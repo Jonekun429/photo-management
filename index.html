@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Cleaner Pro - Swipe Update</title>
+    <title>Cleaner Pro - Dynamic Data</title>
     <style>
         :root {
             --bg:#04100e;--card:#0c1f1b;--card2:#153029;--text:#eaf5f2;--sub:#5a7d75;--dim:#3d5c54;
@@ -23,7 +23,6 @@
         .h-act{display:none;gap:8px;align-items:center}
         .pill{background:var(--card);color:var(--text);border:1px solid var(--bdr);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s}
         .pill:active{transform:scale(.95);background:var(--card2)}
-        .ib{width:36px;height:36px;justify-content:center;padding:0;border-radius:50%;font-size:15px}
         .h-tr{display:flex;justify-content:space-between;align-items:flex-end}
         h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
         .h-sub{font-size:12.5px;color:var(--sub);margin-top:2px;display:none}
@@ -34,15 +33,14 @@
         .view.active{display:block;animation:fi .3s ease}
         @keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-        .del-bar{position:absolute;bottom:80px;left:0;width:100%;padding:12px 20px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:30;transform:translateY(110%);transition:transform .35s cubic-bezier(.25,.8,.25,1)}
-        .del-bar.show{transform:translateY(0)}
-        .btn-del{width:100%;padding:15px;background:var(--dgrad);color:#fff;border:none;border-radius:var(--rm);font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,71,87,.3);display:flex;justify-content:center;align-items:center;gap:8px}
-
-        .sel{position:relative;cursor:pointer;border:2.5px solid transparent;transition:all .25s;overflow:hidden;background:var(--card)}
-        .sel.ck{border-color:var(--danger);border-radius:14px!important}
-        .sel.ck img{filter:brightness(.65)}
-        .chk{position:absolute;bottom:8px;right:8px;width:24px;height:24px;border:2px solid rgba(255,255,255,.6);border-radius:7px;display:flex;justify-content:center;align-items:center;color:transparent;font-size:13px;font-weight:bold;z-index:10;background:rgba(0,0,0,.35);backdrop-filter:blur(4px)}
-        .sel.ck .chk{background:var(--danger);border-color:var(--danger);color:#fff;transform:scale(1.08)}
+        /* アクセスパネル */
+        .access{background:var(--card);border:1px solid var(--bdr2);border-radius:var(--rl);padding:20px;margin-top:15px;overflow:hidden}
+        .access-head{text-align:center;margin-bottom:15px}
+        .access-head h4{font-size:15px;font-weight:700;margin-bottom:4px}
+        .access-head p{font-size:12px;color:var(--sub);line-height:1.5}
+        .a-btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:var(--grad);color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.3)}
+        .a-btn:active{transform:scale(.97)}
+        .file-in{display:none}
 
         /* Home */
         .sto-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
@@ -52,15 +50,11 @@
         .pf{width:0;height:100%;background:var(--grad);border-radius:3px;transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}.pf.go{width:82%}
         
         .gh{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px}
-        .gc{border-radius:var(--rl);height:155px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;cursor:pointer;background-size:cover;background-position:center;box-shadow:var(--sh)}
-        .gc.full{grid-column: 1 / -1; height: 110px;} /* すべての写真用 フル幅 */
+        .gc{border-radius:var(--rl);height:130px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;cursor:pointer;background:var(--card2);background-size:cover;background-position:center;box-shadow:var(--sh)}
+        .gc.full{grid-column: 1 / -1; height: 110px;}
         .gc::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.25) 55%,rgba(0,0,0,.08) 100%);z-index:1}
         .gc>div{position:relative;z-index:2}
         .gc.all-photos{background-image:url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80'); background-position: top;}
-        .gc.photos{background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80')}
-        .gc.videos{background-image:url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=400&q=80')}
-        .gc.screenshots{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80')}
-        .gc.raw{background-image:url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=400&q=80')}
         .gc h3{font-size:12.5px;font-weight:500;margin-bottom:2px;opacity:.7}
         .gc p{font-size:21px;font-weight:700;letter-spacing:-.3px}
         .gc.full p{font-size:26px;}
@@ -68,12 +62,11 @@
 
         /* Media Grid */
         .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .mi{border-radius:var(--rm);aspect-ratio:4/5;position:relative;opacity:0;animation:pop .35s ease forwards}
-        .mi img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
-        @keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+        .mi{border-radius:var(--rm);aspect-ratio:4/5;position:relative;background:var(--card2);overflow:hidden}
+        .mi img{width:100%;height:100%;object-fit:cover;display:block;}
         .sz-t{position:absolute;bottom:8px;left:8px;background:var(--badge);backdrop-filter:blur(6px);color:#fff;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;z-index:2}
 
-        /* ----- スワイプ機能 (新設) ----- */
+        /* スワイプ機能 */
         .swipe-header-stats { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-box { flex: 1; background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rm); padding: 12px; display: flex; align-items: center; gap: 10px; }
         .stat-ic { font-size: 24px; }
@@ -83,7 +76,7 @@
         .month-list { display: flex; flex-direction: column; gap: 12px; }
         .month-card { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rm); padding: 15px; display: flex; gap: 15px; align-items: center; cursor: pointer; transition: transform .2s; }
         .month-card:active { transform: scale(0.98); background: var(--card2); }
-        .mc-thumb { width: 60px; height: 60px; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; }
+        .mc-thumb { width: 60px; height: 60px; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; background-color: var(--dim); }
         .mc-thumb.done::after { content: '✓'; position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; border-radius: inherit; }
         .mc-info { flex: 1; }
         .mc-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
@@ -100,7 +93,6 @@
         .sp-counts { font-size: 11px; color: var(--sub); text-align: right; margin-bottom: 4px; }
         .sp-img-container { flex: 1; background: var(--card); border-radius: var(--rl); position: relative; overflow: hidden; box-shadow: var(--sh); display: flex; align-items: center; justify-content: center; }
         .sp-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--rl); transition: transform 0.3s ease, opacity 0.3s ease; }
-        /* スワイプアニメーション用クラス */
         .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
         .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
         
@@ -128,9 +120,7 @@
     <header>
         <div class="h-top">
             <div id="back" class="back" onclick="goBack()">‹</div>
-            <div id="act" class="h-act">
-                <button class="pill" id="sa-btn" onclick="toggleAll()">☑ すべて選択</button>
-            </div>
+            <div id="act" class="h-act"></div>
             <div id="gear" class="gear">⚙</div>
         </div>
         <div class="h-tr">
@@ -141,27 +131,25 @@
     <main id="home" class="view active">
         <div>
             <div class="sto-row">
-                <div class="sto-u"><strong id="sto-txt">42.5 GB</strong> / 128 GB</div>
-                <div class="sto-p" id="sto-pct">33%</div>
+                <div class="sto-u"><strong id="sto-txt">使用中</strong> / 端末ストレージ</div>
+                <div class="sto-p" id="sto-pct">連携中</div>
             </div>
-            <div class="prog"><div class="pf" id="prog" style="width: 33%;"></div></div>
+            <div class="prog"><div class="pf go" id="prog" style="width: 50%;"></div></div>
+
+            <div class="access" id="access-panel">
+                <div class="access-head">
+                    <h4>スマホの写真を読み込む</h4>
+                    <p>アップロードした写真の撮影日を解析して、<br>自動で月別のスワイプを生成します</p>
+                </div>
+                <button class="a-btn" onclick="document.getElementById('fi-files').click()">
+                    📸 写真を選択する
+                </button>
+                <input type="file" id="fi-files" class="file-in" accept="image/*,video/*" multiple onchange="handleFiles(this.files)">
+            </div>
 
             <div class="gh" id="home-grid">
                 <div class="gc full all-photos" onclick="go('all')">
-                    <div><h3>すべての写真</h3><p id="h-all-sz">42.5 GB</p><div class="cnt" id="h-all-cnt">5,200 枚</div></div>
-                </div>
-
-                <div class="gc photos" onclick="go('similar')">
-                    <div><h3>似ている写真</h3><p>24.4 GB</p><div class="cnt">1,088 枚</div></div>
-                </div>
-                <div class="gc raw" onclick="go('raw')">
-                    <div><h3>RAWデータ</h3><p>12 GB</p><div class="cnt">210 個</div></div>
-                </div>
-                <div class="gc videos" onclick="go('videos')">
-                    <div><h3>動画</h3><p>5.1 GB</p><div class="cnt">42 本</div></div>
-                </div>
-                <div class="gc screenshots" onclick="go('ss')">
-                    <div><h3>スクショ</h3><p>193 MB</p><div class="cnt">78 枚</div></div>
+                    <div><h3>すべての写真</h3><p id="h-all-sz">0 MB</p><div class="cnt" id="h-all-cnt">0 枚</div></div>
                 </div>
             </div>
         </div>
@@ -169,21 +157,22 @@
 
     <main id="all" class="view">
         <div id="all-grid" class="mg"></div>
+        <div id="all-empty" class="empty"><div class="e-ic">✨</div><h3>写真がありません</h3><p>ホームから写真を読み込んでください</p></div>
     </main>
 
-    <main id="similar" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
-    <main id="raw" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
-    <main id="videos" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
-    <main id="ss" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
+    <main id="similar" class="view"><div class="empty" style="display:flex"><div class="e-ic">✉️</div><h3>準備中</h3><p>メール機能は開発中です</p></div></main>
+    <main id="raw" class="view"><div class="empty" style="display:flex"><div class="e-ic">☁️</div><h3>準備中</h3><p>クラウド連携機能は開発中です</p></div></main>
+    <main id="ss" class="view"><div class="empty" style="display:flex"><div class="e-ic">➕</div><h3>準備中</h3><p>追加機能は開発中です</p></div></main>
 
     <main id="swipe" class="view">
         <div id="swipe-list-view">
             <div class="swipe-header-stats">
-                <div class="stat-box"><div class="stat-ic">🏅</div><div><div class="stat-l">報酬</div><div class="stat-v">19/20</div></div></div>
-                <div class="stat-box"><div class="stat-ic">🧹</div><div><div class="stat-l">クリーニング済み</div><div class="stat-v">42.51 GB</div></div></div>
+                <div class="stat-box"><div class="stat-ic">🏅</div><div><div class="stat-l">報酬</div><div class="stat-v" id="reward-cnt">0/0</div></div></div>
+                <div class="stat-box"><div class="stat-ic">🧹</div><div><div class="stat-l">クリーニング済み</div><div class="stat-v" id="cleaned-sz">0 MB</div></div></div>
             </div>
             <div class="month-list" id="month-list-container">
-                </div>
+                <div class="empty" style="display:flex; padding:20px;"><p>ホームから写真を読み込むと<br>ここに月別のスワイプが表示されます</p></div>
+            </div>
         </div>
 
         <div id="swipe-play">
@@ -194,8 +183,8 @@
                 </div>
             </div>
             <div class="sp-img-container">
-                <img id="sp-img" class="sp-img" src="" alt="Swipe Image">
-                <div class="sz-t" id="sp-size" style="bottom: 15px; left: 15px; font-size: 14px;">2.5 MB</div>
+                <img id="sp-img" class="sp-img" src="">
+                <div class="sz-t" id="sp-size" style="bottom: 15px; left: 15px; font-size: 14px;"></div>
             </div>
             <div class="sp-actions">
                 <button class="sp-btn btn-dislike" onclick="handleSwipe('del')">👎</button>
@@ -203,8 +192,6 @@
             </div>
         </div>
     </main>
-
-    <div id="del-bar" class="del-bar"><button class="btn-del"><span>🗑</span>削除</button></div>
 
     <nav>
         <div class="ni on" data-t="home"><div class="nic">🏠</div><span>ホーム</span><div class="nd"></div></div>
@@ -216,104 +203,40 @@
 </div>
 
 <script>
-// デモ用画像リスト
-const ALL_PHOTOS = [
-    { src:'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80', sz: 3.2 },
-    { src:'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80', sz: 4.1 },
-    { src:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400&q=80', sz: 2.8 },
-    { src:'https://images.unsplash.com/photo-1621360841013-c76831f1a301?w=400&q=80', sz: 5.5 },
-    { src:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80', sz: 1.2 },
-    { src:'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=400&q=80', sz: 6.0 }
-];
-
-// スワイプ機能用の月別データ構造
-const SWIPE_MONTHS = [
-    { id: '2026-02', title: '2月, 2026', total: 1102, done: 697, thumb: 'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=200&q=80' },
-    { id: '2026-01', title: '1月, 2026', total: 1373, done: 1373, thumb: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&q=80' },
-    { id: '2025-12', title: '12月, 2025', total: 998, done: 998, thumb: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200&q=80' },
-    { id: '2025-11', title: '11月, 2025', total: 642, done: 642, thumb: 'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=200&q=80' }
-];
-
+let globalFiles = []; // { url, szMB, file, date, monthKey }
+let swipeMonthsData = {}; // { '2026-02': { title, total, done, photos: [] } }
 let currentView = 'home';
-let swipeActiveMonth = null;
-let swipeImages = []; // プレイ中の画像配列
-
-function init() {
-    // すべての写真の描画
-    const grid = document.getElementById('all-grid');
-    grid.innerHTML = ALL_PHOTOS.map((p, i) => `
-        <div class="mi sel" data-sz="${p.sz}" style="animation-delay:${i*.05}s" onclick="this.classList.toggle('ck')">
-            <img src="${p.src}" loading="lazy"><div class="sz-t">${p.sz} MB</div><div class="chk">✓</div>
-        </div>
-    `).join('');
-
-    // スワイプ月別リストの描画
-    renderSwipeList();
-
-    // ナビゲーションイベント
-    document.querySelectorAll('.ni').forEach(n => {
-        n.addEventListener('click', (e) => {
-            const t = e.currentTarget.dataset.t;
-            document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
-            e.currentTarget.classList.add('on');
-            go(t);
-        });
-    });
-}
-
-function renderSwipeList() {
-    const cont = document.getElementById('month-list-container');
-    cont.innerHTML = SWIPE_MONTHS.map(m => {
-        const pct = (m.done / m.total) * 100;
-        const isComp = m.done === m.total;
-        return `
-            <div class="month-card" onclick="startSwipe('${m.id}')">
-                <div class="mc-thumb ${isComp ? 'done' : ''}" style="background-image:url('${m.thumb}')"></div>
-                <div class="mc-info">
-                    <div class="mc-title">
-                        <span>${m.title}</span>
-                        <span class="mc-medal ${isComp ? 'active' : ''}">🏅</span>
-                    </div>
-                    <div class="mc-prog-text">${m.done}/${m.total} 件を確認済み</div>
-                    <div class="mc-prog-bar"><div class="mc-prog-fill" style="width: ${pct}%"></div></div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
+let swipeActiveMonthKey = null;
+let cleanedTotalMB = 0;
 
 function go(id) {
     currentView = id;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     
-    const titles = { home:'ストレージ', all:'すべての写真', swipe:'写真をスワイプ', similar:'メール', raw:'クラウド', ss:'追加', videos:'動画' };
+    const titles = { home:'ストレージ', all:'すべての写真', swipe:'写真をスワイプ', similar:'メール', raw:'クラウド', ss:'追加' };
     document.getElementById('title').innerText = titles[id] || id;
 
     const backBtn = document.getElementById('back');
-    const actBtn = document.getElementById('act');
     const gearBtn = document.getElementById('gear');
     
     if (id === 'home' || id === 'swipe') {
-        backBtn.style.display = 'none';
-        actBtn.style.display = 'none';
-        gearBtn.style.display = 'flex';
-        
+        backBtn.style.display = 'none'; gearBtn.style.display = 'flex';
         if (id === 'swipe') {
             document.getElementById('swipe-list-view').style.display = 'block';
             document.getElementById('swipe-play').style.display = 'none';
         }
     } else {
-        backBtn.style.display = 'block';
-        actBtn.style.display = (id === 'all') ? 'flex' : 'none';
-        gearBtn.style.display = 'none';
+        backBtn.style.display = 'block'; gearBtn.style.display = 'none';
     }
+    
+    checkAllEmpty();
 }
 
 function goBack() {
     if (document.getElementById('swipe-play').style.display === 'flex') {
-        // スワイププレイ中なら月別リストへ戻る
         go('swipe');
+        renderSwipeList();
     } else {
         go('home');
         document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
@@ -321,18 +244,93 @@ function goBack() {
     }
 }
 
-// ----- スワイププレイ機能 -----
-function startSwipe(monthId) {
-    const month = SWIPE_MONTHS.find(m => m.id === monthId);
-    if (month.done >= month.total) {
-        alert("この月はすでに整理完了しています！");
-        return;
+function handleFiles(filesList) {
+    if(!filesList.length) return;
+    
+    // 変数の初期化
+    globalFiles = [];
+    swipeMonthsData = {};
+    let totalMB = 0;
+
+    for(let f of filesList) {
+        if(!f.type.startsWith('image/')) continue; // 今回は画像のみ対象
+        
+        let d = new Date(f.lastModified);
+        let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
+        totalMB += sz;
+        
+        let photoObj = {
+            url: URL.createObjectURL(f),
+            szMB: sz,
+            monthKey: mKey,
+            file: f
+        };
+        globalFiles.push(photoObj);
+
+        // 月別にグループ化
+        if(!swipeMonthsData[mKey]) {
+            swipeMonthsData[mKey] = {
+                id: mKey,
+                title: `${d.getMonth()+1}月, ${d.getFullYear()}`,
+                total: 0, done: 0, photos: []
+            };
+        }
+        swipeMonthsData[mKey].total++;
+        swipeMonthsData[mKey].photos.push(photoObj);
     }
+
+    // ホーム画面の統計更新
+    document.getElementById('h-all-sz').innerText = totalMB.toFixed(1) + ' MB';
+    document.getElementById('h-all-cnt').innerText = globalFiles.length + ' 枚';
     
-    swipeActiveMonth = month;
-    // デモ用に残りの未確認件数分の画像をALL_PHOTOSからランダムに生成するフリ
-    swipeImages = [...ALL_PHOTOS, ...ALL_PHOTOS].sort(() => 0.5 - Math.random());
+    // すべての写真グリッド描画
+    const grid = document.getElementById('all-grid');
+    grid.innerHTML = globalFiles.map(p => `
+        <div class="mi"><img src="${p.url}" loading="lazy"><div class="sz-t">${p.szMB} MB</div></div>
+    `).join('');
     
+    renderSwipeList();
+    go('all'); // 読み込み完了したら一覧へ飛ばす
+}
+
+function renderSwipeList() {
+    const cont = document.getElementById('month-list-container');
+    const monthsArr = Object.values(swipeMonthsData).sort((a,b) => b.id.localeCompare(a.id)); // 新しい順
+    
+    if(monthsArr.length === 0) return;
+    
+    let compCount = 0;
+    
+    cont.innerHTML = monthsArr.map(m => {
+        const pct = (m.done / m.total) * 100;
+        const isComp = m.done === m.total;
+        if(isComp) compCount++;
+        
+        // 代表画像
+        const thumbUrl = m.photos.length > 0 ? m.photos[0].url : '';
+        
+        return `
+            <div class="month-card" onclick="startSwipe('${m.id}')">
+                <div class="mc-thumb ${isComp ? 'done' : ''}" style="background-image:url('${thumbUrl}')"></div>
+                <div class="mc-info">
+                    <div class="mc-title"><span>${m.title}</span><span class="mc-medal ${isComp ? 'active' : ''}">🏅</span></div>
+                    <div class="mc-prog-text">${m.done}/${m.total} 件を確認済み</div>
+                    <div class="mc-prog-bar"><div class="mc-prog-fill" style="width: ${pct}%"></div></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('reward-cnt').innerText = `${compCount}/${monthsArr.length}`;
+    document.getElementById('cleaned-sz').innerText = `${cleanedTotalMB.toFixed(1)} MB`;
+}
+
+function startSwipe(monthKey) {
+    const month = swipeMonthsData[monthKey];
+    if (month.done >= month.total) { alert("この月は確認完了しています！"); return; }
+    
+    swipeActiveMonthKey = monthKey;
     document.getElementById('title').innerText = month.title;
     document.getElementById('back').style.display = 'block';
     document.getElementById('gear').style.display = 'none';
@@ -344,57 +342,56 @@ function startSwipe(monthId) {
 }
 
 function updateSwipeCard() {
-    const month = swipeActiveMonth;
+    const month = swipeMonthsData[swipeActiveMonthKey];
     if (!month) return;
     
-    // UI更新
     document.getElementById('sp-curr').innerText = month.done;
     document.getElementById('sp-total').innerText = month.total;
-    const pct = (month.done / month.total) * 100;
-    document.getElementById('sp-prog-bar').style.width = pct + '%';
+    document.getElementById('sp-prog-bar').style.width = ((month.done / month.total) * 100) + '%';
     
-    if (month.done >= month.total || swipeImages.length === 0) {
-        // 完了処理
-        renderSwipeList(); // リストの進捗更新
-        alert("この月の整理が完了しました！素晴らしい！🎉");
-        goBack();
-        return;
+    // 未処理の写真を探す（doneの数＝インデックス）
+    if (month.done >= month.total) {
+        alert("🎉 この月の整理が完了しました！");
+        goBack(); return;
     }
     
-    // 画像セット
+    const currentImg = month.photos[month.done];
     const imgEl = document.getElementById('sp-img');
-    const currentImg = swipeImages[0];
     
-    // アニメーションのリセット
     imgEl.className = 'sp-img'; 
     setTimeout(() => {
-        imgEl.src = currentImg.src;
-        document.getElementById('sp-size').innerText = currentImg.sz + " MB";
+        imgEl.src = currentImg.url;
+        document.getElementById('sp-size').innerText = currentImg.szMB + " MB";
     }, 50);
 }
 
 function handleSwipe(action) {
     const imgEl = document.getElementById('sp-img');
+    const month = swipeMonthsData[swipeActiveMonthKey];
+    const currentImg = month.photos[month.done];
     
-    // CSSでスワイプして消えるアニメーション
     if (action === 'del') {
         imgEl.classList.add('swipe-left');
-        // ※実際のアプリならここで削除APIを呼ぶか、削除リストに追加する
+        cleanedTotalMB += currentImg.szMB; // デモとして削除容量を加算
     } else {
         imgEl.classList.add('swipe-right');
     }
     
-    // 進捗を進める
-    swipeActiveMonth.done += 1;
-    swipeImages.shift(); // 最初の画像を削除
-    
-    // アニメーション完了後に次の画像へ
-    setTimeout(() => {
-        updateSwipeCard();
-    }, 300);
+    month.done += 1;
+    setTimeout(() => updateSwipeCard(), 300);
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function checkAllEmpty() {
+    document.getElementById('all-empty').style.display = globalFiles.length ? 'none' : 'flex';
+}
+
+document.querySelectorAll('.ni').forEach(n => {
+    n.addEventListener('click', (e) => {
+        document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
+        e.currentTarget.classList.add('on');
+        go(e.currentTarget.dataset.t);
+    });
+});
 </script>
 </body>
 </html>
