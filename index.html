@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Cleaner Pro - Dynamic Data</title>
+    <title>Cleaner Pro - Prototype</title>
     <style>
         :root {
             --bg:#04100e;--card:#0c1f1b;--card2:#153029;--text:#eaf5f2;--sub:#5a7d75;--dim:#3d5c54;
@@ -21,8 +21,6 @@
         .back{font-size:24px;cursor:pointer;display:none;padding:4px 14px 4px 0;color:var(--bright);transition:opacity .2s;font-weight:300}
         .back:active{opacity:.4}
         .h-act{display:none;gap:8px;align-items:center}
-        .pill{background:var(--card);color:var(--text);border:1px solid var(--bdr);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s}
-        .pill:active{transform:scale(.95);background:var(--card2)}
         .h-tr{display:flex;justify-content:space-between;align-items:flex-end}
         h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
         .h-sub{font-size:12.5px;color:var(--sub);margin-top:2px;display:none}
@@ -38,8 +36,10 @@
         .access-head{text-align:center;margin-bottom:15px}
         .access-head h4{font-size:15px;font-weight:700;margin-bottom:4px}
         .access-head p{font-size:12px;color:var(--sub);line-height:1.5}
-        .a-btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:var(--grad);color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.3)}
+        .a-btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:14.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:var(--grad);color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.3)}
         .a-btn:active{transform:scale(.97)}
+        .a-btn.danger{background:var(--dgrad);box-shadow:0 4px 16px rgba(255,71,87,.3)}
+        .a-btn.secondary{background:var(--card2);color:var(--bright);border:1px solid var(--bdr2);box-shadow:none}
         .file-in{display:none}
 
         /* Home */
@@ -47,7 +47,7 @@
         .sto-u{font-size:12.5px;color:var(--sub)}.sto-u strong{color:var(--bright);font-weight:600}
         .sto-p{font-size:11px;font-weight:700;color:var(--amber);background:rgba(255,177,66,.1);padding:3px 8px;border-radius:6px}
         .prog{width:100%;height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
-        .pf{width:0;height:100%;background:var(--grad);border-radius:3px;transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}.pf.go{width:82%}
+        .pf{width:0;height:100%;background:var(--grad);border-radius:3px;transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
         
         .gh{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px}
         .gc{border-radius:var(--rl);height:130px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;cursor:pointer;background:var(--card2);background-size:cover;background-position:center;box-shadow:var(--sh)}
@@ -61,10 +61,9 @@
         .gc .cnt{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:1px}
 
         /* Media Grid */
-        .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .mi{border-radius:var(--rm);aspect-ratio:4/5;position:relative;background:var(--card2);overflow:hidden}
+        .mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+        .mi{aspect-ratio:1/1;position:relative;background:var(--card2);overflow:hidden}
         .mi img{width:100%;height:100%;object-fit:cover;display:block;}
-        .sz-t{position:absolute;bottom:8px;left:8px;background:var(--badge);backdrop-filter:blur(6px);color:#fff;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;z-index:2}
 
         /* スワイプ機能 */
         .swipe-header-stats { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -77,11 +76,9 @@
         .month-card { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rm); padding: 15px; display: flex; gap: 15px; align-items: center; cursor: pointer; transition: transform .2s; }
         .month-card:active { transform: scale(0.98); background: var(--card2); }
         .mc-thumb { width: 60px; height: 60px; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; background-color: var(--dim); }
-        .mc-thumb.done::after { content: '✓'; position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; border-radius: inherit; }
+        .mc-thumb.done::after { content: '✓'; position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; border-radius: inherit; }
         .mc-info { flex: 1; }
         .mc-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .mc-medal { font-size: 20px; opacity: 0.3; }
-        .mc-medal.active { opacity: 1; }
         .mc-prog-text { font-size: 11px; color: var(--sub); margin-bottom: 4px; }
         .mc-prog-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
         .mc-prog-fill { height: 100%; background: var(--bright); border-radius: 2px; transition: width 0.3s; }
@@ -95,16 +92,29 @@
         .sp-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--rl); transition: transform 0.3s ease, opacity 0.3s ease; }
         .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
         .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
+        .sz-badge { position:absolute; bottom:15px; left:15px; background:var(--badge); backdrop-filter:blur(6px); color:#fff; font-size:14px; font-weight:700; padding:6px 12px; border-radius:10px; z-index:2; border:1px solid rgba(255,255,255,0.1); }
         
         .sp-actions { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
-        .sp-btn { width: 70px; height: 70px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .sp-btn { width: 72px; height: 72px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .sp-btn:active { transform: scale(0.9); }
         .btn-dislike { background: var(--card); color: var(--danger); border: 2px solid var(--danger); }
         .btn-like { background: var(--card); color: var(--bright); border: 2px solid var(--bright); }
-        .sp-btn.btn-dislike:active { background: var(--danger); color: #fff; }
-        .sp-btn.btn-like:active { background: var(--bright); color: #fff; }
 
-        .empty { display:none; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; text-align:center; animation:fi .5s ease; }
+        /* リザルト(結果)画面 */
+        .res-container { display:flex; flex-direction:column; align-items:center; text-align:center; padding:20px 0; animation:fi .5s ease; }
+        .res-icon { width:80px; height:80px; background:var(--grad); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:20px; box-shadow:0 10px 30px var(--glow); }
+        .res-container h2 { font-size:22px; font-weight:700; margin-bottom:8px; }
+        .res-container p { font-size:13px; color:var(--sub); margin-bottom:30px; }
+        
+        .res-stats { width:100%; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:35px; }
+        .rs-box { background:var(--card); border:1px solid var(--bdr); border-radius:var(--rm); padding:18px 10px; display:flex; flex-direction:column; align-items:center; }
+        .rs-box.danger { border-color:rgba(255,71,87,0.3); background:linear-gradient(to bottom, var(--card), rgba(255,71,87,0.05)); }
+        .rs-box span { font-size:11px; color:var(--sub); margin-bottom:6px; font-weight:600; }
+        .rs-box strong { font-size:24px; font-weight:800; }
+        .rs-box.danger strong { color:var(--danger); }
+        .rs-box small { font-size:11px; color:var(--danger); margin-top:4px; font-weight:600; background:rgba(255,71,87,0.15); padding:3px 8px; border-radius:6px; }
+
+        .empty { display:none; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; text-align:center; }
         .e-ic { width:76px; height:76px; background:linear-gradient(135deg,rgba(0,93,77,.18),rgba(0,184,148,.08)); border:1px solid rgba(0,93,77,.18); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:34px; margin-bottom:18px; }
         
         nav{position:absolute;bottom:0;left:0;width:100%;height:78px;background:rgba(4,16,14,.94);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);display:flex;justify-content:space-around;align-items:center;padding-bottom:18px;border-top:1px solid var(--bdr);z-index:40}
@@ -131,10 +141,10 @@
     <main id="home" class="view active">
         <div>
             <div class="sto-row">
-                <div class="sto-u"><strong id="sto-txt">使用中</strong> / 端末ストレージ</div>
-                <div class="sto-p" id="sto-pct">連携中</div>
+                <div class="sto-u"><strong id="sto-txt">0 MB</strong> / 読み込み済み</div>
+                <div class="sto-p" id="sto-pct">---</div>
             </div>
-            <div class="prog"><div class="pf go" id="prog" style="width: 50%;"></div></div>
+            <div class="prog"><div class="pf" id="prog" style="width: 0%;"></div></div>
 
             <div class="access" id="access-panel">
                 <div class="access-head">
@@ -157,18 +167,14 @@
 
     <main id="all" class="view">
         <div id="all-grid" class="mg"></div>
-        <div id="all-empty" class="empty"><div class="e-ic">✨</div><h3>写真がありません</h3><p>ホームから写真を読み込んでください</p></div>
+        <div id="all-empty" class="empty" style="display:flex;"><div class="e-ic">✨</div><h3>写真がありません</h3><p>ホームから写真を読み込んでください</p></div>
     </main>
-
-    <main id="similar" class="view"><div class="empty" style="display:flex"><div class="e-ic">✉️</div><h3>準備中</h3><p>メール機能は開発中です</p></div></main>
-    <main id="raw" class="view"><div class="empty" style="display:flex"><div class="e-ic">☁️</div><h3>準備中</h3><p>クラウド連携機能は開発中です</p></div></main>
-    <main id="ss" class="view"><div class="empty" style="display:flex"><div class="e-ic">➕</div><h3>準備中</h3><p>追加機能は開発中です</p></div></main>
 
     <main id="swipe" class="view">
         <div id="swipe-list-view">
             <div class="swipe-header-stats">
-                <div class="stat-box"><div class="stat-ic">🏅</div><div><div class="stat-l">報酬</div><div class="stat-v" id="reward-cnt">0/0</div></div></div>
-                <div class="stat-box"><div class="stat-ic">🧹</div><div><div class="stat-l">クリーニング済み</div><div class="stat-v" id="cleaned-sz">0 MB</div></div></div>
+                <div class="stat-box"><div class="stat-ic">🏅</div><div><div class="stat-l">整理済み</div><div class="stat-v" id="reward-cnt">0/0</div></div></div>
+                <div class="stat-box"><div class="stat-ic">🧹</div><div><div class="stat-l">解放した容量</div><div class="stat-v" id="cleaned-sz">0 MB</div></div></div>
             </div>
             <div class="month-list" id="month-list-container">
                 <div class="empty" style="display:flex; padding:20px;"><p>ホームから写真を読み込むと<br>ここに月別のスワイプが表示されます</p></div>
@@ -184,7 +190,7 @@
             </div>
             <div class="sp-img-container">
                 <img id="sp-img" class="sp-img" src="">
-                <div class="sz-t" id="sp-size" style="bottom: 15px; left: 15px; font-size: 14px;"></div>
+                <div class="sz-badge" id="sp-size"></div>
             </div>
             <div class="sp-actions">
                 <button class="sp-btn btn-dislike" onclick="handleSwipe('del')">👎</button>
@@ -193,34 +199,60 @@
         </div>
     </main>
 
+    <main id="results" class="view">
+        <div class="res-container">
+            <div class="res-icon">✨</div>
+            <h2>スワイプ完了！</h2>
+            <p id="res-month-title">2026年2月の整理が終わりました</p>
+            
+            <div class="res-stats">
+                <div class="rs-box safe">
+                    <span>残す写真</span>
+                    <strong id="res-keep-cnt">0</strong>
+                </div>
+                <div class="rs-box danger">
+                    <span>削除する写真</span>
+                    <strong id="res-del-cnt">0</strong>
+                    <small id="res-del-sz">0 MB 解放</small>
+                </div>
+            </div>
+            
+            <button class="a-btn danger" onclick="executeNativeDeleteMock()">
+                🗑 iPhoneから削除する
+            </button>
+            <button class="a-btn secondary" style="margin-top:12px" onclick="go('swipe'); renderSwipeList();">
+                あとで削除する
+            </button>
+        </div>
+    </main>
+
     <nav>
         <div class="ni on" data-t="home"><div class="nic">🏠</div><span>ホーム</span><div class="nd"></div></div>
-        <div class="ni" data-t="similar"><div class="nic">✉️</div><span>メール</span><div class="nd"></div></div>
         <div class="ni" data-t="swipe"><div class="nic">🃏</div><span>スワイプ</span><div class="nd"></div></div>
-        <div class="ni" data-t="raw"><div class="nic">☁️</div><span>クラウド</span><div class="nd"></div></div>
-        <div class="ni" data-t="ss"><div class="nic">➕</div><span>追加</span><div class="nd"></div></div>
+        <div class="ni" data-t="all"><div class="nic">📁</div><span>すべて</span><div class="nd"></div></div>
     </nav>
 </div>
 
 <script>
-let globalFiles = []; // { url, szMB, file, date, monthKey }
-let swipeMonthsData = {}; // { '2026-02': { title, total, done, photos: [] } }
+let globalFiles = []; 
+let swipeMonthsData = {}; 
 let currentView = 'home';
 let swipeActiveMonthKey = null;
 let cleanedTotalMB = 0;
+let totalInitialMB = 0;
 
 function go(id) {
     currentView = id;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     
-    const titles = { home:'ストレージ', all:'すべての写真', swipe:'写真をスワイプ', similar:'メール', raw:'クラウド', ss:'追加' };
+    const titles = { home:'ストレージ', all:'すべての写真', swipe:'写真をスワイプ', results:'整理結果' };
     document.getElementById('title').innerText = titles[id] || id;
 
     const backBtn = document.getElementById('back');
     const gearBtn = document.getElementById('gear');
     
-    if (id === 'home' || id === 'swipe') {
+    if (id === 'home' || id === 'swipe' || id === 'results') {
         backBtn.style.display = 'none'; gearBtn.style.display = 'flex';
         if (id === 'swipe') {
             document.getElementById('swipe-list-view').style.display = 'block';
@@ -229,75 +261,76 @@ function go(id) {
     } else {
         backBtn.style.display = 'block'; gearBtn.style.display = 'none';
     }
-    
-    checkAllEmpty();
 }
 
 function goBack() {
     if (document.getElementById('swipe-play').style.display === 'flex') {
-        go('swipe');
-        renderSwipeList();
+        go('swipe'); renderSwipeList();
     } else {
-        go('home');
-        document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
-        document.querySelector('.ni[data-t="home"]').classList.add('on');
+        go('home'); document.querySelectorAll('.ni').forEach(x => x.classList.remove('on')); document.querySelector('.ni[data-t="home"]').classList.add('on');
     }
 }
 
 function handleFiles(filesList) {
     if(!filesList.length) return;
     
-    // 変数の初期化
     globalFiles = [];
     swipeMonthsData = {};
-    let totalMB = 0;
+    totalInitialMB = 0;
+    cleanedTotalMB = 0;
 
     for(let f of filesList) {
-        if(!f.type.startsWith('image/')) continue; // 今回は画像のみ対象
+        if(!f.type.startsWith('image/')) continue;
         
         let d = new Date(f.lastModified);
         let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
         let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
-        totalMB += sz;
+        totalInitialMB += sz;
         
-        let photoObj = {
-            url: URL.createObjectURL(f),
-            szMB: sz,
-            monthKey: mKey,
-            file: f
-        };
+        let photoObj = { id: Math.random().toString(36).substr(2,9), url: URL.createObjectURL(f), szMB: sz, monthKey: mKey };
         globalFiles.push(photoObj);
 
-        // 月別にグループ化
         if(!swipeMonthsData[mKey]) {
             swipeMonthsData[mKey] = {
-                id: mKey,
-                title: `${d.getMonth()+1}月, ${d.getFullYear()}`,
-                total: 0, done: 0, photos: []
+                id: mKey, title: `${d.getFullYear()}年${d.getMonth()+1}月`,
+                total: 0, done: 0, photos: [],
+                kept: [], deleted: [], savedMB: 0, isCleaned: false // 結果トラッキング用
             };
         }
         swipeMonthsData[mKey].total++;
         swipeMonthsData[mKey].photos.push(photoObj);
     }
 
-    // ホーム画面の統計更新
-    document.getElementById('h-all-sz').innerText = totalMB.toFixed(1) + ' MB';
+    updateHomeStats();
+    renderAllPhotos();
+    renderSwipeList();
+    go('swipe'); 
+}
+
+function updateHomeStats() {
+    let currentTotalMB = globalFiles.reduce((sum, p) => sum + p.szMB, 0);
+    document.getElementById('h-all-sz').innerText = currentTotalMB.toFixed(1) + ' MB';
     document.getElementById('h-all-cnt').innerText = globalFiles.length + ' 枚';
     
-    // すべての写真グリッド描画
+    document.getElementById('sto-txt').innerText = currentTotalMB.toFixed(1) + ' MB';
+    document.getElementById('sto-pct').innerText = globalFiles.length > 0 ? '読込済' : '---';
+    
+    // プログレスバーのダミー演出（元の容量に対する現在の割合）
+    let pct = totalInitialMB > 0 ? (currentTotalMB / totalInitialMB) * 100 : 0;
+    document.getElementById('prog').style.width = pct + '%';
+}
+
+function renderAllPhotos() {
     const grid = document.getElementById('all-grid');
     grid.innerHTML = globalFiles.map(p => `
-        <div class="mi"><img src="${p.url}" loading="lazy"><div class="sz-t">${p.szMB} MB</div></div>
+        <div class="mi" id="img-${p.id}"><img src="${p.url}" loading="lazy"></div>
     `).join('');
-    
-    renderSwipeList();
-    go('all'); // 読み込み完了したら一覧へ飛ばす
+    document.getElementById('all-empty').style.display = globalFiles.length ? 'none' : 'flex';
 }
 
 function renderSwipeList() {
     const cont = document.getElementById('month-list-container');
-    const monthsArr = Object.values(swipeMonthsData).sort((a,b) => b.id.localeCompare(a.id)); // 新しい順
-    
+    const monthsArr = Object.values(swipeMonthsData).sort((a,b) => b.id.localeCompare(a.id));
     if(monthsArr.length === 0) return;
     
     let compCount = 0;
@@ -306,15 +339,13 @@ function renderSwipeList() {
         const pct = (m.done / m.total) * 100;
         const isComp = m.done === m.total;
         if(isComp) compCount++;
-        
-        // 代表画像
         const thumbUrl = m.photos.length > 0 ? m.photos[0].url : '';
         
         return `
             <div class="month-card" onclick="startSwipe('${m.id}')">
-                <div class="mc-thumb ${isComp ? 'done' : ''}" style="background-image:url('${thumbUrl}')"></div>
+                <div class="mc-thumb ${m.isCleaned ? 'done' : ''}" style="background-image:url('${thumbUrl}')"></div>
                 <div class="mc-info">
-                    <div class="mc-title"><span>${m.title}</span><span class="mc-medal ${isComp ? 'active' : ''}">🏅</span></div>
+                    <div class="mc-title"><span>${m.title}</span></div>
                     <div class="mc-prog-text">${m.done}/${m.total} 件を確認済み</div>
                     <div class="mc-prog-bar"><div class="mc-prog-fill" style="width: ${pct}%"></div></div>
                 </div>
@@ -328,31 +359,27 @@ function renderSwipeList() {
 
 function startSwipe(monthKey) {
     const month = swipeMonthsData[monthKey];
-    if (month.done >= month.total) { alert("この月は確認完了しています！"); return; }
+    if (month.isCleaned) { alert("この月はすでに削除完了しています。"); return; }
+    if (month.done >= month.total) { showResults(monthKey); return; } // やり残しの結果画面へ
     
     swipeActiveMonthKey = monthKey;
     document.getElementById('title').innerText = month.title;
     document.getElementById('back').style.display = 'block';
-    document.getElementById('gear').style.display = 'none';
     
     document.getElementById('swipe-list-view').style.display = 'none';
     document.getElementById('swipe-play').style.display = 'flex';
-    
     updateSwipeCard();
 }
 
 function updateSwipeCard() {
     const month = swipeMonthsData[swipeActiveMonthKey];
-    if (!month) return;
-    
     document.getElementById('sp-curr').innerText = month.done;
     document.getElementById('sp-total').innerText = month.total;
     document.getElementById('sp-prog-bar').style.width = ((month.done / month.total) * 100) + '%';
     
-    // 未処理の写真を探す（doneの数＝インデックス）
     if (month.done >= month.total) {
-        alert("🎉 この月の整理が完了しました！");
-        goBack(); return;
+        setTimeout(() => showResults(swipeActiveMonthKey), 400);
+        return;
     }
     
     const currentImg = month.photos[month.done];
@@ -372,17 +399,59 @@ function handleSwipe(action) {
     
     if (action === 'del') {
         imgEl.classList.add('swipe-left');
-        cleanedTotalMB += currentImg.szMB; // デモとして削除容量を加算
+        month.deleted.push(currentImg);
+        month.savedMB += currentImg.szMB;
     } else {
         imgEl.classList.add('swipe-right');
+        month.kept.push(currentImg);
     }
     
     month.done += 1;
     setTimeout(() => updateSwipeCard(), 300);
 }
 
-function checkAllEmpty() {
-    document.getElementById('all-empty').style.display = globalFiles.length ? 'none' : 'flex';
+// === 結果画面と擬似削除アクション ===
+function showResults(monthKey) {
+    const month = swipeMonthsData[monthKey];
+    swipeActiveMonthKey = monthKey; // 保持
+    
+    // リザルト画面に数値をセット
+    document.getElementById('res-month-title').innerText = `${month.title} の整理が終わりました`;
+    document.getElementById('res-keep-cnt').innerText = `${month.kept.length} 枚`;
+    document.getElementById('res-del-cnt').innerText = `${month.deleted.length} 枚`;
+    document.getElementById('res-del-sz').innerText = `${month.savedMB.toFixed(1)} MB 解放可能`;
+    
+    go('results');
+}
+
+function executeNativeDeleteMock() {
+    const month = swipeMonthsData[swipeActiveMonthKey];
+    
+    if(month.deleted.length === 0) {
+        alert("削除する写真がありません！素晴らしい整理整頓です。");
+        month.isCleaned = true;
+        go('swipe'); renderSwipeList(); return;
+    }
+
+    // iOSのネイティブ削除ダイアログを模したアラート
+    if(confirm(`"${month.title}" の写真 ${month.deleted.length}枚 をiPhoneから削除しますか？\n\n(※このダイアログは、アプリ化後のiOS標準ポップアップのシミュレーションです)`)) {
+        
+        // 1. globalFiles(すべての写真)から削除予定の写真を本当に取り除く
+        const deletedIds = month.deleted.map(p => p.id);
+        globalFiles = globalFiles.filter(p => !deletedIds.includes(p.id));
+        
+        // 2. 解放容量をトータルに加算
+        cleanedTotalMB += month.savedMB;
+        month.isCleaned = true; // 処理完了フラグ
+        
+        // 3. UIの更新
+        updateHomeStats();
+        renderAllPhotos();
+        renderSwipeList();
+        
+        alert(`✨ 削除が完了しました！\nデバイスの空き容量が ${month.savedMB.toFixed(1)} MB 増えました。`);
+        go('swipe');
+    }
 }
 
 document.querySelectorAll('.ni').forEach(n => {
