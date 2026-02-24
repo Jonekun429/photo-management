@@ -57,8 +57,8 @@ h1{font-size:25px;font-weight:800;letter-spacing:-.3px;}
 .view.active{display:block;}
 
 /* 削除バー（スワイプ詳細では非表示） */
-.del-bar{position:absolute;bottom:80px;left:0;width:100%;padding:0 16px;display:flex;justify-content:center;z-index:30;transform:translateY(150%);transition:transform .32s cubic-bezier(.25,.8,.25,1);pointer-events:none;}
-.del-bar.show{transform:translateY(0);pointer-events:auto;}
+.del-bar{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(150%);width:100%;max-width:480px;padding:0 16px;display:flex;justify-content:center;z-index:30;transition:transform .32s cubic-bezier(.25,.8,.25,1);pointer-events:none;}
+.del-bar.show{transform:translateX(-50%) translateY(0);pointer-events:auto;}
 .del-bar.hidden-force{display:none !important;}
 .btn-del{width:100%;padding:15px 20px;background:linear-gradient(135deg,var(--danger),var(--dnk));color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(224,82,82,.4);display:flex;justify-content:center;align-items:center;gap:8px;}
 
@@ -240,11 +240,13 @@ h1{font-size:25px;font-weight:800;letter-spacing:-.3px;}
 .gd-cta{background:linear-gradient(135deg,var(--mid),var(--primary));color:#fff;border:none;border-radius:16px;padding:16px;width:100%;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 
 /* ── ボトムナビ ── */
-nav{height:76px;background:rgba(10,20,17,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding-bottom:10px;border-top:1px solid var(--border);flex-shrink:0;z-index:40;}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:76px;background:rgba(10,20,17,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding-bottom:10px;border-top:1px solid var(--border);z-index:40;}
 .nav-item{display:flex;flex-direction:column;align-items:center;color:var(--text-sub);font-size:10px;font-weight:600;cursor:pointer;width:80px;transition:color .2s;}
 .nav-item.active{color:var(--accent);}
 .nav-icon{font-size:22px;margin-bottom:3px;}
 .nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(0,232,181,.5));}
+/* navの高さ分ビューに余白を確保 */
+.view{padding-bottom:96px !important;}
 </style>
 </head>
 <body>
