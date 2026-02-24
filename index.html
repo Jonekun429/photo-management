@@ -89,10 +89,10 @@ h1{font-size:25px;font-weight:800;letter-spacing:-.3px;}
 .hc-inner{position:relative;z-index:2;}
 .home-card h3{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:3px;}
 .home-card p{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;}
-.home-card.photos     {background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80');}
-.home-card.raw        {background-image:url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80');}
-.home-card.videos     {background-image:url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80');}
-.home-card.screenshots{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80');}
+.home-card.photos     {background-color:#fdf5ff;}
+.home-card.raw        {background-color:#fff5e0;}
+.home-card.videos     {background-color:#fff0e8;}
+.home-card.screenshots{background-color:#e8f8ff;}
 
 /* ── メディアグリッド（大きめ 2列） ── */
 .media-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:100px;}
@@ -301,7 +301,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
     <div class="guide-body">
 
       <!-- フィーチャー大カード -->
-      <div class="guide-feature-card" style="background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80')">
+      <div class="guide-feature-card" id="guide-feat-card">
         <div class="guide-feature-inner">
           <div class="guide-feature-tag">⭐ おすすめ</div>
           <div class="guide-feature-title">月別スワイプで整理</div>
@@ -439,20 +439,187 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
 </div>
 
 <script>
-const imgPool=[
-  'https://images.unsplash.com/photo-1531306728370-53bfd6202e88',
-  'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
-  'https://images.unsplash.com/photo-1511895426328-dc8714191300',
-  'https://images.unsplash.com/photo-1611162617474-5b21e879e113',
-  'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e',
-  'https://images.unsplash.com/photo-1504274066651-8d31a536b11a',
-  'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4',
-  'https://images.unsplash.com/photo-1492691527719-9d1c255998b3',
-  'https://images.unsplash.com/photo-1520697921389-9a2f647035ce'
-];
+// クレヨン風SVGアニマルイラスト（data URL）
+function makeSVG(svgContent, bg){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+    <rect width="200" height="200" fill="${bg}" rx="12"/>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <g filter="url(#rough)">${svgContent}</g>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// 子猫 🐱
+const cat1 = makeSVG(`
+  <ellipse cx="100" cy="125" rx="52" ry="48" fill="#f4c97a" stroke="#b07a2a" stroke-width="3.5" stroke-linecap="round"/>
+  <ellipse cx="100" cy="90" rx="42" ry="40" fill="#f4c97a" stroke="#b07a2a" stroke-width="3.5"/>
+  <polygon points="65,60 55,30 80,55" fill="#f4c97a" stroke="#b07a2a" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="135,60 145,30 120,55" fill="#f4c97a" stroke="#b07a2a" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="88" cy="88" rx="9" ry="11" fill="#fff" stroke="#b07a2a" stroke-width="2"/>
+  <ellipse cx="112" cy="88" rx="9" ry="11" fill="#fff" stroke="#b07a2a" stroke-width="2"/>
+  <ellipse cx="88" cy="90" rx="5" ry="7" fill="#3a2a1a"/>
+  <ellipse cx="112" cy="90" rx="5" ry="7" fill="#3a2a1a"/>
+  <circle cx="90" cy="88" r="2" fill="#fff"/>
+  <circle cx="114" cy="88" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="103" rx="7" ry="5" fill="#f0a0b0" stroke="#c06070" stroke-width="2"/>
+  <path d="M93 108 Q100 115 107 108" stroke="#b07a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="70" y1="100" x2="50" y2="96" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="70" y1="104" x2="48" y2="104" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="130" y1="100" x2="150" y2="96" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="130" y1="104" x2="152" y2="104" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
+  <path d="M55 155 Q100 180 145 155" stroke="#b07a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+`, '#fff9e6');
+
+// 子猫2（グレー）
+const cat2 = makeSVG(`
+  <ellipse cx="100" cy="125" rx="52" ry="48" fill="#c8cdd4" stroke="#666" stroke-width="3.5"/>
+  <ellipse cx="100" cy="88" rx="42" ry="40" fill="#c8cdd4" stroke="#666" stroke-width="3.5"/>
+  <polygon points="65,58 54,28 80,55" fill="#c8cdd4" stroke="#666" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="135,58 146,28 120,55" fill="#c8cdd4" stroke="#666" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="88" cy="87" rx="9" ry="11" fill="#fff" stroke="#666" stroke-width="2"/>
+  <ellipse cx="112" cy="87" rx="9" ry="11" fill="#fff" stroke="#666" stroke-width="2"/>
+  <ellipse cx="88" cy="89" rx="5" ry="7" fill="#2a2a3a"/>
+  <ellipse cx="112" cy="89" rx="5" ry="7" fill="#2a2a3a"/>
+  <circle cx="90" cy="87" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="102" rx="7" ry="5" fill="#f0a0b0" stroke="#c06070" stroke-width="2"/>
+  <path d="M93 107 Q100 114 107 107" stroke="#666" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="70" y1="99" x2="50" y2="95" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+  <line x1="70" y1="103" x2="48" y2="103" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+  <line x1="130" y1="99" x2="150" y2="95" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+  <line x1="130" y1="103" x2="152" y2="103" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+  <path d="M50 155 Q100 178 150 155" stroke="#666" stroke-width="3" fill="none" stroke-linecap="round"/>
+`, '#eef0f8');
+
+// 子犬 🐶（ゴールデン）
+const dog1 = makeSVG(`
+  <ellipse cx="100" cy="128" rx="55" ry="46" fill="#e8b45a" stroke="#9a6820" stroke-width="3.5"/>
+  <ellipse cx="100" cy="88" rx="44" ry="40" fill="#e8b45a" stroke="#9a6820" stroke-width="3.5"/>
+  <ellipse cx="67" cy="78" rx="18" ry="26" fill="#d4963c" stroke="#9a6820" stroke-width="3" transform="rotate(-10,67,78)"/>
+  <ellipse cx="133" cy="78" rx="18" ry="26" fill="#d4963c" stroke="#9a6820" stroke-width="3" transform="rotate(10,133,78)"/>
+  <ellipse cx="88" cy="87" rx="9" ry="10" fill="#fff" stroke="#9a6820" stroke-width="2"/>
+  <ellipse cx="112" cy="87" rx="9" ry="10" fill="#fff" stroke="#9a6820" stroke-width="2"/>
+  <ellipse cx="88" cy="89" rx="5" ry="6" fill="#2a1a0a"/>
+  <ellipse cx="112" cy="89" rx="5" ry="6" fill="#2a1a0a"/>
+  <circle cx="90" cy="87" r="2" fill="#fff"/>
+  <circle cx="114" cy="87" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="106" rx="14" ry="10" fill="#d4763c" stroke="#9a4820" stroke-width="2.5"/>
+  <path d="M88 112 Q100 122 112 112" stroke="#9a4820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="100" cy="105" rx="6" ry="4" fill="#c05040"/>
+`, '#fff5e0');
+
+// 子犬2（白黒）
+const dog2 = makeSVG(`
+  <ellipse cx="100" cy="128" rx="55" ry="46" fill="#f0f0f0" stroke="#444" stroke-width="3.5"/>
+  <ellipse cx="100" cy="88" rx="44" ry="40" fill="#f0f0f0" stroke="#444" stroke-width="3.5"/>
+  <ellipse cx="67" cy="78" rx="18" ry="26" fill="#ddd" stroke="#444" stroke-width="3" transform="rotate(-10,67,78)"/>
+  <ellipse cx="133" cy="78" rx="18" ry="26" fill="#ddd" stroke="#444" stroke-width="3" transform="rotate(10,133,78)"/>
+  <ellipse cx="82" cy="80" rx="20" ry="16" fill="#333" opacity="0.85"/>
+  <ellipse cx="88" cy="87" rx="9" ry="10" fill="#fff" stroke="#444" stroke-width="2"/>
+  <ellipse cx="112" cy="87" rx="9" ry="10" fill="#fff" stroke="#444" stroke-width="2"/>
+  <ellipse cx="88" cy="89" rx="5" ry="6" fill="#111"/>
+  <ellipse cx="112" cy="89" rx="5" ry="6" fill="#111"/>
+  <circle cx="90" cy="87" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="106" rx="14" ry="10" fill="#e07060" stroke="#a04030" stroke-width="2.5"/>
+  <path d="M88 112 Q100 122 112 112" stroke="#444" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`, '#f0f4ff');
+
+// 子ウサギ 🐰
+const bunny1 = makeSVG(`
+  <ellipse cx="100" cy="130" rx="50" ry="44" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3.5"/>
+  <ellipse cx="100" cy="88" rx="38" ry="36" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3.5"/>
+  <ellipse cx="76" cy="52" rx="12" ry="32" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3" transform="rotate(-8,76,52)"/>
+  <ellipse cx="124" cy="52" rx="12" ry="32" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3" transform="rotate(8,124,52)"/>
+  <ellipse cx="77" cy="52" rx="6" ry="24" fill="#f4b8c0" opacity="0.7"/>
+  <ellipse cx="123" cy="52" rx="6" ry="24" fill="#f4b8c0" opacity="0.7"/>
+  <ellipse cx="88" cy="86" rx="9" ry="10" fill="#fff" stroke="#9a8a7a" stroke-width="2"/>
+  <ellipse cx="112" cy="86" rx="9" ry="10" fill="#fff" stroke="#9a8a7a" stroke-width="2"/>
+  <ellipse cx="88" cy="88" rx="5" ry="6" fill="#4a3a5a"/>
+  <ellipse cx="112" cy="88" rx="5" ry="6" fill="#4a3a5a"/>
+  <circle cx="90" cy="86" r="2" fill="#fff"/>
+  <circle cx="114" cy="86" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="101" rx="8" ry="6" fill="#f4b8c0" stroke="#d090a0" stroke-width="2"/>
+  <path d="M94 107 Q100 113 106 107" stroke="#9a8a7a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="72" y1="100" x2="52" y2="96" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="72" y1="104" x2="50" y2="104" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="128" y1="100" x2="148" y2="96" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M52 152 Q100 176 148 152" stroke="#9a8a7a" stroke-width="3" fill="none" stroke-linecap="round"/>
+`, '#fdf5ff');
+
+// 子ウサギ2（茶色）
+const bunny2 = makeSVG(`
+  <ellipse cx="100" cy="130" rx="50" ry="44" fill="#c8956a" stroke="#7a4820" stroke-width="3.5"/>
+  <ellipse cx="100" cy="88" rx="38" ry="36" fill="#c8956a" stroke="#7a4820" stroke-width="3.5"/>
+  <ellipse cx="76" cy="52" rx="12" ry="32" fill="#c8956a" stroke="#7a4820" stroke-width="3" transform="rotate(-8,76,52)"/>
+  <ellipse cx="124" cy="52" rx="12" ry="32" fill="#c8956a" stroke="#7a4820" stroke-width="3" transform="rotate(8,124,52)"/>
+  <ellipse cx="77" cy="52" rx="6" ry="24" fill="#f4c0c8" opacity="0.7"/>
+  <ellipse cx="123" cy="52" rx="6" ry="24" fill="#f4c0c8" opacity="0.7"/>
+  <ellipse cx="88" cy="86" rx="9" ry="10" fill="#fff" stroke="#7a4820" stroke-width="2"/>
+  <ellipse cx="112" cy="86" rx="9" ry="10" fill="#fff" stroke="#7a4820" stroke-width="2"/>
+  <ellipse cx="88" cy="88" rx="5" ry="6" fill="#3a1a0a"/>
+  <ellipse cx="112" cy="88" rx="5" ry="6" fill="#3a1a0a"/>
+  <circle cx="90" cy="86" r="2" fill="#fff"/>
+  <ellipse cx="100" cy="101" rx="8" ry="6" fill="#f4b8c0" stroke="#d090a0" stroke-width="2"/>
+  <path d="M94 107 Q100 113 106 107" stroke="#7a4820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`, '#fff0e8');
+
+// 小鳥 🐤（ひよこ）
+const bird1 = makeSVG(`
+  <ellipse cx="100" cy="125" rx="50" ry="44" fill="#fde96a" stroke="#c8a020" stroke-width="3.5"/>
+  <ellipse cx="100" cy="82" rx="36" ry="34" fill="#fde96a" stroke="#c8a020" stroke-width="3.5"/>
+  <ellipse cx="88" cy="78" rx="9" ry="10" fill="#fff" stroke="#c8a020" stroke-width="2"/>
+  <ellipse cx="112" cy="78" rx="9" ry="10" fill="#fff" stroke="#c8a020" stroke-width="2"/>
+  <ellipse cx="88" cy="80" rx="5" ry="6" fill="#1a1a2a"/>
+  <ellipse cx="112" cy="80" rx="5" ry="6" fill="#1a1a2a"/>
+  <circle cx="90" cy="78" r="2" fill="#fff"/>
+  <circle cx="114" cy="78" r="2" fill="#fff"/>
+  <polygon points="100,96 90,103 110,103" fill="#ff9020" stroke="#c06010" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M55 105 Q35 85 50 70 Q58 90 70 105" fill="#fde96a" stroke="#c8a020" stroke-width="2.5"/>
+  <path d="M145 105 Q165 85 150 70 Q142 90 130 105" fill="#fde96a" stroke="#c8a020" stroke-width="2.5"/>
+  <ellipse cx="78" cy="148" rx="12" ry="8" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+  <ellipse cx="122" cy="148" rx="12" ry="8" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+`, '#fffbe0');
+
+// 小鳥2（青い鳥）
+const bird2 = makeSVG(`
+  <ellipse cx="100" cy="122" rx="48" ry="42" fill="#6ac0f0" stroke="#1a70c0" stroke-width="3.5"/>
+  <ellipse cx="100" cy="80" rx="36" ry="34" fill="#6ac0f0" stroke="#1a70c0" stroke-width="3.5"/>
+  <ellipse cx="115" cy="70" rx="18" ry="8" fill="#fff" stroke="#1a70c0" stroke-width="2.5" transform="rotate(-20,115,70)"/>
+  <ellipse cx="88" cy="77" rx="9" ry="10" fill="#fff" stroke="#1a70c0" stroke-width="2"/>
+  <ellipse cx="112" cy="77" rx="9" ry="10" fill="#fff" stroke="#1a70c0" stroke-width="2"/>
+  <ellipse cx="88" cy="79" rx="5" ry="6" fill="#0a0a2a"/>
+  <ellipse cx="112" cy="79" rx="5" ry="6" fill="#0a0a2a"/>
+  <circle cx="90" cy="77" r="2" fill="#fff"/>
+  <polygon points="100,94 89,101 111,101" fill="#ff9020" stroke="#c06010" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M54 108 Q32 88 46 68 Q56 88 68 108" fill="#5aaae0" stroke="#1a70c0" stroke-width="2.5"/>
+  <path d="M146 108 Q168 88 154 68 Q144 88 132 108" fill="#5aaae0" stroke="#1a70c0" stroke-width="2.5"/>
+  <ellipse cx="80" cy="146" rx="12" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+  <ellipse cx="120" cy="146" rx="12" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+`, '#e8f8ff');
+
+// 小鳥3（緑インコ）
+const bird3 = makeSVG(`
+  <ellipse cx="100" cy="122" rx="48" ry="42" fill="#7ad460" stroke="#3a8a20" stroke-width="3.5"/>
+  <ellipse cx="100" cy="80" rx="36" ry="34" fill="#7ad460" stroke="#3a8a20" stroke-width="3.5"/>
+  <ellipse cx="100" cy="60" rx="10" ry="14" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
+  <ellipse cx="100" cy="56" rx="5" ry="7" fill="#ffe060"/>
+  <ellipse cx="87" cy="77" rx="9" ry="10" fill="#fff" stroke="#3a8a20" stroke-width="2"/>
+  <ellipse cx="113" cy="77" rx="9" ry="10" fill="#fff" stroke="#3a8a20" stroke-width="2"/>
+  <ellipse cx="87" cy="79" rx="5" ry="6" fill="#0a1a0a"/>
+  <ellipse cx="113" cy="79" rx="5" ry="6" fill="#0a1a0a"/>
+  <circle cx="89" cy="77" r="2" fill="#fff"/>
+  <polygon points="100,93 88,101 112,101" fill="#ff9020" stroke="#c06010" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="80" cy="90" rx="14" ry="10" fill="#ffe060" opacity="0.8"/>
+  <ellipse cx="120" cy="90" rx="14" ry="10" fill="#ffe060" opacity="0.8"/>
+  <path d="M52 110 Q30 90 44 68 Q54 90 68 110" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
+  <path d="M148 110 Q170 90 156 68 Q146 90 132 110" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
+  <ellipse cx="80" cy="148" rx="11" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+  <ellipse cx="120" cy="148" rx="11" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
+`, '#f0fff0');
+
+const imgPool=[cat1,cat2,dog1,dog2,bunny1,bunny2,bird1,bird2,bird3,cat1,cat2,dog1];
 function genData(n,type){
   return Array.from({length:n},(_,i)=>{
-    const src=`${imgPool[i%imgPool.length]}?w=600&q=80&r=${i}`;
+    const src=imgPool[i%imgPool.length];
     if(type==='raw')   return{src,size:(Math.random()*50+20).toFixed(1)};
     if(type==='video') return{src,size:(Math.random()*5+.5).toFixed(2),dur:`0${Math.floor(Math.random()*9)}:${String(Math.floor(Math.random()*50)+10).padStart(2,'0')}`};
     return{src,size:(Math.random()*4+1).toFixed(1)};
@@ -461,8 +628,8 @@ function genData(n,type){
 function genSimilar(n){
   return Array.from({length:n},(_,i)=>{
     const base=imgPool[i%imgPool.length];
-    const sub=Array.from({length:Math.floor(Math.random()*3)+2},(__,j)=>({src:`${base}?w=400&q=60&r=${i}${j}`,size:(Math.random()*3+1).toFixed(1)}));
-    return{id:`g${i}`,best:{src:`${base}?w=600&q=80`,size:(Math.random()*4+2).toFixed(1)},sub};
+    const sub=Array.from({length:Math.floor(Math.random()*3)+2},(__,j)=>({src:imgPool[(i+j+1)%imgPool.length],size:(Math.random()*3+1).toFixed(1)}));
+    return{id:`g${i}`,best:{src:base,size:(Math.random()*4+2).toFixed(1)},sub};
   });
 }
 function genMonths(){
@@ -471,8 +638,8 @@ function genMonths(){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const total=Math.floor(Math.random()*120)+30;
     const reviewed=i<3?Math.floor(Math.random()*total):(Math.random()>.4?total:Math.floor(Math.random()*total));
-    const photos=Array.from({length:Math.min(total,30)},(__,j)=>({src:`${imgPool[(i+j)%imgPool.length]}?w=800&q=80&r=${i}${j}`}));
-    return{label:`${d.getFullYear()}年${d.getMonth()+1}月`,navLabel:`${d.getMonth()+1}月 ${d.getFullYear()}`,total,reviewed,done:reviewed===total,photos,thumb:`${imgPool[i%imgPool.length]}?w=200&q=70&r=${i}`};
+    const photos=Array.from({length:Math.min(total,30)},(__,j)=>({src:imgPool[(i+j)%imgPool.length]}));
+    return{label:`${d.getFullYear()}年${d.getMonth()+1}月`,navLabel:`${d.getMonth()+1}月 ${d.getFullYear()}`,total,reviewed,done:reviewed===total,photos,thumb:imgPool[i%imgPool.length]};
   });
 }
 
@@ -524,6 +691,12 @@ function rerenderCurrentGrid(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // ホームカードにSVGイラストを設定
+  document.querySelector('.home-card.photos').style.backgroundImage=`url("${bunny1}")`;
+  document.querySelector('.home-card.raw').style.backgroundImage=`url("${cat1}")`;
+  document.querySelector('.home-card.videos').style.backgroundImage=`url("${bird1}")`;
+  document.querySelector('.home-card.screenshots').style.backgroundImage=`url("${dog1}")`;
+  document.getElementById('guide-feat-card').style.backgroundImage=`url("${bird3}")`;
   renderGrids(); renderSimilar(); renderMonths();
   document.querySelectorAll('.nav-item[data-target]').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.target)));
   switchTab('home');
@@ -584,7 +757,7 @@ function renderSd(){
   document.getElementById('sd-main-img').src=photo.src;
   document.getElementById('sd-photo-meta').textContent=`${Math.min(sdIdx+1,tot)} / ${tot}`;
   document.getElementById('sd-strip').innerHTML=m.photos.slice(0,Math.min(20,tot)).map((p,i)=>
-    `<img class="sd-strip-thumb${i===sdIdx?' active-thumb':''}" src="${imgPool[i%imgPool.length]}?w=100&q=60&r=${i}" loading="lazy" onclick="jumpSd(${i})">`
+    `<img class="sd-strip-thumb${i===sdIdx?' active-thumb':''}" src="${imgPool[i%imgPool.length]}" loading="lazy" onclick="jumpSd(${i})">`
   ).join('');
 }
 function jumpSd(i){sdIdx=i;renderSd();}
@@ -608,7 +781,7 @@ function swipeAction(action){
 const guideContent={
   similar:{
     title:'似ている写真を整理',icon:'📷',
-    img:'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80',
+    imgVar:'bunny2',
     tag:'類似写真の整理',
     steps:[
       {title:'ホームから開く',desc:'ホーム画面の「似ている写真」カードをタップします。'},
@@ -620,7 +793,7 @@ const guideContent={
   },
   videos:{
     title:'動画を整理する',icon:'🎬',
-    img:'https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80',
+    imgVar:'bird1',
     tag:'動画の整理',
     steps:[
       {title:'ホームから開く',desc:'ホーム画面の「動画を整理」カードをタップします。'},
@@ -632,7 +805,7 @@ const guideContent={
   },
   raw:{
     title:'RAWデータを削除',icon:'📄',
-    img:'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80',
+    imgVar:'cat2',
     tag:'RAWファイルの整理',
     steps:[
       {title:'ホームから開く',desc:'ホーム画面の「RAWデータ」カードをタップします。'},
@@ -644,7 +817,7 @@ const guideContent={
   },
   screenshots:{
     title:'スクショを一括削除',icon:'🖼️',
-    img:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80',
+    imgVar:'dog2',
     tag:'スクリーンショットの整理',
     steps:[
       {title:'ホームから開く',desc:'ホーム画面の「スクショ」カードをタップします。'},
@@ -655,11 +828,13 @@ const guideContent={
     cta:'スクショを整理する',ctaTab:'screenshots'
   }
 };
+const svgMap={cat1,cat2,dog1,dog2,bunny1,bunny2,bird1,bird2,bird3};
 function openGuideDetail(key){
   const c=guideContent[key];
+  const imgSrc=svgMap[c.imgVar]||cat1;
   document.getElementById('gd-title').textContent=c.title;
   document.getElementById('gd-body').innerHTML=`
-    <div class="gd-hero" style="background-image:url('${c.img}')">
+    <div class="gd-hero" style="background-image:url('${imgSrc}')">
       <div class="gd-hero-inner">
         <div class="gd-hero-tag">${c.icon} ${c.tag}</div>
         <div class="gd-hero-title">${c.title}</div>
