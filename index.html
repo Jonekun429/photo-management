@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Cleaner Pro - Ultimate Prototype</title>
+    <title>Cleaner Pro - Sample Mode Update</title>
     <style>
         :root {
             --bg:#04100e;--card:#0c1f1b;--card2:#153029;--text:#eaf5f2;--sub:#5a7d75;--dim:#3d5c54;
@@ -41,6 +41,10 @@
         .a-btn.danger{background:var(--dgrad);box-shadow:0 4px 16px rgba(255,71,87,.3)}
         .a-btn.secondary{background:var(--card2);color:var(--bright);border:1px solid var(--bdr2);box-shadow:none}
         .file-in{display:none}
+
+        /* サンプルモード用のバッジ */
+        .mode-badge { display:inline-block; background:var(--amber); color:#000; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; vertical-align:middle; margin-left:8px; display:none; }
+        .mode-badge.show { display:inline-block; animation:fi 0.3s ease; }
 
         /* Home */
         .sto-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
@@ -157,7 +161,11 @@
             <div id="gear" class="gear">⚙</div>
         </div>
         <div class="h-tr">
-            <div><h1 id="title">ストレージ</h1><div id="sub" class="h-sub"></div></div>
+            <div>
+                <h1 style="display:inline-block;" id="title">ストレージ</h1>
+                <span id="mode-badge" class="mode-badge">SAMPLE</span>
+                <div id="sub" class="h-sub"></div>
+            </div>
         </div>
     </header>
 
@@ -172,10 +180,13 @@
             <div class="access" id="access-panel">
                 <div class="access-head">
                     <h4>スマホの写真を読み込む</h4>
-                    <p>画像のプレビュー、月別スワイプ、<br>似ている写真の整理をすべて体験できます</p>
+                    <p>実際の写真を追加するか、サンプルデータで<br>アプリの動きを体験できます。</p>
                 </div>
                 <button class="a-btn" onclick="document.getElementById('fi-files').click()">
-                    📸 写真を追加する
+                    📸 自分の写真を追加する
+                </button>
+                <button class="a-btn secondary" id="demo-toggle-btn" style="margin-top:10px" onclick="toggleSampleMode()">
+                    🪄 サンプルモードで体験
                 </button>
                 <input type="file" id="fi-files" class="file-in" accept="image/*,video/*" multiple onchange="handleFiles(this)">
             </div>
@@ -188,7 +199,7 @@
                     <div><h3>月別スワイプ</h3><p>整理する</p></div>
                 </div>
                 <div class="gc similar-bg" onclick="navTo('similar')">
-                    <div><h3>似ている写真</h3><p>デモ</p></div>
+                    <div><h3>似ている写真</h3><p id="h-sim-txt">未検出</p></div>
                 </div>
             </div>
         </div>
@@ -200,8 +211,12 @@
     </main>
 
     <main id="similar" class="view">
-        <p style="font-size:12px; color:var(--sub); margin-bottom:15px;">一番左の「ベスト」を残し、2枚目以降を削除候補として自動選択しています。横にスクロールできます。</p>
-        <div id="similar-container"></div>
+        <div id="similar-header-text">
+            <p style="font-size:12px; color:var(--sub); margin-bottom:15px;">一番左の「ベスト」を残し、2枚目以降を削除候補として自動選択しています。横にスクロールできます。</p>
+        </div>
+        <div id="similar-container">
+            <div class="empty" style="display:flex; padding:20px;"><p>現在、似ている写真は検出されていません。<br>（※サンプルモードでお試しください）</p></div>
+        </div>
     </main>
 
     <main id="swipe" class="view">
@@ -274,20 +289,153 @@
 </div>
 
 <script>
-// --- グローバル変数 ---
-// ★変更点：アップロードのたびに初期化せず、データを蓄積するようにしました
+// --- グローバル変数と状態管理 ---
+let isSampleMode = false;
+
+// 実際のユーザーデータ（退避用）
+let realState = {
+    globalFiles: [],
+    swipeMonthsData: {},
+    totalInitialMB: 0,
+    cleanedTotalMB: 0
+};
+
+// アプリが現在表示しているデータ
 let globalFiles = []; 
 let swipeMonthsData = {}; 
+let totalInitialMB = 0;
+let cleanedTotalMB = 0;
+
 let currentView = 'home';
 let swipeActiveMonthKey = null;
-let cleanedTotalMB = 0;
-let totalInitialMB = 0;
 
-// デモ用類似画像データ
-const SIMILAR_DATA = [
-    { id: 'g1', count: 3, saved: '5.2 MB', photos: [{ src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&q=80', isBest: true }, { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&q=80&blur=2', isBest: false }, { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&q=80&sepia=1', isBest: false }] },
-    { id: 'g2', count: 2, saved: '3.8 MB', photos: [{ src: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=300&q=80', isBest: true }, { src: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=300&q=80&blur=3', isBest: false }] }
+// サンプル用のダミー画像URL
+const DEMO_URLS = [
+    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80',
+    'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80',
+    'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400&q=80',
+    'https://images.unsplash.com/photo-1621360841013-c76831f1a301?w=400&q=80',
+    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80'
 ];
+
+// サンプル用「似ている写真」データ
+const DEMO_SIMILAR_DATA = [
+    { id: 'g1', count: 3, saved: '5.2 MB', photos: [{ src: DEMO_URLS[0], isBest: true }, { src: DEMO_URLS[0]+'&blur=2', isBest: false }, { src: DEMO_URLS[0]+'&sepia=1', isBest: false }] },
+    { id: 'g2', count: 2, saved: '3.8 MB', photos: [{ src: DEMO_URLS[2], isBest: true }, { src: DEMO_URLS[2]+'&blur=3', isBest: false }] }
+];
+
+// --- サンプルモードの切り替え ---
+function toggleSampleMode() {
+    const btn = document.getElementById('demo-toggle-btn');
+    const badge = document.getElementById('mode-badge');
+
+    if (!isSampleMode) {
+        // サンプルモードをONにする
+        isSampleMode = true;
+        
+        // 現在のリアルデータを退避
+        realState.globalFiles = [...globalFiles];
+        realState.swipeMonthsData = Object.assign({}, swipeMonthsData);
+        realState.totalInitialMB = totalInitialMB;
+        realState.cleanedTotalMB = cleanedTotalMB;
+
+        // UIをサンプルモード用に変更
+        btn.innerHTML = '❌ サンプルモードを終了';
+        btn.classList.add('danger');
+        btn.classList.remove('secondary');
+        badge.classList.add('show');
+
+        loadSampleData();
+    } else {
+        // サンプルモードをOFFにする
+        isSampleMode = false;
+
+        // 退避していたリアルデータを復元
+        globalFiles = [...realState.globalFiles];
+        swipeMonthsData = Object.assign({}, realState.swipeMonthsData);
+        totalInitialMB = realState.totalInitialMB;
+        cleanedTotalMB = realState.cleanedTotalMB;
+
+        // UIを元に戻す
+        btn.innerHTML = '🪄 サンプルモードで体験';
+        btn.classList.add('secondary');
+        btn.classList.remove('danger');
+        badge.classList.remove('show');
+
+        refreshAllViews();
+        navTo('home');
+    }
+}
+
+// サンプルデータの生成
+function loadSampleData() {
+    globalFiles = [];
+    swipeMonthsData = {};
+    totalInitialMB = 0;
+    cleanedTotalMB = 0;
+
+    // 2026年1月と2月のダミーデータを生成
+    createDemoMonth('2026-02', '2026年2月', 6);
+    createDemoMonth('2026-01', '2026年1月', 4);
+
+    refreshAllViews();
+}
+
+function createDemoMonth(mKey, title, count) {
+    if(!swipeMonthsData[mKey]) {
+        swipeMonthsData[mKey] = { id: mKey, title: title, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
+    }
+    for(let i=0; i<count; i++) {
+        let sz = Math.round((Math.random() * 3 + 1)*10)/10;
+        totalInitialMB += sz;
+        let url = DEMO_URLS[i % DEMO_URLS.length];
+        let photoObj = { id: 'demo_'+Math.random(), url: url, szMB: sz, monthKey: mKey };
+        globalFiles.push(photoObj);
+        swipeMonthsData[mKey].total++;
+        swipeMonthsData[mKey].photos.push(photoObj);
+    }
+}
+
+// 全ビューの再描画
+function refreshAllViews() {
+    updateHomeStats();
+    renderAllPhotos();
+    renderSwipeList();
+    renderSimilar();
+}
+
+// --- ファイル読み込み処理 (自分の写真を追加) ---
+function handleFiles(inputElement) {
+    const filesList = inputElement.files;
+    if(!filesList.length) return;
+
+    // ★重要: もしサンプルモード中に写真をアップロードしたら、自動でサンプルモードを終了する
+    if (isSampleMode) {
+        toggleSampleMode();
+    }
+
+    for(let f of filesList) {
+        if(f.type && !f.type.startsWith('image/') && !f.type.startsWith('video/')) continue;
+        
+        let d = f.lastModified ? new Date(f.lastModified) : new Date();
+        let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
+        totalInitialMB += sz;
+        
+        let photoObj = { id: Math.random().toString(36).substr(2,9), url: URL.createObjectURL(f), szMB: sz, monthKey: mKey };
+        globalFiles.push(photoObj);
+
+        if(!swipeMonthsData[mKey]) {
+            swipeMonthsData[mKey] = { id: mKey, title: `${d.getFullYear()}年${d.getMonth()+1}月`, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
+        }
+        swipeMonthsData[mKey].total++;
+        swipeMonthsData[mKey].photos.push(photoObj);
+    }
+
+    inputElement.value = ''; // 連続アップロード対応
+    refreshAllViews();
+    navTo('swipe'); 
+}
 
 // --- 画面遷移ロジック ---
 function navTo(id) {
@@ -334,38 +482,6 @@ function goBackToSwipe() {
     navTo('swipe'); renderSwipeList();
 }
 
-// --- ★修正版：ファイル読み込み（追加）処理 ---
-function handleFiles(inputElement) {
-    const filesList = inputElement.files;
-    if(!filesList.length) return;
-
-    for(let f of filesList) {
-        // iPhone等の特殊フォーマット(HEIC等)への対応のため判定を緩和
-        if(f.type && !f.type.startsWith('image/') && !f.type.startsWith('video/')) continue;
-        
-        let d = f.lastModified ? new Date(f.lastModified) : new Date();
-        let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
-        totalInitialMB += sz;
-        
-        let photoObj = { id: Math.random().toString(36).substr(2,9), url: URL.createObjectURL(f), szMB: sz, monthKey: mKey };
-        globalFiles.push(photoObj);
-
-        // 既存の月に写真を追加していく（追加方式）
-        if(!swipeMonthsData[mKey]) {
-            swipeMonthsData[mKey] = { id: mKey, title: `${d.getFullYear()}年${d.getMonth()+1}月`, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
-        }
-        swipeMonthsData[mKey].total++;
-        swipeMonthsData[mKey].photos.push(photoObj);
-    }
-
-    // ★重要：Inputの値をリセットして、同じファイルでも連続で追加テストできるようにする
-    inputElement.value = '';
-
-    updateHomeStats(); renderAllPhotos(); renderSwipeList();
-    navTo('swipe'); 
-}
-
 function updateHomeStats() {
     let currentTotalMB = globalFiles.reduce((sum, p) => sum + p.szMB, 0);
     document.getElementById('h-all-sz').innerText = currentTotalMB.toFixed(1) + ' MB';
@@ -376,7 +492,6 @@ function updateHomeStats() {
     document.getElementById('prog').style.width = pct + '%';
 }
 
-// --- すべての写真＆プレビュー機能 ---
 function renderAllPhotos() {
     const grid = document.getElementById('all-grid');
     grid.innerHTML = globalFiles.map(p => `
@@ -384,6 +499,7 @@ function renderAllPhotos() {
     `).join('');
     document.getElementById('all-empty').style.display = globalFiles.length ? 'none' : 'flex';
 }
+
 function openPreview(url) {
     document.getElementById('preview-img').src = url;
     document.getElementById('preview-modal').classList.add('show');
@@ -393,11 +509,15 @@ function closePreview() {
     setTimeout(() => { document.getElementById('preview-img').src = ''; }, 300);
 }
 
-// --- 月別スワイプ機能 ---
 function renderSwipeList() {
     const cont = document.getElementById('month-list-container');
     const monthsArr = Object.values(swipeMonthsData).sort((a,b) => b.id.localeCompare(a.id));
-    if(monthsArr.length === 0) return;
+    if(monthsArr.length === 0) {
+        cont.innerHTML = `<div class="empty" style="display:flex; padding:20px;"><p>写真を追加すると<br>ここに月別のリストが表示されます</p></div>`;
+        document.getElementById('reward-cnt').innerText = `0/0`;
+        document.getElementById('cleaned-sz').innerText = `0 MB`;
+        return;
+    }
     
     let compCount = 0;
     cont.innerHTML = monthsArr.map(m => {
@@ -467,7 +587,6 @@ function handleSwipe(action) {
     setTimeout(() => updateSwipeCard(), 300);
 }
 
-// --- スワイプ結果 & 疑似削除 ---
 function showResults(monthKey) {
     const month = swipeMonthsData[monthKey];
     document.getElementById('res-month-title').innerText = `${month.title} の整理が終わりました`;
@@ -490,7 +609,7 @@ function executeNativeDeleteMock() {
         cleanedTotalMB += month.savedMB;
         month.isCleaned = true;
         
-        updateHomeStats(); renderAllPhotos(); renderSwipeList();
+        refreshAllViews();
         alert(`✨ 削除完了！\n容量が ${month.savedMB.toFixed(1)} MB 増えました。`);
         goBackToSwipe();
     }
@@ -499,7 +618,20 @@ function executeNativeDeleteMock() {
 // --- 似ている写真 機能 ---
 function renderSimilar() {
     const cont = document.getElementById('similar-container');
-    cont.innerHTML = SIMILAR_DATA.map(g => {
+    const headerText = document.getElementById('similar-header-text');
+    
+    // サンプルモードOFF時は「空」にする
+    if (!isSampleMode) {
+        headerText.style.display = 'none';
+        cont.innerHTML = `<div class="empty" style="display:flex; padding:20px;"><p>現在、似ている写真は検出されていません。<br>（※「サンプルモードで体験」をお試しください）</p></div>`;
+        document.getElementById('h-sim-txt').innerText = '未検出';
+        return;
+    }
+
+    // サンプルモードON時
+    headerText.style.display = 'block';
+    document.getElementById('h-sim-txt').innerText = 'デモデータ';
+    cont.innerHTML = DEMO_SIMILAR_DATA.map(g => {
         const items = g.photos.map(p => `
             <div class="sim-item ${p.isBest ? 'best' : 'ck to-del'}" onclick="toggleSimItem(this)">
                 ${p.isBest ? '<div class="badge">KEEP</div>' : ''}
@@ -537,7 +669,7 @@ function mockDeleteSimilar() {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    renderSimilar();
+    refreshAllViews();
 });
 </script>
 </body>
