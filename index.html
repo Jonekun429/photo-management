@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Cleaner Pro - Interactive Prototype</title>
+    <title>Cleaner Pro - Full Features Restored</title>
     <style>
         :root {
             /* Cleaner Guru風ダークネイビーテーマ */
@@ -12,9 +12,9 @@
             --surface-light: #2a2d3e;
             --text: #ffffff;
             --subtext: #9aa0b8;
-            --accent: #5e6ad2;
-            --success: #3ec4b5;
-            --danger: #d94a55;
+            --accent: #5e6ad2; /* 青系アクセント */
+            --success: #3ec4b5; /* 緑系（スワイプ達成など） */
+            --danger: #d94a55; /* 赤系（削除など） */
             --border: rgba(255, 255, 255, 0.08);
             --radius: 18px;
             --btn-blue: #4c56c0;
@@ -54,7 +54,6 @@
 
         .masonry { display: flex; gap: 12px; }
         .m-col { flex: 1; display: flex; flex-direction: column; gap: 12px; }
-        
         .card { background: var(--surface); border-radius: var(--radius); position: relative; overflow: hidden; cursor: pointer; background-size: cover; background-position: center; transition: transform 0.2s; }
         .card:active { transform: scale(0.96); }
         .card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0) 100%); z-index: 1; }
@@ -73,53 +72,88 @@
         .detail-info { padding: 0 20px; margin-bottom: 15px; }
         .di-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
         .di-sub { font-size: 13px; color: var(--subtext); transition: all 0.3s; }
-        
         .grid-header { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--subtext); font-weight: 600; }
-
         .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 2px; }
         .media-grid.two-cols { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 20px; }
         .m-item { position: relative; aspect-ratio: 1/1; background: var(--surface-light); cursor: pointer; overflow: hidden; border-radius: 4px; transition: opacity 0.3s, transform 0.3s; }
         .media-grid.two-cols .m-item { border-radius: 12px; }
         .m-item img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.2s, transform 0.2s; }
-        
         .m-vid-time, .m-size { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
         .m-size { background: var(--accent); }
-        
         .m-check { position: absolute; bottom: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.3); transition: all 0.2s; z-index: 2; }
         .m-item.checked .m-check { background: var(--danger); border-color: var(--danger); display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
         .m-item.checked .m-check::after { content: '✓'; font-size: 14px; font-weight: bold; }
         .m-item.checked img { filter: brightness(0.6); transform: scale(1.05); }
 
-        /* 類似グループ */
         .sim-group { margin-bottom: 20px; transition: all 0.3s; overflow: hidden; }
         .sg-header { padding: 10px 20px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; }
         .sg-badge { position: absolute; top: 8px; left: 8px; background: #fff; color: #000; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 4px; z-index: 2; }
         .sg-badge span { color: var(--accent); }
 
-        /* アニメーション用クラス */
         .m-item.deleting { transform: scale(0.8); opacity: 0; }
-        
-        /* 削除ボタンバー */
-        .delete-bar { position: fixed; bottom: 90px; left: 20px; right: 20px; background: var(--btn-blue); color: #fff; padding: 16px; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; box-shadow: 0 4px 20px rgba(76, 86, 192, 0.4); cursor: pointer; z-index: 50; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; transform: translateY(150%); opacity: 0; pointer-events: none; }
+        .delete-bar { position: fixed; bottom: 90px; left: 20px; right: 20px; background: var(--btn-blue); color: #fff; padding: 16px; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 20px rgba(76, 86, 192, 0.4); cursor: pointer; z-index: 50; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; transform: translateY(150%); opacity: 0; pointer-events: none; }
         .delete-bar.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .delete-bar:active { transform: translateY(0) scale(0.97); }
+
+        /* --- スワイプ画面 (15ヶ月リスト復活) --- */
+        .swipe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .swipe-stats { display: flex; gap: 12px; margin-bottom: 24px; }
+        .stat-box { flex: 1; background: var(--surface); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); }
+        .stat-icon { font-size: 26px; }
+        .stat-label { font-size: 11px; color: var(--subtext); margin-bottom: 2px; }
+        .stat-val { font-size: 16px; font-weight: 700; }
+
+        .month-list { display: flex; flex-direction: column; gap: 12px; }
+        .m-card { background: var(--surface); border-radius: var(--radius); padding: 16px; display: flex; gap: 16px; align-items: center; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; }
+        .m-card:active { background: var(--surface-light); }
+        .m-thumb { width: 64px; height: 64px; border-radius: 12px; background-size: cover; background-position: center; position: relative; }
+        .m-thumb.done::after { content: '✓'; position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; font-size: 24px; border-radius: inherit; }
+        .m-info { flex: 1; }
+        .m-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .m-medal { font-size: 22px; opacity: 0.2; }
+        .m-medal.active { opacity: 1; }
+        .m-prog-txt { font-size: 11px; color: var(--subtext); margin-bottom: 6px; }
+        .m-prog-bg { width: 100%; height: 4px; background: var(--surface-light); border-radius: 2px; }
+        .m-prog-fill { height: 100%; background: var(--success); border-radius: 2px; }
+
+        /* スワイプ プレイ画面 */
+        #swipe-play { display: none; flex-direction: column; height: 100%; position: absolute; inset: 0; background: var(--bg); z-index: 30; padding: 50px 20px 30px; }
+        .sp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .sp-back { font-size: 20px; color: var(--text); padding: 10px; cursor: pointer; }
+        .sp-img-wrap { flex: 1; position: relative; border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; background: #000; display: flex; align-items: center; justify-content: center; }
+        .sp-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius); transition: transform 0.3s ease, opacity 0.3s ease; }
+        .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
+        .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
+        .sp-actions { display: flex; gap: 16px; justify-content: center; }
+        .sp-btn { flex: 1; padding: 16px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-dislike { background: var(--danger); }
+        .btn-like { background: var(--success); color: #000; }
+
+        /* --- 使い方ガイド画面 --- */
+        .guide-section { background: var(--surface); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
+        .guide-step { font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 4px; letter-spacing: 1px; }
+        .guide-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .guide-desc { font-size: 14px; color: var(--subtext); line-height: 1.5; }
+        
+        .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; }
+        .faq-q::before { content: 'Q.'; color: var(--accent); }
+        .faq-a { font-size: 13px; color: var(--subtext); line-height: 1.5; display: flex; gap: 8px; }
+        .faq-a::before { content: 'A.'; color: var(--success); }
 
         /* ナビゲーション */
         nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(28,30,43,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; border-top: 1px solid var(--border); z-index: 40; }
         .ni { display: flex; flex-direction: column; align-items: center; color: var(--subtext); font-size: 10px; font-weight: 600; cursor: pointer; transition: color 0.2s; width: 60px; }
         .ni.on { color: var(--accent); }
         .nic { font-size: 24px; margin-bottom: 4px; }
-
-        /* 開発用パネル (追加タブ内) */
-        .tool-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-        .tool-item { background: var(--surface); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 15px; font-weight: 600;}
     </style>
 </head>
 <body>
 <div id="app">
     <header id="home-header">
         <h1>ストレージ</h1>
-        </header>
+    </header>
 
     <main id="home" class="view active">
         <div class="storage-info">
@@ -128,9 +162,7 @@
         </div>
         <div class="s-bar-bg"><div class="s-bar-fill" id="home-bar"></div></div>
 
-        <div class="search-bar">
-            <span>🔍</span> Search...
-        </div>
+        <div class="search-bar"><span>🔍</span> Search...</div>
 
         <div class="masonry">
             <div class="m-col">
@@ -156,7 +188,6 @@
         <div class="sub-header">
             <div class="sh-left"><span class="sh-back" onclick="navTo('home')">‹</span> 似ています</div>
             <div class="sh-actions">
-                <div class="btn-round">≡</div>
                 <div class="btn-capsule" onclick="toggleSelectAll('similar-photos', this)" data-all="false">✓ 全て選択</div>
             </div>
         </div>
@@ -181,7 +212,7 @@
     <div id="videos" class="view" style="padding-top:0;">
         <div class="sub-header">
             <div class="sh-left"><span class="sh-back" onclick="navTo('home')">‹</span> 動画を整理</div>
-            <div class="sh-actions"><div class="btn-round">≡</div><div class="btn-capsule" onclick="toggleSelectAll('videos', this)" data-all="false">✓ 全て選択</div></div>
+            <div class="sh-actions"><div class="btn-capsule" onclick="toggleSelectAll('videos', this)" data-all="false">✓ 全て選択</div></div>
         </div>
         <div class="detail-info"><div class="di-sub" id="vid-count-text">4 アイテム (14.3 GB)</div></div>
         <div class="media-grid two-cols">
@@ -203,7 +234,7 @@
     <div id="screenshots" class="view" style="padding-top:0;">
         <div class="sub-header">
             <div class="sh-left"><span class="sh-back" onclick="navTo('home')">‹</span> スクショ</div>
-            <div class="sh-actions"><div class="btn-round">≡</div><div class="btn-capsule" onclick="toggleSelectAll('screenshots', this)" data-all="false">✓ 全て選択</div></div>
+            <div class="sh-actions"><div class="btn-capsule" onclick="toggleSelectAll('screenshots', this)" data-all="false">✓ 全て選択</div></div>
         </div>
         <div class="detail-info"><div class="di-sub" id="ss-count-text">6枚の写真 (246 MB)</div></div>
         <div class="media-grid">
@@ -219,7 +250,7 @@
     <div id="similar-videos" class="view" style="padding-top:0;">
         <div class="sub-header">
             <div class="sh-left"><span class="sh-back" onclick="navTo('home')">‹</span> 類似のビデオ</div>
-            <div class="sh-actions"><div class="btn-round">≡</div><div class="btn-capsule" onclick="toggleSelectAll('similar-videos', this)" data-all="false">✓ 全て選択</div></div>
+            <div class="sh-actions"><div class="btn-capsule" onclick="toggleSelectAll('similar-videos', this)" data-all="false">✓ 全て選択</div></div>
         </div>
         <div class="detail-info"><div class="di-sub" id="simvid-count-text">2 アイテム (1.5 GB)</div></div>
         <div class="sim-group">
@@ -241,66 +272,139 @@
         🗑 <span id="del-text">削除</span>
     </div>
 
-    <header id="tools-header" style="display:none;"><h1>追加</h1></header>
-    <main id="tools" class="view">
-        <div style="color:var(--subtext); font-size:13px; margin-top:20px;">デモ版につき、他の機能は準備中です。</div>
-        <div class="tool-list">
-            <div class="tool-item"><span>📊 ウィジェット</span><span>›</span></div>
-            <div class="tool-item"><span>⚡ 充電アニメーション</span><span>›</span></div>
-            <div class="tool-item"><span>🔒 シークレットフォルダー</span><span>›</span></div>
+    <header id="swipe-header" style="display:none;">
+        <div class="swipe-header" style="width:100%;">
+            <h1>写真をスワイプ</h1>
+            <div class="btn-capsule">≡ 並べ替え</div>
+        </div>
+    </header>
+    
+    <main id="swipe" class="view">
+        <div class="swipe-stats">
+            <div class="stat-box"><div class="stat-icon">🎖️</div><div><div class="stat-label">報酬:</div><div class="stat-val">19/20</div></div></div>
+            <div class="stat-box"><div class="stat-icon">🧹</div><div><div class="stat-label">クリーニング済み:</div><div class="stat-val">42.51 GB</div></div></div>
+        </div>
+        
+        <div class="month-list" id="swipe-month-list">
+            <div class="m-card" onclick="startSwipe('2月 2026')">
+                <div class="m-thumb" style="background-image:url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=100')"></div>
+                <div class="m-info">
+                    <div class="m-title">2月, 2026 <span class="m-medal">🏅</span></div>
+                    <div class="m-prog-txt">698/1108 件を確認済み</div>
+                    <div class="m-prog-bg"><div class="m-prog-fill" style="width:63%"></div></div>
+                </div>
+            </div>
+            <div class="m-card">
+                <div class="m-thumb done" style="background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=100')"></div>
+                <div class="m-info">
+                    <div class="m-title">1月, 2026 <span class="m-medal active">🏅</span></div>
+                    <div class="m-prog-txt">1373/1373 件を確認済み</div>
+                    <div class="m-prog-bg"><div class="m-prog-fill" style="width:100%;background:var(--accent)"></div></div>
+                </div>
+            </div>
+            </div>
+    </main>
+
+    <div id="swipe-play">
+        <div class="sp-header">
+            <div class="sp-back" onclick="closeSwipe()">‹ 月</div>
+            <div style="font-weight:600; font-size:16px;" id="sp-month-title">2月 2026</div>
+            <div style="width:50px;"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--subtext); margin-bottom:8px;">
+            <div style="width:70%; height:4px; background:var(--surface-light); border-radius:2px; margin-top:4px;"><div style="width:63%; height:100%; background:var(--success); border-radius:2px;"></div></div>
+            <span>698/1108 件</span>
+        </div>
+        <div class="sp-img-wrap">
+            <img id="sp-img" class="sp-img" src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80">
+        </div>
+        <div class="sp-actions">
+            <button class="sp-btn btn-dislike" onclick="handleSwipe('del')">👎 削除</button>
+            <button class="sp-btn btn-like" onclick="handleSwipe('keep')">👍 保持</button>
+        </div>
+    </div>
+
+    <header id="guide-header" style="display:none;"><h1>使い方ガイド</h1></header>
+    <main id="guide" class="view">
+        <div class="guide-section">
+            <div class="guide-step">STEP 1</div>
+            <div class="guide-title">不要な写真を見つける</div>
+            <div class="guide-desc">
+                ホーム画面から「似ている写真」や「動画」をタップすると、アプリが自動で不要なファイルをピックアップします。「✓ 全て選択」を押して、一気に削除の準備をしましょう。
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <div class="guide-step">STEP 2</div>
+            <div class="guide-title">スワイプでサクサク整理</div>
+            <div class="guide-desc">
+                下の「スワイプ」タブを開くと、月ごとの写真が表示されます。残したい写真は右(👍)へ、消したい写真は左(👎)へスワイプするだけで、簡単にカメラロールを掃除できます。
+            </div>
+        </div>
+
+        <h3 style="font-size: 16px; margin: 30px 0 15px; padding-left: 5px;">よくある質問 (FAQ)</h3>
+        <div class="guide-section" style="padding: 10px 20px;">
+            <div class="faq-item">
+                <div class="faq-q">削除した写真は元に戻せますか？</div>
+                <div class="faq-a">はい。iPhoneの標準写真アプリの「最近削除した項目」に30日間保存されるため、いつでも復元可能です。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">アプリ内で消したら本体からも消えますか？</div>
+                <div class="faq-a">はい、連動しています。削除ボタンを押した際に出るiOSの確認ポップアップで「削除」を許可すると、本体のストレージも軽くなります。</div>
+            </div>
         </div>
     </main>
 
     <nav>
         <div class="ni on" data-t="home" onclick="navTo('home')"><div class="nic">🏠</div><span>ホーム</span></div>
-        <div class="ni" data-t="swipe" onclick="alert('スワイプ機能は別ファイルで稼働中です')"><div class="nic">🃏</div><span>スワイプ</span></div>
-        <div class="ni" data-t="tools" onclick="navTo('tools')"><div class="nic">⚙️</div><span>追加</span></div>
+        <div class="ni" data-t="swipe" onclick="navTo('swipe')"><div class="nic">🃏</div><span>スワイプ</span></div>
+        <div class="ni" data-t="guide" onclick="navTo('guide')"><div class="nic">⚙️</div><span>使い方</span></div>
     </nav>
 </div>
 
 <script>
-// --- グローバル状態管理 (リアルな容量計算用) ---
-let totalStorageMB = 2000 * 1024; // 2TB
-let usedStorageMB = 536 * 1024;   // 536GB
-
-// 現在開いている詳細ビュー
+// --- グローバル状態管理 ---
+let totalStorageMB = 2000 * 1024;
+let usedStorageMB = 536 * 1024;
 let activeDetailView = null;
+
+// --- 初期化処理 ---
+document.addEventListener('DOMContentLoaded', () => {
+    updateHomeDisplay();
+    generateDummyMonths(); // スワイプの月別リストを生成
+});
 
 // --- ナビゲーション ---
 function navTo(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 
-    // タブの切り替え
-    if (['home', 'tools'].includes(id)) {
+    if (['home', 'swipe', 'guide'].includes(id)) {
         document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
         document.querySelector(`.ni[data-t="${id}"]`).classList.add('on');
-        document.getElementById('home-header').style.display = id === 'home' ? 'flex' : 'none';
-        document.getElementById('tools-header').style.display = id === 'tools' ? 'flex' : 'none';
         
-        // ホームに戻ったら削除バーを隠す
+        document.getElementById('home-header').style.display = id === 'home' ? 'flex' : 'none';
+        document.getElementById('swipe-header').style.display = id === 'swipe' ? 'block' : 'none';
+        document.getElementById('guide-header').style.display = id === 'guide' ? 'flex' : 'none';
+        
         document.getElementById('global-delete-bar').classList.remove('show');
         activeDetailView = null;
-        updateHomeDisplay();
+        if(id === 'home') updateHomeDisplay();
     } else {
         document.getElementById('home-header').style.display = 'none';
-        document.getElementById('tools-header').style.display = 'none';
+        document.getElementById('swipe-header').style.display = 'none';
+        document.getElementById('guide-header').style.display = 'none';
         activeDetailView = id;
-        updateDeleteBar(); // ビューを開いた瞬間に選択状態をチェックしてバーを表示
+        updateDeleteBar();
     }
 }
 
 // --- フォーマット関数 ---
 function formatSize(mb) {
-    if (mb >= 1000) {
-        return (mb / 1024).toFixed(1) + ' GB';
-    }
-    return Math.round(mb) + ' MB';
+    return mb >= 1000 ? (mb / 1024).toFixed(1) + ' GB' : Math.round(mb) + ' MB';
 }
 
 // --- 選択アクション ---
 function toggleItem(el, viewId) {
-    // ベストショット(★)は選択できない仕様にする場合
     if(el.querySelector('.sg-badge')) {
         alert("これはベストショット(KEEP)として保護されています。");
         return;
@@ -311,30 +415,22 @@ function toggleItem(el, viewId) {
 
 function toggleSelectAll(viewId, btnNode) {
     const view = document.getElementById(viewId);
-    const isAll = btnNode.dataset.all === 'true'; // 現在の状態
-    
-    // 全てのアイテム(ベストショット以外)を取得
+    const isAll = btnNode.dataset.all === 'true';
     const items = Array.from(view.querySelectorAll('.m-item')).filter(el => !el.querySelector('.sg-badge'));
     
     items.forEach(el => {
-        if (isAll) {
-            el.classList.remove('checked'); // 全解除
-        } else {
-            el.classList.add('checked'); // 全選択
-        }
+        if (isAll) el.classList.remove('checked');
+        else el.classList.add('checked');
     });
 
-    // ボタンのテキストと状態を更新
     btnNode.dataset.all = !isAll;
     btnNode.innerHTML = !isAll ? '× 選択を解除' : '✓ 全て選択';
-    
     updateDeleteBar();
 }
 
-// --- 削除バーの更新 ---
+// --- 削除機能 ---
 function updateDeleteBar() {
     if(!activeDetailView) return;
-    
     const view = document.getElementById(activeDetailView);
     const checkedItems = view.querySelectorAll('.m-item.checked');
     const bar = document.getElementById('global-delete-bar');
@@ -342,11 +438,8 @@ function updateDeleteBar() {
     
     if (checkedItems.length > 0) {
         let totalMB = 0;
-        checkedItems.forEach(item => {
-            totalMB += parseFloat(item.dataset.mb || 0);
-        });
-        
-        let label = activeDetailView === 'screenshots' ? 'のスクリーンショット' : (activeDetailView === 'videos' ? 'の動画' : 'の類似アイテム');
+        checkedItems.forEach(item => totalMB += parseFloat(item.dataset.mb || 0));
+        let label = activeDetailView === 'screenshots' ? 'のスクショ' : (activeDetailView === 'videos' ? 'の動画' : 'の類似アイテム');
         txtNode.innerText = `${checkedItems.length}${label}を削除 (${formatSize(totalMB)})`;
         bar.classList.add('show');
     } else {
@@ -354,88 +447,87 @@ function updateDeleteBar() {
     }
 }
 
-// --- 削除の実行 ---
 function executeDelete() {
     if(!activeDetailView) return;
-    
     const view = document.getElementById(activeDetailView);
     const checkedItems = view.querySelectorAll('.m-item.checked');
-    
     if(checkedItems.length === 0) return;
 
-    // ネイティブ風の確認ダイアログ
     if(confirm(`${checkedItems.length}件のアイテムをiPhoneから完全に削除しますか？`)) {
-        
         let freedMB = 0;
-        
-        // 削除アニメーションとDOMからの削除
         checkedItems.forEach(el => {
             freedMB += parseFloat(el.dataset.mb || 0);
-            el.classList.add('deleting'); // 縮んで消えるクラス
+            el.classList.add('deleting');
             setTimeout(() => {
                 el.remove();
-                recalculateViewTotal(view.id); // DOM削除後に計算をやり直す
-            }, 300); // CSSのtransition時間と合わせる
+                recalculateViewTotal(view.id);
+            }, 300);
         });
         
-        // 全体の容量から差し引く
         usedStorageMB -= freedMB;
-        
-        // 削除バーを隠す
         document.getElementById('global-delete-bar').classList.remove('show');
-        
-        // 選択全解除ボタンのリセット
         const btn = view.querySelector('.btn-capsule');
         if(btn) { btn.dataset.all = 'false'; btn.innerHTML = '✓ 全て選択'; }
     }
 }
 
-// 各カテゴリの詳細画面の合計表示（1088枚の写真...など）を再計算
 function recalculateViewTotal(viewId) {
     const view = document.getElementById(viewId);
     const remainingItems = view.querySelectorAll('.m-item');
     let totalMB = 0;
-    
-    remainingItems.forEach(el => {
-        totalMB += parseFloat(el.dataset.mb || 0);
-    });
+    remainingItems.forEach(el => totalMB += parseFloat(el.dataset.mb || 0));
 
-    // テキスト要素の更新
-    let labelId = '';
-    let unitName = 'アイテム';
-    if(viewId === 'similar-photos') { labelId = 'sim-count-text'; unitName = '枚の写真'; }
-    if(viewId === 'videos') { labelId = 'vid-count-text'; unitName = 'アイテム'; }
-    if(viewId === 'screenshots') { labelId = 'ss-count-text'; unitName = '枚の写真'; }
-    if(viewId === 'similar-videos') { labelId = 'simvid-count-text'; unitName = 'アイテム'; }
+    let labelId = ''; let unitName = 'アイテム';
+    if(viewId === 'similar-photos') { labelId = 'sim-count-text'; unitName = '枚の写真'; document.getElementById('card-sim-sz').innerText = formatSize(totalMB); }
+    if(viewId === 'videos') { labelId = 'vid-count-text'; unitName = 'アイテム'; document.getElementById('card-vid-sz').innerText = formatSize(totalMB); }
+    if(viewId === 'screenshots') { labelId = 'ss-count-text'; unitName = '枚の写真'; document.getElementById('card-ss-sz').innerText = formatSize(totalMB); }
+    if(viewId === 'similar-videos') { labelId = 'simvid-count-text'; unitName = 'アイテム'; document.getElementById('card-simvid-sz').innerText = formatSize(totalMB); }
     
     const txtNode = document.getElementById(labelId);
-    if(txtNode) {
-        txtNode.innerText = `${remainingItems.length} ${unitName} (${formatSize(totalMB)})`;
-    }
-
-    // ホーム画面のカードの数字も更新しておく
-    if(viewId === 'similar-photos') document.getElementById('card-sim-sz').innerText = formatSize(totalMB);
-    if(viewId === 'videos') document.getElementById('card-vid-sz').innerText = formatSize(totalMB);
-    if(viewId === 'screenshots') document.getElementById('card-ss-sz').innerText = formatSize(totalMB);
-    if(viewId === 'similar-videos') document.getElementById('card-simvid-sz').innerText = formatSize(totalMB);
+    if(txtNode) txtNode.innerText = `${remainingItems.length} ${unitName} (${formatSize(totalMB)})`;
 }
 
-// --- ホーム画面の容量表示更新 ---
 function updateHomeDisplay() {
-    // GB換算
     const usedGB = (usedStorageMB / 1024).toFixed(1);
     const pct = ((usedStorageMB / totalStorageMB) * 100).toFixed(1);
-    
     document.getElementById('home-used-gb').innerText = `${usedGB} GB`;
     document.getElementById('home-pct').innerText = `${pct}% 使用済み`;
     document.getElementById('home-bar').style.width = `${pct}%`;
 }
 
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
-    // 初期状態の表示をセット
-    updateHomeDisplay();
-});
+// --- スワイプ機能関連 ---
+function generateDummyMonths() {
+    const list = document.getElementById('swipe-month-list');
+    let year = 2025; let month = 11;
+    
+    for(let i=0; i<13; i++) {
+        const total = Math.floor(Math.random() * 800) + 200;
+        list.innerHTML += `
+            <div class="m-card">
+                <div class="m-thumb done" style="background-color: var(--surface-light);"></div>
+                <div class="m-info">
+                    <div class="m-title">${month}月, ${year} <span class="m-medal active">🏅</span></div>
+                    <div class="m-prog-txt">${total}/${total} 件を確認済み</div>
+                    <div class="m-prog-bg"><div class="m-prog-fill" style="width:100%; background:var(--accent)"></div></div>
+                </div>
+            </div>`;
+        month--;
+        if(month === 0) { month = 12; year--; }
+    }
+}
+
+function startSwipe(title) {
+    document.getElementById('sp-month-title').innerText = title;
+    document.getElementById('swipe-play').style.display = 'flex';
+}
+function closeSwipe() {
+    document.getElementById('swipe-play').style.display = 'none';
+}
+function handleSwipe(action) {
+    const imgEl = document.getElementById('sp-img');
+    imgEl.classList.add(action === 'del' ? 'swipe-left' : 'swipe-right');
+    setTimeout(() => { imgEl.className = 'sp-img'; }, 300);
+}
 </script>
 </body>
 </html>
