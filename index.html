@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cleaner App Clone - Wide & Swipe Edition</title>
+    <title>Cleaner App Clone - Horizontal Scroll Edition</title>
     <style>
         :root {
             --bg-color: #0d0f1a;
@@ -13,72 +13,46 @@
             --primary-blue: #3d4df5;
             --primary-purple: #6a4cff;
             --keep-bg: #40445a;
-            --danger-red: #bb2d3b; /* スクショの深めの赤に近い色 */
-            --good-green: #3f8e61; /* スクショの緑に近い色 */
+            --danger-red: #bb2d3b;
+            --good-green: #3f8e61;
             --gold: #ffd700;
             --badge-blue: #4a54f1;
             --badge-dark: rgba(0, 0, 0, 0.65);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #000; display: flex; justify-content: center; }
+        body { background-color: #000; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         
-        /* 画面幅の制限を解除し、広く使えるように変更 */
-        #app-container { width: 100%; max-width: 1200px; height: 100vh; background-color: var(--bg-color); color: var(--text-main); position: relative; display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        /* コンテナの構造をFlexboxで縦割り（ヘッダー・メイン・ナビ）にして確実にナビを表示させる */
+        #app-container { width: 100%; max-width: 1200px; height: 100%; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; margin: 0 auto; position: relative; }
 
         /* --- ヘッダー領域 --- */
-        header { padding: 30px 20px 10px; display: flex; flex-direction: column; gap: 15px; z-index: 20; background: var(--bg-color); flex-shrink: 0;}
+        header { padding: 30px 20px 15px; display: flex; flex-direction: column; gap: 15px; background: var(--bg-color); flex-shrink: 0; z-index: 20; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 36px; }
-        .back-btn { font-size: 20px; cursor: pointer; display: none; padding-right: 20px; }
+        .back-btn { font-size: 20px; cursor: pointer; display: none; padding-right: 20px; font-weight: bold; }
         .header-actions { display: none; gap: 10px; align-items: center; }
         .icon-btn, .pill-btn { background-color: var(--card-bg); color: var(--text-main); border: none; border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .icon-btn { width: 36px; height: 36px; justify-content: center; padding: 0; border-radius: 50%; }
         
         .header-title-row { display: flex; justify-content: space-between; align-items: flex-end; }
-        h1 { font-size: 28px; font-weight: bold; letter-spacing: 0.5px; }
+        h1 { font-size: 26px; font-weight: bold; letter-spacing: 0.5px; }
         .header-sub { font-size: 13px; color: var(--text-sub); margin-top: 4px; display: none; }
         .settings-icon { background-color: var(--card-bg); border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; }
 
-        /* --- ビュー領域 --- */
-        .view { flex: 1; overflow-y: auto; padding: 0 20px 100px; display: none; }
+        /* --- ビュー領域 (スクロール可能部分) --- */
+        .view { flex: 1; overflow-y: auto; padding: 20px; display: none; position: relative; }
         .view.active { display: block; }
-        .view-content-wrapper { padding-bottom: 20px; }
-
-        /* 削除アクションバー */
-        .delete-bar-container { position: absolute; bottom: 80px; left: 0; width: 100%; padding: 15px 20px; background: linear-gradient(to top, var(--bg-color) 80%, transparent); z-index: 30; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; justify-content: center;}
-        .delete-bar-container.show { transform: translateY(0); }
-        .btn-delete-all { width: 100%; max-width: 600px; padding: 16px; background-color: var(--primary-blue); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(61, 77, 245, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        
+        /* 削除アクションバー (画面下部、ナビのすぐ上に固定) */
+        .delete-bar-container { position: absolute; bottom: 85px; left: 0; width: 100%; padding: 0 20px; display: flex; justify-content: center; z-index: 30; transform: translateY(150%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; }
+        .delete-bar-container.show { transform: translateY(0); pointer-events: auto; }
+        .btn-delete-all { width: 100%; max-width: 500px; padding: 16px; background-color: var(--primary-blue); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 8px 25px rgba(61, 77, 245, 0.5); display: flex; justify-content: center; align-items: center; gap: 8px; }
 
         /* --- 共通アイテムスタイル --- */
         .selectable-item { position: relative; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; overflow: hidden; background-color: var(--card-bg); }
         .selectable-item.selected { transform: scale(0.92); border-radius: 12px; opacity: 0.8; }
         .check-box { position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.8); border-radius: 6px; display: flex; justify-content: center; align-items: center; color: transparent; font-size: 14px; font-weight: bold; transition: all 0.2s; z-index: 10; background: rgba(0,0,0,0.2); }
-        .selectable-item.selected .check-box { background-color: #ff3b30; border-color: #ff3b30; color: white; }
-
-        /* --- ホーム画面 --- */
-        .storage-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
-        .storage-info span:first-child { color: var(--primary-purple); font-weight: bold; }
-        .progress-bar { width: 100%; height: 8px; background-color: var(--card-bg); border-radius: 4px; margin-bottom: 24px; overflow: hidden; }
-        .progress-fill { width: 82%; height: 100%; background: linear-gradient(90deg, var(--primary-blue), var(--primary-purple)); border-radius: 4px; }
-        
-        /* ホームのパネルをレスポンシブに */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .grid-item { border-radius: 20px; height: 160px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; cursor: pointer; background-size: cover; background-position: center; transition: transform 0.2s; }
-        .grid-item:active { transform: scale(0.98); }
-        .grid-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%); z-index: 1; }
-        .grid-item-content { position: relative; z-index: 2; }
-        .grid-item h3 { font-size: 16px; font-weight: 500; margin-bottom: 4px; opacity: 0.9; }
-        .grid-item p { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
-
-        .grid-item.photos { background-image: url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80'); }
-        .grid-item.videos { background-image: url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80'); }
-        .grid-item.raw { background-image: url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80'); }
-        .grid-item.screenshots { background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80'); }
-
-        /* --- 写真・動画グリッド共通（画面幅に応じて自動で列が増える） --- */
-        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-        .media-item { border-radius: 12px; aspect-ratio: 1/1; position: relative; }
-        .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit;}
+        .selectable-item.selected .check-box { background-color: var(--danger-red); border-color: var(--danger-red); color: white; }
 
         /* バッジ類 */
         .raw-badge-top { position: absolute; top: 8px; left: 8px; background-color: var(--badge-dark); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; z-index: 2;}
@@ -87,38 +61,72 @@
         .video-badge .size { font-size: 12px; font-weight: bold; color: white; line-height: 1.2; }
         .video-badge .duration { font-size: 10px; color: rgba(255,255,255,0.8); line-height: 1.2; }
 
-        /* --- スワイプ画面 (新規) --- */
+        /* --- ホーム画面 --- */
+        .storage-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
+        .storage-info span:first-child { color: var(--primary-purple); font-weight: bold; }
+        .progress-bar { width: 100%; height: 8px; background-color: var(--card-bg); border-radius: 4px; margin-bottom: 24px; overflow: hidden; }
+        .progress-fill { width: 82%; height: 100%; background: linear-gradient(90deg, var(--primary-blue), var(--primary-purple)); border-radius: 4px; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .grid-item { border-radius: 20px; height: 160px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; cursor: pointer; background-size: cover; background-position: center; transition: transform 0.2s; }
+        .grid-item:active { transform: scale(0.98); }
+        .grid-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%); z-index: 1; }
+        .grid-item-content { position: relative; z-index: 2; }
+        .grid-item h3 { font-size: 16px; font-weight: 500; margin-bottom: 4px; opacity: 0.9; }
+        .grid-item p { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
+        .grid-item.photos { background-image: url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80'); }
+        .grid-item.videos { background-image: url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80'); }
+        .grid-item.raw { background-image: url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80'); }
+        .grid-item.screenshots { background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80'); }
+
+        /* --- 写真・動画グリッド（RAW, 動画, スクショ用） --- */
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding-bottom: 60px; }
+        .media-item { border-radius: 12px; aspect-ratio: 1/1; position: relative; }
+        .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit;}
+
+        /* --- ⭐️ 似ている写真の横スクロールUI (新規) --- */
+        .similar-group { margin-bottom: 30px; }
+        .similar-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .similar-group-title { font-size: 15px; font-weight: bold; }
+        
+        .similar-scroll-row { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .similar-scroll-row::-webkit-scrollbar { height: 6px; }
+        .similar-scroll-row::-webkit-scrollbar-track { background: var(--bg-color); }
+        .similar-scroll-row::-webkit-scrollbar-thumb { background: var(--card-bg); border-radius: 3px; }
+
+        /* グッド写真（ベストショット） */
+        .similar-best-item { flex: 0 0 160px; /* 少し大きめに固定 */ aspect-ratio: 3/4; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--good-green); scroll-snap-align: start; }
+        .similar-best-item img { width: 100%; height: 100%; object-fit: cover; }
+        .best-label { position: absolute; top: 10px; left: 10px; background-color: var(--good-green); color: white; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 8px; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        /* 類似写真（削除候補） */
+        .similar-sub-item { flex: 0 0 120px; aspect-ratio: 3/4; scroll-snap-align: start; }
+
+        /* --- ボトムナビゲーション (絶対表示を確実にする) --- */
+        nav { height: 80px; background: rgba(30, 34, 53, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; z-index: 40; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 11px; font-weight: 500; cursor: pointer; width: 60px; transition: color 0.2s; }
+        .nav-item.active { color: var(--primary-purple); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+        
+        /* --- スワイプ画面 --- */
         #swipe { overflow: hidden; display: none; flex-direction: column; align-items: center; padding-top: 20px;}
         #swipe.active { display: flex; }
-        
         .swipe-container { position: relative; width: 100%; max-width: 400px; height: 60vh; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
         .swipe-card { position: absolute; width: 100%; height: 100%; border-radius: 24px; overflow: hidden; background-color: var(--card-bg); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.4s ease-out, opacity 0.4s ease-out; transform-origin: center bottom; }
         .swipe-card img { width: 100%; height: 100%; object-fit: cover; }
-        
         .swipe-info-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); color: white; pointer-events: none; }
         .swipe-info-overlay h2 { font-size: 18px; margin-bottom: 5px; }
         .swipe-info-overlay p { font-size: 24px; font-weight: bold; color: var(--gold); }
-
         .swipe-controls { display: flex; justify-content: space-between; gap: 20px; width: 100%; max-width: 400px; margin-top: 30px; }
         .btn-swipe { flex: 1; padding: 18px 0; border-radius: 16px; border: none; font-size: 18px; font-weight: bold; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.1s; }
         .btn-swipe:active { transform: scale(0.95); }
         .btn-swipe.bad { background-color: var(--danger-red); }
         .btn-swipe.good { background-color: var(--good-green); }
-
-        /* スワイプアニメーション用クラス */
         .swipe-left { transform: translateX(-120%) rotate(-15deg); opacity: 0; }
         .swipe-right { transform: translateX(120%) rotate(15deg); opacity: 0; }
-
-        /* スワイプ完了後のサマリー画面 */
         .swipe-summary { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 60vh; text-align: center; }
         .swipe-summary h2 { font-size: 24px; margin-bottom: 10px; }
         .swipe-summary p { font-size: 16px; color: var(--text-sub); margin-bottom: 30px; }
-
-        /* --- ボトムナビゲーション --- */
-        nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; background: rgba(30, 34, 53, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 40; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 11px; font-weight: 500; cursor: pointer; width: 60px; }
-        .nav-item.active { color: var(--primary-purple); }
-        .nav-icon { font-size: 24px; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -142,46 +150,48 @@
     </header>
 
     <main id="home" class="view active">
-        <div class="view-content-wrapper">
-            <div class="storage-info">
-                <span>1,640 GB を使用中 : 全 2,000 GB</span>
-                <span style="color: var(--text-sub);">82% 使用済み</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="storage-info">
+            <span>1,640 GB を使用中 : 全 2,000 GB</span>
+            <span style="color: var(--text-sub);">82% 使用済み</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
 
-            <div class="grid-container">
-                <div class="grid-item photos" onclick="switchTab('similar-photos')">
-                    <div class="grid-item-content">
-                        <h3>似ている写真</h3>
-                        <p id="home-similar-size">24.4 GB</p>
-                    </div>
+        <div class="grid-container">
+            <div class="grid-item photos" onclick="switchTab('similar-photos')">
+                <div class="grid-item-content">
+                    <h3>似ている写真</h3>
+                    <p id="home-similar-size">24.4 GB</p>
                 </div>
-                <div class="grid-item raw" onclick="switchTab('raw-photos')">
-                    <div class="grid-item-content">
-                        <h3>RAWデータ</h3>
-                        <p id="home-raw-size">128 GB</p>
-                    </div>
+            </div>
+            <div class="grid-item raw" onclick="switchTab('raw-photos')">
+                <div class="grid-item-content">
+                    <h3>RAWデータ</h3>
+                    <p id="home-raw-size">128 GB</p>
                 </div>
-                <div class="grid-item videos" onclick="switchTab('videos')">
-                    <div class="grid-item-content">
-                        <h3>動画を整理</h3>
-                        <p id="home-video-size">299 GB</p>
-                    </div>
+            </div>
+            <div class="grid-item videos" onclick="switchTab('videos')">
+                <div class="grid-item-content">
+                    <h3>動画を整理</h3>
+                    <p id="home-video-size">299 GB</p>
                 </div>
-                <div class="grid-item screenshots" onclick="switchTab('screenshots')">
-                    <div class="grid-item-content">
-                        <h3>スクショ</h3>
-                        <p id="home-screenshot-size">1.8 GB</p>
-                    </div>
+            </div>
+            <div class="grid-item screenshots" onclick="switchTab('screenshots')">
+                <div class="grid-item-content">
+                    <h3>スクショ</h3>
+                    <p id="home-screenshot-size">1.8 GB</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <main id="raw-photos" class="view"><div class="view-content-wrapper"><div id="raw-grid" class="media-grid"></div></div></main>
-    <main id="similar-photos" class="view"><div class="view-content-wrapper"><div id="similar-grid" class="media-grid"></div></div></main>
-    <main id="videos" class="view"><div class="view-content-wrapper"><div id="video-grid" class="media-grid"></div></div></main>
-    <main id="screenshots" class="view"><div class="view-content-wrapper"><div id="screenshot-grid" class="media-grid"></div></div></main>
+    <main id="raw-photos" class="view"><div id="raw-grid" class="media-grid"></div></main>
+    <main id="videos" class="view"><div id="video-grid" class="media-grid"></div></main>
+    <main id="screenshots" class="view"><div id="screenshot-grid" class="media-grid"></div></main>
+    
+    <main id="similar-photos" class="view">
+        <div id="similar-container" style="padding-bottom: 60px;">
+            </div>
+    </main>
 
     <main id="swipe" class="view">
         <div class="swipe-container" id="swipe-container">
@@ -193,12 +203,10 @@
                 </div>
             </div>
         </div>
-
         <div class="swipe-controls" id="swipe-controls">
             <button class="btn-swipe bad" onclick="handleSwipe('bad')">👎 削除</button>
             <button class="btn-swipe good" onclick="handleSwipe('good')">👍 保持</button>
         </div>
-
         <div class="swipe-summary" id="swipe-summary">
             <h2>🎉 振り分け完了！</h2>
             <p><span id="summary-count">0</span>件のアイテムをゴミ箱に移動しますか？<br>合計: <span id="summary-size">0 MB</span></p>
@@ -229,7 +237,7 @@
 </div>
 
 <script>
-    // --- 画像ソースのプール (Unsplash) ---
+    // --- 画像プール ---
     const imgPool = [
         'https://images.unsplash.com/photo-1531306728370-53bfd6202e88',
         'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
@@ -242,80 +250,102 @@
         'https://images.unsplash.com/photo-1520697921389-9a2f647035ce'
     ];
 
-    // --- 大量データの自動生成関数 ---
-    function generateData(count, type) {
+    // --- データ生成関数 ---
+    function generateSimpleData(count, type) {
         let data = [];
         for (let i = 0; i < count; i++) {
-            const baseImg = imgPool[Math.floor(Math.random() * imgPool.length)];
-            const imgUrl = `${baseImg}?w=300&q=80&random=${i}`; // キャッシュ回避で別画像風に
-            
-            if (type === 'raw') {
-                data.push({ src: imgUrl, size: (Math.random() * 50 + 20).toFixed(1), type: 'raw' });
-            } else if (type === 'video') {
-                data.push({ src: imgUrl, size: (Math.random() * 5 + 0.5).toFixed(2), duration: `0${Math.floor(Math.random()*9)}:${Math.floor(Math.random()*50)+10}`, type: 'video' });
-            } else {
-                data.push({ src: imgUrl, size: (Math.random() * 4 + 1).toFixed(1), type: 'photo' });
-            }
+            const imgUrl = `${imgPool[Math.floor(Math.random() * imgPool.length)]}?w=300&q=80&random=${i}`;
+            if (type === 'raw') data.push({ src: imgUrl, size: (Math.random() * 50 + 20).toFixed(1), type: 'raw' });
+            else if (type === 'video') data.push({ src: imgUrl, size: (Math.random() * 5 + 0.5).toFixed(2), duration: `0${Math.floor(Math.random()*9)}:${Math.floor(Math.random()*50)+10}`, type: 'video' });
+            else data.push({ src: imgUrl, size: (Math.random() * 4 + 1).toFixed(1), type: 'photo' });
         }
         return data;
     }
 
-    // 数十件のダミーデータを生成
-    const rawData = generateData(45, 'raw');
-    const videoData = generateData(32, 'video');
-    const similarData = generateData(60, 'photo');
-    const screenshotData = generateData(80, 'photo');
+    // ⭐️ 似ている写真の「グループ化」データ生成
+    function generateSimilarGroups(groupCount) {
+        let groups = [];
+        for (let i = 0; i < groupCount; i++) {
+            const baseImg = imgPool[Math.floor(Math.random() * imgPool.length)];
+            const subCount = Math.floor(Math.random() * 3) + 2; // 類似写真は2〜4枚
+            let similarItems = [];
+            for(let j = 0; j < subCount; j++) {
+                similarItems.push({ src: `${baseImg}?w=300&q=80&sepia=${j}`, size: (Math.random() * 3 + 1).toFixed(1) });
+            }
+            groups.push({
+                id: `group-${i}`,
+                best: { src: `${baseImg}?w=300&q=80`, size: (Math.random() * 4 + 2).toFixed(1) },
+                similar: similarItems
+            });
+        }
+        return groups;
+    }
 
-    // スワイプ用の混合キューを作成
+    const rawData = generateSimpleData(30, 'raw');
+    const videoData = generateSimpleData(20, 'video');
+    const screenshotData = generateSimpleData(50, 'photo');
+    const similarGroups = generateSimilarGroups(15); // 15グループ生成
+
     let swipeQueue = [...rawData.slice(0,5), ...videoData.slice(0,5), ...screenshotData.slice(0,10)].sort(() => 0.5 - Math.random());
-    let swipeTrashBin = []; // 削除に振り分けたアイテム
-
+    let swipeTrashBin = [];
     let currentTab = 'home';
     let isAllSelected = false;
 
     // --- 初期化 ---
     document.addEventListener('DOMContentLoaded', () => {
         renderGrids();
-        setupNavigation();
-        initSwipeCard();
+        renderSimilarGroups();
+        
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => switchTab(e.currentTarget.dataset.target));
+        });
+        switchTab('home');
     });
 
-    // --- グリッドの描画 ---
+    // --- 描画関数 ---
     function renderGrids() {
-        // RAW (45件)
-        document.getElementById('raw-grid').innerHTML = rawData.map(item => `
-            <div class="media-item selectable-item" data-size="${item.size}" onclick="toggleSelect(this)">
-                <img src="${item.src}" loading="lazy"><div class="raw-badge-top">RAW</div><div class="size-badge-bottom">${item.size} MB</div><div class="check-box">✓</div>
-            </div>`).join('');
-
-        // 動画 (32件)
-        document.getElementById('video-grid').innerHTML = videoData.map(item => `
-            <div class="media-item selectable-item" data-size="${item.size * 1000}" onclick="toggleSelect(this)">
-                <img src="${item.src}" loading="lazy"><div class="video-badge"><span class="size">${item.size} GB</span><span class="duration">${item.duration}</span></div><div class="check-box">✓</div>
-            </div>`).join('');
-
-        // スクショ (80件)
-        document.getElementById('screenshot-grid').innerHTML = screenshotData.map(item => `
-            <div class="media-item selectable-item" data-size="${item.size}" onclick="toggleSelect(this)">
-                <img src="${item.src}" loading="lazy"><div class="check-box">✓</div>
-            </div>`).join('');
-
-        // 似ている写真 (60件)
-        document.getElementById('similar-grid').innerHTML = similarData.map(item => `
-            <div class="media-item selectable-item" data-size="${item.size}" onclick="toggleSelect(this)">
-                <img src="${item.src}" loading="lazy"><div class="check-box">✓</div>
-            </div>`).join('');
+        document.getElementById('raw-grid').innerHTML = rawData.map(item => `<div class="media-item selectable-item" data-size="${item.size}" onclick="toggleSelect(this)"><img src="${item.src}" loading="lazy"><div class="raw-badge-top">RAW</div><div class="size-badge-bottom">${item.size} MB</div><div class="check-box">✓</div></div>`).join('');
+        document.getElementById('video-grid').innerHTML = videoData.map(item => `<div class="media-item selectable-item" data-size="${item.size * 1000}" onclick="toggleSelect(this)"><img src="${item.src}" loading="lazy"><div class="video-badge"><span class="size">${item.size} GB</span><span class="duration">${item.duration}</span></div><div class="check-box">✓</div></div>`).join('');
+        document.getElementById('screenshot-grid').innerHTML = screenshotData.map(item => `<div class="media-item selectable-item" data-size="${item.size}" onclick="toggleSelect(this)"><img src="${item.src}" loading="lazy"><div class="check-box">✓</div></div>`).join('');
     }
 
-    // --- ナビゲーション制御 ---
-    function setupNavigation() {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                if(e.currentTarget.dataset.target) switchTab(e.currentTarget.dataset.target);
-            });
+    // ⭐️ 似ている写真の横スクロール描画
+    function renderSimilarGroups() {
+        const container = document.getElementById('similar-container');
+        let html = '';
+        
+        similarGroups.forEach(group => {
+            let totalSubSize = 0;
+            group.similar.forEach(sub => totalSubSize += parseFloat(sub.size));
+            
+            // 右側に並ぶ類似写真（初期状態で selected クラスを付与し、削除対象にしておく）
+            const subItemsHtml = group.similar.map(sub => `
+                <div class="media-item similar-sub-item selectable-item selected" data-size="${sub.size}" onclick="toggleSelect(this)">
+                    <img src="${sub.src}" loading="lazy">
+                    <div class="size-badge-bottom" style="font-size: 10px;">${sub.size} MB</div>
+                    <div class="check-box">✓</div>
+                </div>
+            `).join('');
+
+            html += `
+                <div class="similar-group" id="${group.id}">
+                    <div class="similar-group-header">
+                        <span class="similar-group-title">${group.similar.length}枚の類似項目</span>
+                    </div>
+                    <div class="similar-scroll-row">
+                        <div class="similar-best-item">
+                            <div class="best-label">⭐ グッド写真</div>
+                            <img src="${group.best.src}" loading="lazy">
+                        </div>
+                        ${subItemsHtml}
+                    </div>
+                </div>
+            `;
         });
+        container.innerHTML = html;
     }
 
+    // --- UI操作 ---
     function switchTab(tabId) {
         currentTab = tabId;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -342,37 +372,20 @@
                 backBtn.style.display = 'none';
                 headerActions.style.display = 'none';
                 break;
-            case 'raw-photos':
-                titleEl.innerText = 'RAWデータ';
-                subTitleEl.innerText = `${rawData.length}個の項目`;
-                updateDeleteButton();
-                break;
-            case 'similar-photos':
-                titleEl.innerText = '似ている写真';
-                subTitleEl.innerText = `${similarData.length}枚の写真`;
-                updateDeleteButton();
-                break;
-            case 'videos':
-                titleEl.innerText = '動画を整理';
-                subTitleEl.innerText = `${videoData.length} アイテム`;
-                updateDeleteButton();
-                break;
-            case 'screenshots':
-                titleEl.innerText = 'スクショ';
-                subTitleEl.innerText = `${screenshotData.length}枚の写真`;
-                updateDeleteButton();
-                break;
+            case 'raw-photos': titleEl.innerText = 'RAWデータ'; subTitleEl.innerText = `${rawData.length}個の項目`; updateDeleteButton(); break;
+            case 'similar-photos': titleEl.innerText = '似ている写真'; subTitleEl.innerText = `${similarGroups.length}グループ`; updateDeleteButton(); break;
+            case 'videos': titleEl.innerText = '動画を整理'; subTitleEl.innerText = `${videoData.length} アイテム`; updateDeleteButton(); break;
+            case 'screenshots': titleEl.innerText = 'スクショ'; subTitleEl.innerText = `${screenshotData.length}枚の写真`; updateDeleteButton(); break;
             case 'swipe':
                 titleEl.innerText = 'スワイプ整理';
                 subTitleEl.innerText = '直感的に振り分けましょう';
                 backBtn.style.display = 'none';
                 headerActions.style.display = 'none';
-                initSwipeCard(); // スワイプ画面を開くたびに初期化
+                initSwipeCard();
                 break;
         }
     }
 
-    // --- グリッド選択ロジック ---
     function toggleSelect(element) {
         element.classList.toggle('selected');
         updateDeleteButton();
@@ -380,6 +393,7 @@
 
     function toggleSelectAll() {
         const activeView = document.querySelector('.view.active');
+        // 似ている写真の「グッド写真」は .selectable-item ではないため影響を受けない
         const items = activeView.querySelectorAll('.selectable-item');
         isAllSelected = !isAllSelected;
         items.forEach(item => {
@@ -403,7 +417,7 @@
             let totalMB = 0;
             selectedItems.forEach(item => totalMB += parseFloat(item.dataset.size || 0));
             let sizeStr = totalMB > 1000 ? `${(totalMB/1000).toFixed(2)} GB` : `${totalMB.toFixed(1)} MB`;
-            btnText.innerText = `${count}件のアイテムを削除 (${sizeStr})`;
+            btnText.innerText = `${count}件の不要なアイテムを削除 (${sizeStr})`;
             deleteBar.classList.add('show');
         } else {
             deleteBar.classList.remove('show');
@@ -421,6 +435,17 @@
 
         setTimeout(() => {
             selectedItems.forEach(item => item.remove());
+            
+            // 似ている写真タブの場合、類似写真がすべて消えたグループ自体を隠す処理
+            if (currentTab === 'similar-photos') {
+                document.querySelectorAll('.similar-group').forEach(group => {
+                    // グループ内の .similar-sub-item が残っているかチェック
+                    if (group.querySelectorAll('.similar-sub-item').length === 0) {
+                        group.style.display = 'none';
+                    }
+                });
+            }
+
             updateDeleteButton();
             if (activeView.querySelectorAll('.selectable-item').length === 0) {
                 switchTab('home');
@@ -428,30 +453,21 @@
         }, 300);
     }
 
-    // --- スワイプ機能のロジック ---
+    // --- スワイプ機能 ---
     function initSwipeCard() {
         const container = document.getElementById('swipe-container');
         const controls = document.getElementById('swipe-controls');
         const summary = document.getElementById('swipe-summary');
         
         if (swipeQueue.length > 0) {
-            container.style.display = 'flex';
-            controls.style.display = 'flex';
-            summary.style.display = 'none';
-            
+            container.style.display = 'flex'; controls.style.display = 'flex'; summary.style.display = 'none';
             const item = swipeQueue[0];
             document.getElementById('swipe-img').src = item.src;
-            
-            let typeLabel = '画像';
-            let sizeLabel = `${item.size} MB`;
-            if (item.type === 'raw') typeLabel = 'RAWデータ';
-            if (item.type === 'video') { typeLabel = '動画'; sizeLabel = `${item.size} GB`; }
-            
+            let typeLabel = item.type === 'raw' ? 'RAWデータ' : item.type === 'video' ? '動画' : '写真';
+            let sizeLabel = item.type === 'video' ? `${item.size} GB` : `${item.size} MB`;
             document.getElementById('swipe-type').innerText = typeLabel;
             document.getElementById('swipe-size').innerText = sizeLabel;
-            
-            const card = document.getElementById('current-swipe-card');
-            card.className = 'swipe-card'; // リセット
+            document.getElementById('current-swipe-card').className = 'swipe-card';
         } else {
             showSwipeSummary();
         }
@@ -459,49 +475,30 @@
 
     function handleSwipe(action) {
         if (swipeQueue.length === 0) return;
-        
         const card = document.getElementById('current-swipe-card');
         const item = swipeQueue[0];
-
-        // CSSアニメーションのトリガー
         if (action === 'bad') {
-            card.classList.add('swipe-left');
-            swipeTrashBin.push(item); // 削除キューへ追加
+            card.classList.add('swipe-left'); swipeTrashBin.push(item);
         } else {
             card.classList.add('swipe-right');
         }
-
-        // 次のカードの準備
-        setTimeout(() => {
-            swipeQueue.shift(); // 先頭を削除
-            initSwipeCard();
-        }, 350);
+        setTimeout(() => { swipeQueue.shift(); initSwipeCard(); }, 350);
     }
 
     function showSwipeSummary() {
         document.getElementById('swipe-container').style.display = 'none';
         document.getElementById('swipe-controls').style.display = 'none';
         document.getElementById('swipe-summary').style.display = 'flex';
-
         let totalMB = 0;
-        swipeTrashBin.forEach(item => {
-            if(item.type === 'video') totalMB += parseFloat(item.size) * 1000;
-            else totalMB += parseFloat(item.size);
-        });
-
-        const sizeStr = totalMB > 1000 ? `${(totalMB/1000).toFixed(2)} GB` : `${totalMB.toFixed(1)} MB`;
+        swipeTrashBin.forEach(item => { totalMB += item.type === 'video' ? parseFloat(item.size) * 1000 : parseFloat(item.size); });
         document.getElementById('summary-count').innerText = swipeTrashBin.length;
-        document.getElementById('summary-size').innerText = sizeStr;
+        document.getElementById('summary-size').innerText = totalMB > 1000 ? `${(totalMB/1000).toFixed(2)} GB` : `${totalMB.toFixed(1)} MB`;
     }
 
     function executeSwipeDelete() {
-        const summary = document.getElementById('swipe-summary');
-        summary.innerHTML = '<h2>✨ 削除完了！</h2><p>ストレージの空き容量が増えました。</p>';
-        swipeTrashBin = []; // ゴミ箱リセット
-        
-        setTimeout(() => {
-            switchTab('home'); // 3秒後にホームへ戻る
-        }, 2000);
+        document.getElementById('swipe-summary').innerHTML = '<h2>✨ 削除完了！</h2><p>ストレージの空き容量が増えました。</p>';
+        swipeTrashBin = [];
+        setTimeout(() => switchTab('home'), 2000);
     }
 </script>
 </body>
