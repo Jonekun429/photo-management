@@ -1,354 +1,483 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cleaner App</title>
-    <style>
-        :root {
-            --bg:           #0a100e;
-            --card:         #111f1b;
-            --card-2:       #162520;
-            --border:       rgba(0, 180, 130, 0.10);
-            --text:         #e6f5f1;
-            --text-sub:     #5e9c89;
-            --primary:      #005D4D;
-            --primary-mid:  #007a65;
-            --primary-glow: #00c49a;
-            --accent:       #00e8b5;
-            --danger:       #e05252;
-            --gold:         #ffd166;
-            --badge-dark:   rgba(0,0,0,0.6);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleaner App</title>
+<style>
+:root {
+  --bg:          #0a100e;
+  --card:        #111f1b;
+  --card-2:      #162520;
+  --border:      rgba(0,180,130,0.10);
+  --text:        #e6f5f1;
+  --text-sub:    #5e9c89;
+  --primary:     #005D4D;
+  --mid:         #007a65;
+  --accent:      #00e8b5;
+  --danger:      #e05252;
+  --danger-dark: #c03c3c;
+  --keep:        #007a65;
+  --keep-dark:   #005D4D;
+  --gold:        #ffd166;
+  --badge-dark:  rgba(0,0,0,0.62);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;}
+body{background:#000;display:flex;justify-content:center;height:100vh;overflow:hidden;}
+#app{width:100%;max-width:480px;height:100%;background:var(--bg);color:var(--text);display:flex;flex-direction:column;margin:0 auto;position:relative;}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; }
-        body { background: #000; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+/* ── ヘッダー ── */
+header{padding:36px 18px 14px;display:flex;flex-direction:column;gap:10px;background:var(--bg);flex-shrink:0;z-index:20;border-bottom:1px solid var(--border);}
+.hdr-top{display:flex;justify-content:space-between;align-items:center;min-height:34px;}
+.back-btn{font-size:17px;cursor:pointer;display:none;color:var(--accent);font-weight:700;padding-right:10px;}
+.hdr-actions{display:none;gap:8px;align-items:center;}
+.pill-btn{background:rgba(0,200,154,0.12);border:1px solid rgba(0,200,154,0.25);color:var(--accent);border-radius:20px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.icon-btn{background:rgba(0,200,154,0.1);border:1px solid rgba(0,200,154,0.2);color:var(--accent);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;}
+.hdr-title-row{display:flex;align-items:flex-end;gap:10px;}
+h1{font-size:25px;font-weight:800;letter-spacing:-0.3px;}
+.hdr-sub{font-size:12px;color:var(--text-sub);display:none;padding-bottom:2px;}
 
-        #app { width: 100%; max-width: 1200px; height: 100%; background: var(--bg); color: var(--text);
-               display: flex; flex-direction: column; margin: 0 auto; position: relative; }
+/* ── ビュー ── */
+.view{flex:1;overflow-y:auto;padding:16px;display:none;}
+.view.active{display:block;}
 
-        header {
-            padding: 36px 20px 14px;
-            display: flex; flex-direction: column; gap: 12px;
-            background: var(--bg);
-            flex-shrink: 0; z-index: 20;
-            border-bottom: 1px solid var(--border);
-        }
-        .header-top { display: flex; justify-content: space-between; align-items: center; min-height: 34px; }
-        .back-btn { font-size: 18px; cursor: pointer; display: none; color: var(--accent); font-weight: 700; padding-right: 12px; letter-spacing: -1px; }
-        .header-actions { display: none; gap: 8px; align-items: center; }
-        .pill-btn { background: rgba(0,200,154,0.12); border: 1px solid rgba(0,200,154,0.25); color: var(--accent); border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.2s; }
-        .pill-btn:active { background: rgba(0,200,154,0.22); }
-        .icon-btn { background: rgba(0,200,154,0.1); border: 1px solid rgba(0,200,154,0.2); color: var(--accent); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; }
-        .header-title-row { display: flex; align-items: flex-end; gap: 10px; }
-        h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; }
-        .header-sub { font-size: 12px; color: var(--text-sub); display: none; padding-bottom: 2px; }
+/* 削除バー */
+.del-bar{position:absolute;bottom:80px;left:0;width:100%;padding:0 16px;display:flex;justify-content:center;z-index:30;transform:translateY(150%);transition:transform .32s cubic-bezier(.25,.8,.25,1);pointer-events:none;}
+.del-bar.show{transform:translateY(0);pointer-events:auto;}
+.btn-del{width:100%;padding:15px 20px;background:linear-gradient(135deg,var(--danger),var(--danger-dark));color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(224,82,82,.4);display:flex;justify-content:center;align-items:center;gap:8px;}
 
-        .view { flex: 1; overflow-y: auto; padding: 18px; display: none; }
-        .view.active { display: block; }
+/* 共通セレクタブル */
+.sel-item{position:relative;cursor:pointer;border:2px solid transparent;transition:transform .1s,opacity .1s;overflow:hidden;background:var(--card);}
+.sel-item.selected{transform:scale(.91);opacity:.75;border-radius:12px;}
+.chk{position:absolute;bottom:8px;right:8px;width:22px;height:22px;border:2px solid rgba(255,255,255,.7);border-radius:6px;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;font-weight:800;background:rgba(0,0,0,.25);z-index:10;transition:all .2s;}
+.sel-item.selected .chk{background:var(--danger);border-color:var(--danger);color:#fff;}
 
-        .delete-bar-wrap { position: absolute; bottom: 82px; left: 0; width: 100%; padding: 0 18px; display: flex; justify-content: center; z-index: 30; transform: translateY(150%); transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; }
-        .delete-bar-wrap.show { transform: translateY(0); pointer-events: auto; }
-        .btn-delete { width: 100%; max-width: 520px; padding: 15px 20px; background: linear-gradient(135deg, var(--danger) 0%, #c03c3c 100%); color: #fff; border: none; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 24px rgba(224,82,82,0.4); display: flex; justify-content: center; align-items: center; gap: 8px; }
+/* バッジ */
+.bdg-top{position:absolute;top:7px;left:7px;background:var(--badge-dark);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;z-index:2;letter-spacing:.5px;}
+.bdg-bot{position:absolute;bottom:7px;left:7px;background:var(--badge-dark);color:#fff;font-size:11px;font-weight:700;padding:3px 6px;border-radius:4px;z-index:2;}
+.vid-bdg{position:absolute;bottom:7px;left:7px;background:rgba(0,93,77,.85);border-radius:6px;padding:4px 7px;display:flex;flex-direction:column;z-index:2;}
+.vid-bdg .vs{font-size:12px;font-weight:700;color:#fff;line-height:1.2;}
+.vid-bdg .vd{font-size:10px;color:var(--accent);line-height:1.2;}
 
-        .selectable-item { position: relative; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s, opacity 0.1s; overflow: hidden; background: var(--card); }
-        .selectable-item.selected { transform: scale(0.91); opacity: 0.75; border-radius: 12px; }
-        .check-box { position: absolute; bottom: 8px; right: 8px; width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.7); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: transparent; font-size: 13px; font-weight: 800; background: rgba(0,0,0,0.25); z-index: 10; transition: all 0.2s; }
-        .selectable-item.selected .check-box { background: var(--danger); border-color: var(--danger); color: #fff; }
+/* ── ホーム ── */
+.sto-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;}
+.sto-row .used{color:var(--accent);font-weight:700;}
+.sto-row .pct{color:var(--text-sub);}
+.prog-track{width:100%;height:6px;background:var(--card);border-radius:3px;margin-bottom:20px;overflow:hidden;}
+.prog-fill{width:82%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.home-card{border-radius:20px;height:150px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;cursor:pointer;background-size:cover;background-position:center;transition:transform .2s;}
+.home-card:active{transform:scale(.97);}
+.home-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.18) 55%,transparent 100%);z-index:1;}
+.home-card::after{content:'';position:absolute;inset:0;background:rgba(0,93,77,.18);z-index:1;}
+.hc-inner{position:relative;z-index:2;}
+.home-card h3{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:3px;}
+.home-card p{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+.home-card.photos{background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80');}
+.home-card.raw{background-image:url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80');}
+.home-card.videos{background-image:url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80');}
+.home-card.screenshots{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80');}
 
-        .badge-top    { position: absolute; top: 7px; left: 7px; background: var(--badge-dark); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; z-index: 2; letter-spacing: 0.5px; }
-        .badge-bottom { position: absolute; bottom: 7px; left: 7px; background: var(--badge-dark); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 6px; border-radius: 4px; z-index: 2; }
-        .video-badge  { position: absolute; bottom: 7px; left: 7px; background: rgba(0,93,77,0.85); border-radius: 6px; padding: 4px 7px; display: flex; flex-direction: column; z-index: 2; }
-        .video-badge .vsize { font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2; }
-        .video-badge .vdur  { font-size: 10px; color: var(--accent); line-height: 1.2; }
+/* ── メディアグリッド ── */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:5px;padding-bottom:60px;}
+.media-item{border-radius:10px;aspect-ratio:1/1;position:relative;}
+.media-item img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;}
 
-        .storage-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
-        .storage-row .used { color: var(--accent); font-weight: 700; }
-        .storage-row .pct  { color: var(--text-sub); }
-        .progress-track { width: 100%; height: 6px; background: var(--card); border-radius: 3px; margin-bottom: 22px; overflow: hidden; }
-        .progress-fill  { width: 82%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; }
+/* ── 似ている写真 ── */
+.sim-group{margin-bottom:26px;}
+.sim-group-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.sim-group-title{font-size:14px;font-weight:700;}
+.grp-sel-btn{font-size:12px;color:var(--text-sub);cursor:pointer;}
+.sim-scroll{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;}
+.sim-scroll::-webkit-scrollbar{height:3px;}
+.sim-scroll::-webkit-scrollbar-thumb{background:var(--card-2);border-radius:2px;}
+.sim-best{flex:0 0 148px;aspect-ratio:3/4;border-radius:14px;position:relative;overflow:hidden;scroll-snap-align:start;}
+.sim-best img{width:100%;height:100%;object-fit:cover;}
+.best-lbl{position:absolute;bottom:8px;left:8px;background:rgba(0,93,77,.92);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;z-index:2;display:flex;align-items:center;gap:3px;}
+.best-lbl .star{color:var(--accent);}
+.sim-sub{flex:0 0 110px;aspect-ratio:3/4;scroll-snap-align:start;}
 
-        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-        .home-card { border-radius: 22px; height: 158px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; cursor: pointer; background-size: cover; background-position: center; transition: transform 0.2s; }
-        .home-card:active { transform: scale(0.97); }
-        .home-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.18) 55%, transparent 100%); z-index: 1; }
-        .home-card::after  { content: ''; position: absolute; inset: 0; background: rgba(0,93,77,0.18); z-index: 1; }
-        .home-card-inner { position: relative; z-index: 2; }
-        .home-card h3 { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
-        .home-card p  { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-        .home-card.photos      { background-image: url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=600&q=80'); }
-        .home-card.raw         { background-image: url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=600&q=80'); }
-        .home-card.videos      { background-image: url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=600&q=80'); }
-        .home-card.screenshots { background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80'); }
+/* ═══════════════════════════════════
+   スワイプ — 月一覧
+═══════════════════════════════════ */
+.swipe-list-hdr{margin-bottom:14px;}
+.swipe-list-hdr h2{font-size:20px;font-weight:800;}
+.swipe-list-hdr p{font-size:12px;color:var(--text-sub);margin-top:3px;}
 
-        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 6px; padding-bottom: 60px; }
-        .media-item { border-radius: 12px; aspect-ratio: 1/1; position: relative; }
-        .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
+.month-list{display:flex;flex-direction:column;gap:8px;padding-bottom:20px;}
 
-        .sim-group { margin-bottom: 28px; }
-        .sim-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .sim-group-title { font-size: 14px; font-weight: 700; }
-        .grp-sel-btn { font-size: 12px; color: var(--text-sub); cursor: pointer; }
-        .grp-sel-btn:active { color: var(--accent); }
-        .sim-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .sim-scroll::-webkit-scrollbar { height: 4px; }
-        .sim-scroll::-webkit-scrollbar-thumb { background: var(--card-2); border-radius: 2px; }
-        .sim-best { flex: 0 0 154px; aspect-ratio: 3/4; border-radius: 16px; position: relative; overflow: hidden; scroll-snap-align: start; }
-        .sim-best img { width: 100%; height: 100%; object-fit: cover; }
-        .best-label { position: absolute; bottom: 9px; left: 9px; background: rgba(0,93,77,0.9); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; z-index: 2; display: flex; align-items: center; gap: 3px; }
-        .best-label .star { color: var(--accent); font-size: 12px; }
-        .sim-sub { flex: 0 0 116px; aspect-ratio: 3/4; scroll-snap-align: start; }
+.month-row{
+  background:var(--card);border-radius:14px;overflow:hidden;
+  cursor:pointer;transition:transform .15s;border:1px solid var(--border);
+  position:relative;
+}
+.month-row:active{transform:scale(.975);}
+.month-row-inner{display:flex;align-items:center;gap:10px;padding:12px 14px;}
 
-        .swipe-header { margin-bottom: 18px; }
-        .swipe-header h2 { font-size: 21px; font-weight: 800; }
-        .swipe-header p { font-size: 12px; color: var(--text-sub); margin-top: 3px; }
-        .month-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
-        .month-card { background: var(--card); border-radius: 18px; overflow: hidden; cursor: pointer; transition: transform 0.15s; position: relative; border: 1px solid var(--border); }
-        .month-card:active { transform: scale(0.975); }
-        .month-card-inner { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
-        .month-thumbs { display: flex; gap: 3px; flex-shrink: 0; }
-        .month-thumb { width: 46px; height: 62px; border-radius: 8px; object-fit: cover; background: var(--card-2); }
-        .month-thumb:nth-child(2) { width: 38px; opacity: 0.65; }
-        .month-thumb:nth-child(3) { width: 30px; opacity: 0.35; }
-        .month-info { flex: 1; min-width: 0; }
-        .month-label { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
-        .month-count { font-size: 11px; color: var(--text-sub); margin-bottom: 7px; }
-        .month-prog-track { width: 100%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-        .month-prog-fill  { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--primary-mid), var(--accent)); transition: width 0.5s ease; }
-        .month-badge { flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .month-badge.done { background: radial-gradient(circle at 40% 35%, #fff8d6, #ffd700 60%, #c8930a); box-shadow: 0 0 14px rgba(255,215,0,0.5); animation: glow 2.5s ease-in-out infinite; }
-        .month-badge.pend { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08); font-size: 12px; color: var(--text-sub); }
-        @keyframes glow { 0%,100% { box-shadow: 0 0 10px rgba(255,215,0,0.38); } 50% { box-shadow: 0 0 20px rgba(255,215,0,0.72); } }
-        .month-card.done-card { background: linear-gradient(135deg, #0e2420, #122b25); border-color: rgba(0,200,140,0.15); }
-        .month-card.done-card .month-label { color: var(--accent); }
-        .done-banner { background: linear-gradient(90deg, rgba(0,200,140,0.10), transparent); padding: 6px 16px; font-size: 11px; font-weight: 600; color: rgba(0,232,181,0.8); border-top: 1px solid rgba(0,200,140,0.1); letter-spacing: 0.3px; }
+/* サムネ */
+.month-thumb-wrap{position:relative;width:52px;height:52px;flex-shrink:0;}
+.month-thumb-img{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--card-2);}
 
-        .guide-section { margin-bottom: 26px; }
-        .guide-section-ttl { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
-        .guide-card { background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
-        .guide-item { display: flex; align-items: center; gap: 13px; padding: 15px 16px; border-bottom: 1px solid var(--border); }
-        .guide-item:last-child { border-bottom: none; }
-        .guide-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
-        .guide-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-        .guide-text p  { font-size: 11px; color: var(--text-sub); line-height: 1.45; }
-        .guide-arr { margin-left: auto; color: var(--text-sub); font-size: 16px; flex-shrink: 0; }
+/* テキスト */
+.month-text{flex:1;min-width:0;}
+.month-lbl{font-size:14px;font-weight:700;margin-bottom:2px;}
+.month-cnt{font-size:11px;color:var(--text-sub);margin-bottom:6px;}
+/* 細いプログレスバー */
+.month-bar-wrap{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.month-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--mid),var(--accent));}
 
-        nav { height: 78px; background: rgba(10,20,17,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding-bottom: 12px; border-top: 1px solid var(--border); flex-shrink: 0; z-index: 40; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 10px; font-weight: 600; cursor: pointer; width: 80px; transition: color 0.2s; }
-        .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 23px; margin-bottom: 3px; }
-        .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(0,232,181,0.5)); }
-    </style>
+/* バッジ (右) */
+.month-badge-wrap{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.month-badge-wrap.done{background:radial-gradient(circle at 40% 35%,#fff8d6,#ffd700 60%,#c8930a);box-shadow:0 0 12px rgba(255,215,0,.5);animation:glow 2.5s ease-in-out infinite;font-size:18px;}
+.month-badge-wrap.pend{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);}
+.pend-pct{font-size:11px;font-weight:700;color:var(--text-sub);}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.36);}50%{box-shadow:0 0 20px rgba(255,215,0,.72);}}
+
+/* 完了行 */
+.month-row.done-row{background:linear-gradient(135deg,#0e2420,#122b25);border-color:rgba(0,200,140,.15);}
+.month-row.done-row .month-lbl{color:var(--accent);}
+/* 完了の細ライン */
+.done-bar{height:2px;background:linear-gradient(90deg,rgba(0,232,181,.45),transparent);}
+
+/* ═══════════════════════════════════
+   スワイプ — 月詳細ビュー
+═══════════════════════════════════ */
+#swipe-detail{display:none;flex-direction:column;height:100%;}
+#swipe-detail.active{display:flex;}
+
+.sd-header{
+  padding:36px 16px 0;display:flex;flex-direction:column;gap:0;
+  background:var(--bg);flex-shrink:0;border-bottom:1px solid var(--border);
+}
+.sd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sd-back{color:var(--accent);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.sd-title{font-size:16px;font-weight:700;color:var(--text);}
+.sd-share{background:rgba(0,200,154,.12);border:1px solid rgba(0,200,154,.25);color:var(--accent);border-radius:16px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* プログレスバー（月詳細トップ） */
+.sd-prog-row{display:flex;align-items:center;gap:10px;padding:10px 16px 12px;}
+.sd-prog-track{flex:1;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.sd-prog-fill{height:100%;background:linear-gradient(90deg,var(--mid),var(--accent));border-radius:3px;transition:width .4s;}
+.sd-prog-txt{font-size:11px;color:var(--accent);font-weight:700;white-space:nowrap;}
+
+/* 写真カード（大きく表示） */
+.sd-photo-area{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 16px;overflow:hidden;}
+.sd-photo-card{width:100%;max-height:100%;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.sd-photo-card img{width:100%;display:block;max-height:calc(100vh - 320px);object-fit:cover;border-radius:20px;}
+/* 写真上のメタ情報 */
+.sd-photo-meta{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.55);border-radius:8px;padding:4px 10px;font-size:11px;color:#fff;}
+
+/* 削除/保持 ボタン */
+.sd-actions{flex-shrink:0;padding:12px 20px 14px;display:flex;gap:12px;}
+.btn-delete-sw{flex:1;padding:16px;background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;border:none;border-radius:18px;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(192,57,43,.4);}
+.btn-keep-sw{flex:1;padding:16px;background:linear-gradient(135deg,var(--keep),var(--keep-dark));color:#fff;border:none;border-radius:18px;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(0,93,77,.5);}
+.btn-delete-sw:active{transform:scale(.96);}
+.btn-keep-sw:active{transform:scale(.96);}
+
+/* 下部サムネイルストリップ */
+.sd-strip{flex-shrink:0;padding:0 16px 14px;display:flex;gap:6px;overflow-x:auto;}
+.sd-strip::-webkit-scrollbar{display:none;}
+.sd-strip-thumb{width:48px;height:48px;border-radius:8px;object-fit:cover;cursor:pointer;opacity:.5;transition:opacity .2s;flex-shrink:0;}
+.sd-strip-thumb.active-thumb{opacity:1;box-shadow:0 0 0 2px var(--accent);}
+
+/* ── ガイド ── */
+.guide-section{margin-bottom:24px;}
+.guide-ttl{font-size:11px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
+.guide-card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border);}
+.guide-item{display:flex;align-items:center;gap:12px;padding:14px 15px;border-bottom:1px solid var(--border);}
+.guide-item:last-child{border-bottom:none;}
+.guide-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.guide-text h4{font-size:14px;font-weight:600;margin-bottom:2px;}
+.guide-text p{font-size:11px;color:var(--text-sub);line-height:1.45;}
+.guide-arr{margin-left:auto;color:var(--text-sub);font-size:16px;flex-shrink:0;}
+
+/* ── ボトムナビ ── */
+nav{height:76px;background:rgba(10,20,17,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding-bottom:10px;border-top:1px solid var(--border);flex-shrink:0;z-index:40;}
+.nav-item{display:flex;flex-direction:column;align-items:center;color:var(--text-sub);font-size:10px;font-weight:600;cursor:pointer;width:80px;transition:color .2s;}
+.nav-item.active{color:var(--accent);}
+.nav-icon{font-size:22px;margin-bottom:3px;}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(0,232,181,.5));}
+</style>
 </head>
 <body>
 <div id="app">
-    <header>
-        <div class="header-top">
-            <div id="back-btn" class="back-btn" onclick="switchTab('home')">‹ 戻る</div>
-            <div id="header-actions" class="header-actions">
-                <button class="icon-btn">≡</button>
-                <button class="pill-btn" id="select-all-btn" onclick="toggleSelectAll()">✓ 全て選択する</button>
-            </div>
-        </div>
-        <div class="header-title-row">
-            <h1 id="header-title">ストレージ</h1>
-            <div id="header-sub" class="header-sub"></div>
-        </div>
-    </header>
 
-    <main id="home" class="view active">
-        <div class="storage-row">
-            <span class="used">1,640 GB を使用中 : 全 2,000 GB</span>
-            <span class="pct">82% 使用済み</span>
-        </div>
-        <div class="progress-track"><div class="progress-fill"></div></div>
-        <div class="home-grid">
-            <div class="home-card photos"      onclick="switchTab('similar-photos')"><div class="home-card-inner"><h3>似ている写真</h3><p>24.4 GB</p></div></div>
-            <div class="home-card raw"         onclick="switchTab('raw-photos')"    ><div class="home-card-inner"><h3>RAWデータ</h3><p>128 GB</p></div></div>
-            <div class="home-card videos"      onclick="switchTab('videos')"        ><div class="home-card-inner"><h3>動画を整理</h3><p>299 GB</p></div></div>
-            <div class="home-card screenshots" onclick="switchTab('screenshots')"   ><div class="home-card-inner"><h3>スクショ</h3><p>1.8 GB</p></div></div>
-        </div>
-    </main>
+  <header id="main-header">
+    <div class="hdr-top">
+      <div id="back-btn" class="back-btn" onclick="goBack()">‹ 戻る</div>
+      <div id="hdr-actions" class="hdr-actions">
+        <button class="icon-btn">≡</button>
+        <button class="pill-btn" id="sel-all-btn" onclick="toggleSelectAll()">✓ 全て選択する</button>
+      </div>
+    </div>
+    <div class="hdr-title-row">
+      <h1 id="hdr-title">ストレージ</h1>
+      <div id="hdr-sub" class="hdr-sub"></div>
+    </div>
+  </header>
 
-    <main id="raw-photos" class="view"><div id="raw-grid" class="media-grid"></div></main>
-    <main id="videos" class="view"><div id="video-grid" class="media-grid"></div></main>
-    <main id="screenshots" class="view"><div id="screenshot-grid" class="media-grid"></div></main>
-    <main id="similar-photos" class="view"><div id="similar-container" style="padding-bottom:60px;"></div></main>
+  <!-- ホーム -->
+  <main id="home" class="view active">
+    <div class="sto-row"><span class="used">1,640 GB を使用中 : 全 2,000 GB</span><span class="pct">82% 使用済み</span></div>
+    <div class="prog-track"><div class="prog-fill"></div></div>
+    <div class="home-grid">
+      <div class="home-card photos"      onclick="switchTab('similar-photos')"><div class="hc-inner"><h3>似ている写真</h3><p>24.4 GB</p></div></div>
+      <div class="home-card raw"         onclick="switchTab('raw-photos')"    ><div class="hc-inner"><h3>RAWデータ</h3><p>128 GB</p></div></div>
+      <div class="home-card videos"      onclick="switchTab('videos')"        ><div class="hc-inner"><h3>動画を整理</h3><p>299 GB</p></div></div>
+      <div class="home-card screenshots" onclick="switchTab('screenshots')"   ><div class="hc-inner"><h3>スクショ</h3><p>1.8 GB</p></div></div>
+    </div>
+  </main>
 
-    <main id="swipe" class="view" style="padding:16px;padding-bottom:80px;">
-        <div class="swipe-header"><h2>月別スワイプ</h2><p>月ごとに写真を確認して整理しましょう</p></div>
-        <div class="month-list" id="month-list"></div>
-    </main>
+  <!-- RAW / 動画 / スクショ / 似ている -->
+  <main id="raw-photos"     class="view"><div id="raw-grid"      class="media-grid"></div></main>
+  <main id="videos"         class="view"><div id="video-grid"    class="media-grid"></div></main>
+  <main id="screenshots"    class="view"><div id="ss-grid"       class="media-grid"></div></main>
+  <main id="similar-photos" class="view"><div id="sim-container" style="padding-bottom:60px;"></div></main>
 
-    <main id="guide" class="view" style="padding:18px;padding-bottom:80px;">
-        <div style="margin-bottom:22px;">
-            <h2 style="font-size:22px;font-weight:800;">使い方ガイド</h2>
-            <p style="font-size:12px;color:var(--text-sub);margin-top:4px;">アプリの機能と使い方をご案内します</p>
-        </div>
-        <div class="guide-section">
-            <div class="guide-section-ttl">基本機能</div>
-            <div class="guide-card">
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,0.25);">📷</div><div class="guide-text"><h4>似ている写真を整理</h4><p>同じシーンで撮影した類似写真をグループ化して、最高の1枚だけを残せます。</p></div><div class="guide-arr">›</div></div>
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,0.25);">🎬</div><div class="guide-text"><h4>動画を整理する</h4><p>サイズや長さで動画を絞り込み、不要な動画を素早く削除できます。</p></div><div class="guide-arr">›</div></div>
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,0.25);">📄</div><div class="guide-text"><h4>RAWデータを削除</h4><p>RAW+JPEGで撮影した場合、JPEGを残してRAWファイルだけを削除できます。</p></div><div class="guide-arr">›</div></div>
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,0.25);">🖼️</div><div class="guide-text"><h4>スクショを一括削除</h4><p>不要なスクリーンショットをまとめて確認・削除できます。</p></div><div class="guide-arr">›</div></div>
-            </div>
-        </div>
-        <div class="guide-section">
-            <div class="guide-section-ttl">スワイプ機能</div>
-            <div class="guide-card">
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(255,215,0,0.12);">🏆</div><div class="guide-text"><h4>月別スワイプで整理</h4><p>月ごとに写真をスワイプして保存・削除を判断。全件完了すると🏆マークが付きます。</p></div><div class="guide-arr">›</div></div>
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(224,82,82,0.15);">⬅️</div><div class="guide-text"><h4>左スワイプで削除</h4><p>不要な写真は左にスワイプして削除キューに追加します。</p></div><div class="guide-arr">›</div></div>
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,200,154,0.12);">➡️</div><div class="guide-text"><h4>右スワイプで保存</h4><p>残したい写真は右にスワイプして保存します。</p></div><div class="guide-arr">›</div></div>
-            </div>
-        </div>
-        <div class="guide-section">
-            <div class="guide-section-ttl">ヒント</div>
-            <div class="guide-card">
-                <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,0.25);">💡</div><div class="guide-text"><h4>定期的な整理がおすすめ</h4><p>月に1度スワイプで整理すると、ストレージを常に快適に保てます。</p></div><div class="guide-arr">›</div></div>
-            </div>
-        </div>
-    </main>
+  <!-- スワイプ — 月一覧 -->
+  <main id="swipe" class="view" style="padding:16px;padding-bottom:20px;">
+    <div class="swipe-list-hdr">
+      <h2>月別スワイプ</h2>
+      <p>月ごとに写真を確認して整理しましょう</p>
+    </div>
+    <div class="month-list" id="month-list"></div>
+  </main>
 
-    <div id="delete-bar" class="delete-bar-wrap">
-        <button class="btn-delete" onclick="deleteSelectedItems()">
-            <span>🗑</span><span id="delete-btn-text">削除</span>
-        </button>
+  <!-- スワイプ — 月詳細 -->
+  <div id="swipe-detail">
+    <div class="sd-header">
+      <div class="sd-top">
+        <div class="sd-back" onclick="closeSwipeDetail()">‹ 月</div>
+        <div class="sd-title" id="sd-month-title">2月 2026</div>
+        <button class="sd-share">共有</button>
+      </div>
+      <div class="sd-prog-row">
+        <div class="sd-prog-track"><div class="sd-prog-fill" id="sd-prog-fill" style="width:0%"></div></div>
+        <div class="sd-prog-txt" id="sd-prog-txt">0/0 件を確認済み</div>
+      </div>
     </div>
 
-    <nav>
-        <div class="nav-item active" data-target="home"><div class="nav-icon">🏠</div><span>ホーム</span></div>
-        <div class="nav-item" data-target="swipe"><div class="nav-icon">👆</div><span>スワイプ</span></div>
-        <div class="nav-item" data-target="guide"><div class="nav-icon">📖</div><span>ガイド</span></div>
-    </nav>
+    <div class="sd-photo-area">
+      <div class="sd-photo-card">
+        <img id="sd-main-img" src="" alt="">
+        <div class="sd-photo-meta" id="sd-photo-meta">1 / 10</div>
+      </div>
+    </div>
+
+    <div class="sd-strip" id="sd-strip"></div>
+
+    <div class="sd-actions">
+      <button class="btn-delete-sw" onclick="swipeAction('delete')">👎 削除</button>
+      <button class="btn-keep-sw"   onclick="swipeAction('keep')">👍 保持</button>
+    </div>
+  </div>
+
+  <!-- ガイド -->
+  <main id="guide" class="view" style="padding:16px;padding-bottom:80px;">
+    <div style="margin-bottom:20px;"><h2 style="font-size:21px;font-weight:800;">使い方ガイド</h2><p style="font-size:12px;color:var(--text-sub);margin-top:4px;">アプリの機能と使い方をご案内します</p></div>
+    <div class="guide-section">
+      <div class="guide-ttl">基本機能</div>
+      <div class="guide-card">
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,.25);">📷</div><div class="guide-text"><h4>似ている写真を整理</h4><p>同じシーンで撮影した類似写真をグループ化して最高の1枚だけを残せます。</p></div><div class="guide-arr">›</div></div>
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,.25);">🎬</div><div class="guide-text"><h4>動画を整理する</h4><p>サイズや長さで動画を絞り込み、不要な動画を素早く削除できます。</p></div><div class="guide-arr">›</div></div>
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,.25);">📄</div><div class="guide-text"><h4>RAWデータを削除</h4><p>RAW+JPEGで撮影した場合、JPEGを残してRAWだけを削除できます。</p></div><div class="guide-arr">›</div></div>
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(0,93,77,.25);">🖼️</div><div class="guide-text"><h4>スクショを一括削除</h4><p>不要なスクリーンショットをまとめて確認・削除できます。</p></div><div class="guide-arr">›</div></div>
+      </div>
+    </div>
+    <div class="guide-section">
+      <div class="guide-ttl">スワイプ機能</div>
+      <div class="guide-card">
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(255,215,0,.12);">🏆</div><div class="guide-text"><h4>月別スワイプで整理</h4><p>全件完了すると🏆マークが付きます。</p></div><div class="guide-arr">›</div></div>
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(224,82,82,.15);">👎</div><div class="guide-text"><h4>削除ボタン</h4><p>不要な写真は「削除」で削除キューに追加します。</p></div><div class="guide-arr">›</div></div>
+        <div class="guide-item"><div class="guide-icon" style="background:rgba(0,200,154,.12);">👍</div><div class="guide-text"><h4>保持ボタン</h4><p>残したい写真は「保持」で保存します。</p></div><div class="guide-arr">›</div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 削除バー -->
+  <div id="del-bar" class="del-bar">
+    <button class="btn-del" onclick="deleteSelected()"><span>🗑</span><span id="del-txt">削除</span></button>
+  </div>
+
+  <nav id="main-nav">
+    <div class="nav-item active" data-target="home"><div class="nav-icon">🏠</div><span>ホーム</span></div>
+    <div class="nav-item"        data-target="swipe"><div class="nav-icon">👆</div><span>スワイプ</span></div>
+    <div class="nav-item"        data-target="guide"><div class="nav-icon">📖</div><span>ガイド</span></div>
+  </nav>
 </div>
 
 <script>
-const imgPool = [
-    'https://images.unsplash.com/photo-1531306728370-53bfd6202e88',
-    'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
-    'https://images.unsplash.com/photo-1511895426328-dc8714191300',
-    'https://images.unsplash.com/photo-1611162617474-5b21e879e113',
-    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e',
-    'https://images.unsplash.com/photo-1504274066651-8d31a536b11a',
-    'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4',
-    'https://images.unsplash.com/photo-1492691527719-9d1c255998b3',
-    'https://images.unsplash.com/photo-1520697921389-9a2f647035ce'
+const imgPool=[
+  'https://images.unsplash.com/photo-1531306728370-53bfd6202e88',
+  'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
+  'https://images.unsplash.com/photo-1511895426328-dc8714191300',
+  'https://images.unsplash.com/photo-1611162617474-5b21e879e113',
+  'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e',
+  'https://images.unsplash.com/photo-1504274066651-8d31a536b11a',
+  'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4',
+  'https://images.unsplash.com/photo-1492691527719-9d1c255998b3',
+  'https://images.unsplash.com/photo-1520697921389-9a2f647035ce'
 ];
 
-function genData(count, type) {
-    return Array.from({length: count}, (_, i) => {
-        const src = `${imgPool[i % imgPool.length]}?w=300&q=80&r=${i}`;
-        if (type === 'raw')   return { src, size: (Math.random()*50+20).toFixed(1) };
-        if (type === 'video') return { src, size: (Math.random()*5+0.5).toFixed(2), dur: `0${Math.floor(Math.random()*9)}:${String(Math.floor(Math.random()*50)+10).padStart(2,'0')}` };
-        return { src, size: (Math.random()*4+1).toFixed(1) };
-    });
+function genData(n,type){
+  return Array.from({length:n},(_,i)=>{
+    const src=`${imgPool[i%imgPool.length]}?w=400&q=80&r=${i}`;
+    if(type==='raw')  return{src,size:(Math.random()*50+20).toFixed(1)};
+    if(type==='video')return{src,size:(Math.random()*5+.5).toFixed(2),dur:`0${Math.floor(Math.random()*9)}:${String(Math.floor(Math.random()*50)+10).padStart(2,'0')}`};
+    return{src,size:(Math.random()*4+1).toFixed(1)};
+  });
 }
-function genSimilar(n) {
-    return Array.from({length: n}, (_, i) => {
-        const base = imgPool[i % imgPool.length];
-        const sub = Array.from({length: Math.floor(Math.random()*3)+2}, (__, j) => ({ src: `${base}?w=300&q=60&r=${i}${j}`, size: (Math.random()*3+1).toFixed(1) }));
-        return { id:`g${i}`, best: { src:`${base}?w=300&q=80`, size:(Math.random()*4+2).toFixed(1) }, sub };
-    });
+function genSimilar(n){
+  return Array.from({length:n},(_,i)=>{
+    const base=imgPool[i%imgPool.length];
+    const sub=Array.from({length:Math.floor(Math.random()*3)+2},(__,j)=>({src:`${base}?w=300&q=60&r=${i}${j}`,size:(Math.random()*3+1).toFixed(1)}));
+    return{id:`g${i}`,best:{src:`${base}?w=400&q=80`,size:(Math.random()*4+2).toFixed(1)},sub};
+  });
 }
-function genMonths() {
-    const now = new Date();
-    return Array.from({length: 20}, (_, i) => {
-        const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-        const total = Math.floor(Math.random()*120)+30;
-        const reviewed = i < 3 ? Math.floor(Math.random()*total) : (Math.random()>0.4 ? total : Math.floor(Math.random()*total));
-        return { label: `${d.getFullYear()}年${d.getMonth()+1}月`, total, reviewed, done: reviewed===total, thumbs: [0,1,2].map(j => `${imgPool[(i+j)%imgPool.length]}?w=100&q=60&r=${i}${j}`) };
-    });
+function genMonths(){
+  const now=new Date();
+  return Array.from({length:20},(_,i)=>{
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const total=Math.floor(Math.random()*120)+30;
+    const reviewed=i<3?Math.floor(Math.random()*total):(Math.random()>.4?total:Math.floor(Math.random()*total));
+    const photos=Array.from({length:total},(__,j)=>({src:`${imgPool[(i+j)%imgPool.length]}?w=600&q=80&r=${i}${j}`,idx:j+1}));
+    return{label:`${d.getFullYear()}年${d.getMonth()+1}月`,navLabel:`${d.getMonth()+1}月 ${d.getFullYear()}`,total,reviewed,done:reviewed===total,photos,thumb:`${imgPool[i%imgPool.length]}?w=200&q=70&r=${i}`};
+  });
 }
 
-const rawData = genData(30,'raw'), videoData = genData(20,'video'), screenshotData = genData(50,'photo');
-const similarGroups = genSimilar(15), monthData = genMonths();
-let currentTab = 'home', isAllSelected = false;
+const rawData=genData(30,'raw'),videoData=genData(20,'video'),ssData=genData(50,'photo');
+const simGroups=genSimilar(15),monthData=genMonths();
+let currentTab='home',isAllSel=false;
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderGrids(); renderSimilar(); renderMonths();
-    document.querySelectorAll('.nav-item[data-target]').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.target)));
-    switchTab('home');
+// スワイプ詳細の状態
+let sdMonth=null,sdIdx=0;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  renderGrids(); renderSimilar(); renderMonths();
+  document.querySelectorAll('.nav-item[data-target]').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.target)));
+  switchTab('home');
 });
 
-function renderGrids() {
-    document.getElementById('raw-grid').innerHTML = rawData.map(d => `<div class="media-item selectable-item" data-size="${d.size}" onclick="toggleSelect(this)"><img src="${d.src}" loading="lazy"><div class="badge-top">RAW</div><div class="badge-bottom">${d.size} MB</div><div class="check-box">✓</div></div>`).join('');
-    document.getElementById('video-grid').innerHTML = videoData.map(d => `<div class="media-item selectable-item" data-size="${d.size*1000}" onclick="toggleSelect(this)"><img src="${d.src}" loading="lazy"><div class="video-badge"><span class="vsize">${d.size} GB</span><span class="vdur">${d.dur}</span></div><div class="check-box">✓</div></div>`).join('');
-    document.getElementById('screenshot-grid').innerHTML = screenshotData.map(d => `<div class="media-item selectable-item" data-size="${d.size}" onclick="toggleSelect(this)"><img src="${d.src}" loading="lazy"><div class="check-box">✓</div></div>`).join('');
+/* ── レンダー ── */
+function renderGrids(){
+  document.getElementById('raw-grid').innerHTML=rawData.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="bdg-top">RAW</div><div class="bdg-bot">${d.size} MB</div><div class="chk">✓</div></div>`).join('');
+  document.getElementById('video-grid').innerHTML=videoData.map(d=>`<div class="media-item sel-item" data-size="${d.size*1000}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="vid-bdg"><span class="vs">${d.size} GB</span><span class="vd">${d.dur}</span></div><div class="chk">✓</div></div>`).join('');
+  document.getElementById('ss-grid').innerHTML=ssData.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="chk">✓</div></div>`).join('');
 }
-function renderSimilar() {
-    document.getElementById('similar-container').innerHTML = similarGroups.map(g => `<div class="sim-group" id="${g.id}"><div class="sim-group-header"><span class="sim-group-title">${g.sub.length} 似ています</span><span class="grp-sel-btn" onclick="toggleGroupSelect('${g.id}')">すべての選択を解除</span></div><div class="sim-scroll"><div class="sim-best"><div class="best-label"><span class="star">★</span> 最高</div><img src="${g.best.src}" loading="lazy"></div>${g.sub.map(s => `<div class="media-item sim-sub selectable-item selected" data-size="${s.size}" onclick="toggleSelect(this)"><img src="${s.src}" loading="lazy"><div class="badge-bottom" style="font-size:10px;">${s.size} MB</div><div class="check-box">✓</div></div>`).join('')}</div></div>`).join('');
+function renderSimilar(){
+  document.getElementById('sim-container').innerHTML=simGroups.map(g=>`<div class="sim-group" id="${g.id}"><div class="sim-group-header"><span class="sim-group-title">${g.sub.length} 似ています</span><span class="grp-sel-btn" onclick="toggleGrpSel('${g.id}')">すべての選択を解除</span></div><div class="sim-scroll"><div class="sim-best"><div class="best-lbl"><span class="star">★</span> 最高</div><img src="${g.best.src}" loading="lazy"></div>${g.sub.map(s=>`<div class="media-item sim-sub sel-item selected" data-size="${s.size}" onclick="toggleSel(this)"><img src="${s.src}" loading="lazy"><div class="bdg-bot" style="font-size:10px;">${s.size} MB</div><div class="chk">✓</div></div>`).join('')}</div></div>`).join('');
 }
-function renderMonths() {
-    document.getElementById('month-list').innerHTML = monthData.map((m, i) => {
-        const pct = m.total > 0 ? (m.reviewed/m.total*100).toFixed(0) : 0;
-        const thumbs = m.thumbs.map(t => `<img class="month-thumb" src="${t}" loading="lazy">`).join('');
-        const badge = m.done ? `<div class="month-badge done">🏆</div>` : `<div class="month-badge pend">${pct}%</div>`;
-        const count = m.done ? `<span style="color:rgba(0,232,181,0.85);font-weight:700;">✓ 全${m.total}件 完了</span>` : `<span>${m.reviewed}/${m.total}件を確認済み</span>`;
-        const banner = m.done ? `<div class="done-banner">🏆 このひと月の整理が完了しました！</div>` : '';
-        return `<div class="month-card ${m.done?'done-card':''}" onclick="onMonthClick(${i})"><div class="month-card-inner"><div class="month-thumbs">${thumbs}</div><div class="month-info"><div class="month-label">${m.label}</div><div class="month-count">${count}</div><div class="month-prog-track"><div class="month-prog-fill" style="width:${pct}%"></div></div></div>${badge}</div>${banner}</div>`;
-    }).join('');
+function renderMonths(){
+  document.getElementById('month-list').innerHTML=monthData.map((m,i)=>{
+    const pct=m.total>0?(m.reviewed/m.total*100).toFixed(0):0;
+    const countTxt=m.done?`<span style="color:rgba(0,232,181,.85);font-weight:700;">✓ 全${m.total}件 完了</span>`:`<span>${m.reviewed}/${m.total} 件を確認済み</span>`;
+    const badge=m.done
+      ?`<div class="month-badge-wrap done">🏆</div>`
+      :`<div class="month-badge-wrap pend"><span class="pend-pct">${pct}%</span></div>`;
+    const doneLine=m.done?`<div class="done-bar"></div>`:'';
+    return`<div class="month-row ${m.done?'done-row':''}" onclick="openSwipeDetail(${i})"><div class="month-row-inner"><img class="month-thumb-img" src="${m.thumb}" loading="lazy"><div class="month-text"><div class="month-lbl">${m.label}</div><div class="month-cnt">${countTxt}</div><div class="month-bar-wrap"><div class="month-bar-fill" style="width:${pct}%"></div></div></div>${badge}</div>${doneLine}</div>`;
+  }).join('');
 }
-function onMonthClick(i) { console.log(monthData[i].label + ' スワイプ開始'); }
-function switchTab(id) {
-    currentTab = id;
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-item[data-target]').forEach(n => n.classList.toggle('active', n.dataset.target === id));
-    const title = document.getElementById('header-title'), sub = document.getElementById('header-sub'), back = document.getElementById('back-btn'), actions = document.getElementById('header-actions');
-    sub.style.display='block'; back.style.display='block'; actions.style.display='flex';
-    document.getElementById('delete-bar').classList.remove('show');
-    checkSelectAllState();
-    const topPages = ['home','swipe','guide'];
-    if (topPages.includes(id)) { sub.style.display='none'; back.style.display='none'; actions.style.display='none'; }
-    const titles = { home:'ストレージ', swipe:'スワイプ', guide:'ガイド', 'raw-photos':'RAW', 'similar-photos':'似ています', videos:'動画を整理', screenshots:'スクショ' };
-    const subs = { 'raw-photos':`${rawData.length}個の項目`, 'similar-photos':'1,088枚の写真 (24.4 GB)', videos:`${videoData.length} アイテム (299 GB)`, screenshots:`${screenshotData.length}枚の写真 (193 MB)` };
-    title.innerText = titles[id] || id;
-    if (subs[id]) sub.innerText = subs[id];
-    if (!topPages.includes(id)) updateDeleteButton();
+
+/* ── スワイプ詳細 ── */
+function openSwipeDetail(idx){
+  sdMonth=monthData[idx];
+  sdIdx=0;
+  document.getElementById('main-header').style.display='none';
+  document.getElementById('main-nav').style.display='none';
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('del-bar').classList.remove('show');
+  const det=document.getElementById('swipe-detail');
+  det.classList.add('active');
+  document.getElementById('sd-month-title').textContent=sdMonth.navLabel;
+  renderSwipeDetail();
 }
-function toggleSelect(el) { el.classList.toggle('selected'); checkSelectAllState(); updateDeleteButton(); }
-function toggleGroupSelect(gid) {
-    const g = document.getElementById(gid), btn = g.querySelector('.grp-sel-btn'), selecting = btn.innerText === '全て選択する';
-    g.querySelectorAll('.selectable-item').forEach(el => el.classList.toggle('selected', selecting));
-    btn.innerText = selecting ? 'すべての選択を解除' : '全て選択する';
-    checkSelectAllState(); updateDeleteButton();
+function closeSwipeDetail(){
+  document.getElementById('swipe-detail').classList.remove('active');
+  document.getElementById('main-header').style.display='';
+  document.getElementById('main-nav').style.display='';
+  switchTab('swipe');
 }
-function toggleSelectAll() {
-    const view = document.querySelector('.view.active'); isAllSelected = !isAllSelected;
-    view.querySelectorAll('.selectable-item').forEach(el => el.classList.toggle('selected', isAllSelected));
-    updateSelectAllBtn(); updateDeleteButton();
+function renderSwipeDetail(){
+  const m=sdMonth,total=m.photos.length,reviewed=Math.min(sdIdx,total);
+  const pct=total>0?(reviewed/total*100).toFixed(0):0;
+  document.getElementById('sd-prog-fill').style.width=pct+'%';
+  document.getElementById('sd-prog-txt').textContent=`${reviewed}/${total} 件を確認済み`;
+  const photo=m.photos[sdIdx]||m.photos[0];
+  document.getElementById('sd-main-img').src=photo.src;
+  document.getElementById('sd-photo-meta').textContent=`${sdIdx+1} / ${total}`;
+  // サムネイルストリップ
+  const strip=document.getElementById('sd-strip');
+  strip.innerHTML=m.photos.slice(0,Math.min(20,total)).map((p,i)=>`<img class="sd-strip-thumb ${i===sdIdx?'active-thumb':''}" src="${imgPool[i%imgPool.length]}?w=100&q=60&r=${i}" loading="lazy" onclick="jumpSwipe(${i})">`).join('');
 }
-function checkSelectAllState() {
-    const view = document.querySelector('.view.active'); if (!view) return;
-    const total = view.querySelectorAll('.selectable-item').length, sel = view.querySelectorAll('.selectable-item.selected').length;
-    isAllSelected = total > 0 && total === sel; updateSelectAllBtn();
+function jumpSwipe(i){sdIdx=i;renderSwipeDetail();}
+function swipeAction(action){
+  if(!sdMonth)return;
+  sdMonth.reviewed=Math.min(sdMonth.reviewed+1,sdMonth.total);
+  sdIdx=Math.min(sdIdx+1,sdMonth.photos.length-1);
+  renderSwipeDetail();
 }
-function updateSelectAllBtn() {
-    const btn = document.getElementById('select-all-btn');
-    if (isAllSelected) { btn.innerHTML='⊗ すべての選択を解除'; document.querySelectorAll('.grp-sel-btn').forEach(e => e.innerText='すべての選択を解除'); }
-    else { btn.innerHTML='✓ 全て選択する'; document.querySelectorAll('.grp-sel-btn').forEach(e => e.innerText='全て選択する'); }
+
+/* ── タブ切り替え ── */
+function goBack(){switchTab('home');}
+function switchTab(id){
+  currentTab=id;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item[data-target]').forEach(n=>n.classList.toggle('active',n.dataset.target===id));
+  const title=document.getElementById('hdr-title'),sub=document.getElementById('hdr-sub'),back=document.getElementById('back-btn'),act=document.getElementById('hdr-actions');
+  sub.style.display='block';back.style.display='block';act.style.display='flex';
+  document.getElementById('del-bar').classList.remove('show');
+  checkSelState();
+  const top=['home','swipe','guide'];
+  if(top.includes(id)){sub.style.display='none';back.style.display='none';act.style.display='none';}
+  const titles={home:'ストレージ',swipe:'スワイプ',guide:'ガイド','raw-photos':'RAW','similar-photos':'似ています',videos:'動画を整理',screenshots:'スクショ'};
+  const subs={'raw-photos':`${rawData.length}個の項目`,'similar-photos':'1,088枚の写真 (24.4 GB)',videos:`${videoData.length} アイテム (299 GB)`,screenshots:`${ssData.length}枚の写真 (193 MB)`};
+  title.innerText=titles[id]||id;
+  if(subs[id])sub.innerText=subs[id];
+  if(!top.includes(id))updateDelBtn();
 }
-function updateDeleteButton() {
-    const view = document.querySelector('.view.active'); if (!view || ['home','swipe','guide'].includes(currentTab)) return;
-    const sel = view.querySelectorAll('.selectable-item.selected'), bar = document.getElementById('delete-bar'), txt = document.getElementById('delete-btn-text');
-    if (sel.length > 0) {
-        let mb = 0; sel.forEach(el => mb += parseFloat(el.dataset.size||0));
-        const sz = mb > 1000 ? `${(mb/1000).toFixed(2)} GB` : `${mb.toFixed(1)} MB`;
-        const labels = { 'raw-photos':'RAWデータ', 'similar-photos':'類似アイテム', videos:'動画', screenshots:'スクリーンショット' };
-        txt.innerText = `${sel.length}件の${labels[currentTab]||'アイテム'}を削除 (${sz})`; bar.classList.add('show');
-    } else { bar.classList.remove('show'); }
+function toggleSel(el){el.classList.toggle('selected');checkSelState();updateDelBtn();}
+function toggleGrpSel(gid){
+  const g=document.getElementById(gid),btn=g.querySelector('.grp-sel-btn'),sel=btn.innerText==='全て選択する';
+  g.querySelectorAll('.sel-item').forEach(el=>el.classList.toggle('selected',sel));
+  btn.innerText=sel?'すべての選択を解除':'全て選択する';
+  checkSelState();updateDelBtn();
 }
-function deleteSelectedItems() {
-    const view = document.querySelector('.view.active'), sel = view.querySelectorAll('.selectable-item.selected');
-    sel.forEach(el => { el.style.transform='scale(0.5)'; el.style.opacity='0'; el.style.transition='all 0.25s'; });
-    setTimeout(() => {
-        sel.forEach(el => el.remove());
-        if (currentTab === 'similar-photos') document.querySelectorAll('.sim-group').forEach(g => { if (!g.querySelector('.sim-sub')) g.style.display='none'; });
-        updateDeleteButton();
-        if (!view.querySelector('.selectable-item')) switchTab('home');
-    }, 280);
+function toggleSelectAll(){
+  const view=document.querySelector('.view.active');isAllSel=!isAllSel;
+  view.querySelectorAll('.sel-item').forEach(el=>el.classList.toggle('selected',isAllSel));
+  updateSelBtn();updateDelBtn();
+}
+function checkSelState(){
+  const view=document.querySelector('.view.active');if(!view)return;
+  const total=view.querySelectorAll('.sel-item').length,sel=view.querySelectorAll('.sel-item.selected').length;
+  isAllSel=total>0&&total===sel;updateSelBtn();
+}
+function updateSelBtn(){
+  const btn=document.getElementById('sel-all-btn');
+  if(isAllSel){btn.innerHTML='⊗ すべての選択を解除';document.querySelectorAll('.grp-sel-btn').forEach(e=>e.innerText='すべての選択を解除');}
+  else{btn.innerHTML='✓ 全て選択する';document.querySelectorAll('.grp-sel-btn').forEach(e=>e.innerText='全て選択する');}
+}
+function updateDelBtn(){
+  const view=document.querySelector('.view.active');if(!view||['home','swipe','guide'].includes(currentTab))return;
+  const sel=view.querySelectorAll('.sel-item.selected'),bar=document.getElementById('del-bar'),txt=document.getElementById('del-txt');
+  if(sel.length>0){
+    let mb=0;sel.forEach(el=>mb+=parseFloat(el.dataset.size||0));
+    const sz=mb>1000?`${(mb/1000).toFixed(2)} GB`:`${mb.toFixed(1)} MB`;
+    const lbls={'raw-photos':'RAWデータ','similar-photos':'類似アイテム',videos:'動画',screenshots:'スクリーンショット'};
+    txt.innerText=`${sel.length}件の${lbls[currentTab]||'アイテム'}を削除 (${sz})`;bar.classList.add('show');
+  }else{bar.classList.remove('show');}
+}
+function deleteSelected(){
+  const view=document.querySelector('.view.active'),sel=view.querySelectorAll('.sel-item.selected');
+  sel.forEach(el=>{el.style.transform='scale(.5)';el.style.opacity='0';el.style.transition='all .25s';});
+  setTimeout(()=>{
+    sel.forEach(el=>el.remove());
+    if(currentTab==='similar-photos')document.querySelectorAll('.sim-group').forEach(g=>{if(!g.querySelector('.sim-sub'))g.style.display='none';});
+    updateDelBtn();
+    if(!view.querySelector('.sel-item'))switchTab('home');
+  },280);
 }
 </script>
 </body>
