@@ -3,680 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Smart Cleaner</title>
+    <title>Cleaner Pro - Swipe Update</title>
     <style>
-        :root{--bg:#060F0D;--sf:#0E1E1A;--sf2:#163028;--tx:#E8F1EE;--tx2:#6B8A82;--tx3:#3E5D54;--ac:#005D4D;--ac2:#00A67E;--red:#E5484D;--amb:#F5A623;--r:16px;--r2:12px}
+        :root {
+            --bg:#04100e;--card:#0c1f1b;--card2:#153029;--text:#eaf5f2;--sub:#5a7d75;--dim:#3d5c54;
+            --pri:#005D4D;--pri2:#00896e;--bright:#00b894;--grad:linear-gradient(135deg,#005D4D,#00896e);
+            --glow:rgba(0,93,77,.25);--danger:#ff4757;--dgrad:linear-gradient(135deg,#ff4757,#ff6b7a);
+            --amber:#ffb142;--badge:rgba(4,16,14,.82);--bdr:rgba(0,93,77,.12);--bdr2:rgba(0,93,77,.3);
+            --sh:0 8px 32px rgba(0,0,0,.4);--rl:20px;--rm:14px;--rs:10px;
+        }
         *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-        body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:#000;display:flex;justify-content:center;-webkit-font-smoothing:antialiased}
-        #app{width:100%;max-width:430px;height:100dvh;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;overflow:hidden;position:relative}
+        body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;background:#000;display:flex;justify-content:center;touch-action:manipulation;-webkit-font-smoothing:antialiased}
+        #app{width:100%;max-width:414px;height:100vh;height:100dvh;background:var(--bg);color:var(--text);position:relative;display:flex;flex-direction:column;overflow:hidden}
 
-        /* Header */
-        .hd{padding:54px 20px 12px;flex-shrink:0;background:var(--bg);z-index:10}
-        .hd-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-        .hd-back{color:var(--ac2);font-size:17px;font-weight:500;cursor:pointer;display:none;padding:6px 0}
-        .hd-back:active{opacity:.5}
-        .hd-right{display:flex;gap:8px;align-items:center}
-        .hd-pill{background:var(--sf);color:var(--tx);border:1px solid rgba(0,93,77,.15);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;display:none}
-        .hd-pill:active{background:var(--sf2)}
-        .hd h1{font-size:32px;font-weight:700;letter-spacing:-.5px}
-        .hd-sub{font-size:13px;color:var(--tx2);margin-top:2px;display:none}
+        header{padding:52px 20px 10px;display:flex;flex-direction:column;gap:10px;z-index:20;background:var(--bg);flex-shrink:0}
+        .h-top{display:flex;justify-content:space-between;align-items:center;height:36px}
+        .back{font-size:24px;cursor:pointer;display:none;padding:4px 14px 4px 0;color:var(--bright);transition:opacity .2s;font-weight:300}
+        .back:active{opacity:.4}
+        .h-act{display:none;gap:8px;align-items:center}
+        .pill{background:var(--card);color:var(--text);border:1px solid var(--bdr);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s}
+        .pill:active{transform:scale(.95);background:var(--card2)}
+        .ib{width:36px;height:36px;justify-content:center;padding:0;border-radius:50%;font-size:15px}
+        .h-tr{display:flex;justify-content:space-between;align-items:flex-end}
+        h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+        .h-sub{font-size:12.5px;color:var(--sub);margin-top:2px;display:none}
+        .gear{background:var(--card);border:1px solid var(--bdr);border-radius:50%;width:38px;height:38px;display:flex;justify-content:center;align-items:center;font-size:17px;cursor:pointer}
 
-        /* Scrollable area */
-        .page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none;padding:0 20px 120px}
-        .page::-webkit-scrollbar{display:none}
-        .page.on{display:block;animation:fadeUp .25s ease}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .view{flex:1;overflow-y:auto;padding:0 20px 110px;display:none;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+        .view::-webkit-scrollbar{display:none}
+        .view.active{display:block;animation:fi .3s ease}
+        @keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-        /* === HOME === */
-        .meter{margin:8px 0 24px}
-        .meter-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-        .meter-val{font-size:14px;font-weight:600}
-        .meter-val span{color:var(--ac2)}
-        .meter-pct{font-size:12px;font-weight:700;color:var(--amb);background:rgba(245,166,35,.1);padding:3px 8px;border-radius:6px}
-        .meter-bar{height:4px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden}
-        .meter-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:2px;transition:width 1s ease}
+        .del-bar{position:absolute;bottom:80px;left:0;width:100%;padding:12px 20px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:30;transform:translateY(110%);transition:transform .35s cubic-bezier(.25,.8,.25,1)}
+        .del-bar.show{transform:translateY(0)}
+        .btn-del{width:100%;padding:15px;background:var(--dgrad);color:#fff;border:none;border-radius:var(--rm);font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,71,87,.3);display:flex;justify-content:center;align-items:center;gap:8px}
 
-        /* Category cards */
-        .cats{display:flex;flex-direction:column;gap:12px}
-        .cat{background:var(--sf);border:1px solid rgba(0,93,77,.08);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s}
-        .cat:active{background:var(--sf2);transform:scale(.98)}
-        .cat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-        .cat-icon.sim{background:rgba(0,93,77,.15)}
-        .cat-icon.ss{background:rgba(245,166,35,.12)}
-        .cat-icon.vid{background:rgba(88,166,255,.12)}
-        .cat-icon.big{background:rgba(229,72,77,.1)}
-        .cat-info{flex:1;min-width:0}
-        .cat-name{font-size:15px;font-weight:600;margin-bottom:2px}
-        .cat-desc{font-size:12px;color:var(--tx2)}
-        .cat-size{font-size:16px;font-weight:700;color:var(--ac2);text-align:right;white-space:nowrap}
-        .cat-arrow{color:var(--tx3);font-size:18px;margin-left:4px}
-        .cat .cat-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px}
+        .sel{position:relative;cursor:pointer;border:2.5px solid transparent;transition:all .25s;overflow:hidden;background:var(--card)}
+        .sel.ck{border-color:var(--danger);border-radius:14px!important}
+        .sel.ck img{filter:brightness(.65)}
+        .chk{position:absolute;bottom:8px;right:8px;width:24px;height:24px;border:2px solid rgba(255,255,255,.6);border-radius:7px;display:flex;justify-content:center;align-items:center;color:transparent;font-size:13px;font-weight:bold;z-index:10;background:rgba(0,0,0,.35);backdrop-filter:blur(4px)}
+        .sel.ck .chk{background:var(--danger);border-color:var(--danger);color:#fff;transform:scale(1.08)}
 
-        /* Scan CTA */
-        .scan-cta{margin-top:24px;background:var(--sf);border:1px dashed rgba(0,93,77,.25);border-radius:var(--r);padding:24px 20px;text-align:center}
-        .scan-cta h3{font-size:16px;font-weight:600;margin-bottom:6px}
-        .scan-cta p{font-size:12px;color:var(--tx2);line-height:1.5;margin-bottom:16px}
-        .scan-btns{display:flex;flex-direction:column;gap:8px}
-        .s-btn{width:100%;padding:13px;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
-        .s-btn:active{transform:scale(.97)}
-        .s-btn.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.25)}
-        .s-btn.sec{background:rgba(0,93,77,.1);color:var(--ac2);border:1px solid rgba(0,93,77,.2)}
-        .scan-status{margin-top:12px;display:none;text-align:left;padding:12px;background:rgba(0,166,126,.06);border:1px solid rgba(0,166,126,.12);border-radius:var(--r2)}
-        .scan-status.on{display:block}
-        .scan-status p{font-size:12px;color:var(--ac2);display:flex;align-items:center;gap:6px}
-        .scan-status p::before{content:'';width:6px;height:6px;background:var(--ac2);border-radius:50%;flex-shrink:0}
+        /* Home */
+        .sto-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+        .sto-u{font-size:12.5px;color:var(--sub)}.sto-u strong{color:var(--bright);font-weight:600}
+        .sto-p{font-size:11px;font-weight:700;color:var(--amber);background:rgba(255,177,66,.1);padding:3px 8px;border-radius:6px}
+        .prog{width:100%;height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+        .pf{width:0;height:100%;background:var(--grad);border-radius:3px;transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}.pf.go{width:82%}
+        
+        .gh{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px}
+        .gc{border-radius:var(--rl);height:155px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;cursor:pointer;background-size:cover;background-position:center;box-shadow:var(--sh)}
+        .gc.full{grid-column: 1 / -1; height: 110px;} /* すべての写真用 フル幅 */
+        .gc::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.25) 55%,rgba(0,0,0,.08) 100%);z-index:1}
+        .gc>div{position:relative;z-index:2}
+        .gc.all-photos{background-image:url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80'); background-position: top;}
+        .gc.photos{background-image:url('https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80')}
+        .gc.videos{background-image:url('https://images.unsplash.com/photo-1535016120720-40c68798625c?w=400&q=80')}
+        .gc.screenshots{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80')}
+        .gc.raw{background-image:url('https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=400&q=80')}
+        .gc h3{font-size:12.5px;font-weight:500;margin-bottom:2px;opacity:.7}
+        .gc p{font-size:21px;font-weight:700;letter-spacing:-.3px}
+        .gc.full p{font-size:26px;}
+        .gc .cnt{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:1px}
 
-        /* === DETAIL VIEWS === */
-        /* Grid */
-        .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-        .grid-3{grid-template-columns:1fr 1fr 1fr;gap:6px}
-        .item{position:relative;border-radius:var(--r2);overflow:hidden;cursor:pointer;background:var(--sf);transition:all .2s}
-        .item img{width:100%;aspect-ratio:1;object-fit:cover;display:block;transition:filter .2s}
-        .item.on{outline:2.5px solid var(--red);outline-offset:-2.5px;border-radius:var(--r2)}
-        .item.on img{filter:brightness(.6)}
-        .item .ck{position:absolute;bottom:6px;right:6px;width:22px;height:22px;border:2px solid rgba(255,255,255,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:transparent;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:2;transition:all .2s}
-        .item.on .ck{background:var(--red);border-color:var(--red);color:#fff}
-        .item .tag{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;z-index:2}
-        .item .sz{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;z-index:2}
+        /* Media Grid */
+        .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .mi{border-radius:var(--rm);aspect-ratio:4/5;position:relative;opacity:0;animation:pop .35s ease forwards}
+        .mi img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+        @keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+        .sz-t{position:absolute;bottom:8px;left:8px;background:var(--badge);backdrop-filter:blur(6px);color:#fff;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;z-index:2}
 
-        /* Similar Photo Group */
-        .grp{margin-bottom:20px}
-        .grp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px}
-        .grp-title{font-size:13px;font-weight:600;color:var(--tx2)}
-        .grp-btn{font-size:12px;color:var(--ac2);font-weight:600;cursor:pointer;padding:4px 0}
-        .grp-btn:active{opacity:.5}
-        .grp .item:first-child::after{content:'ベスト';position:absolute;top:6px;right:6px;background:rgba(0,93,77,.85);color:var(--ac2);font-size:9px;font-weight:700;padding:3px 7px;border-radius:5px;z-index:3;letter-spacing:.5px}
+        /* ----- スワイプ機能 (新設) ----- */
+        .swipe-header-stats { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rm); padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .stat-ic { font-size: 24px; }
+        .stat-v { font-size: 16px; font-weight: bold; }
+        .stat-l { font-size: 10px; color: var(--sub); }
 
-        /* Play icon for videos */
-        .item .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:2}
+        .month-list { display: flex; flex-direction: column; gap: 12px; }
+        .month-card { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rm); padding: 15px; display: flex; gap: 15px; align-items: center; cursor: pointer; transition: transform .2s; }
+        .month-card:active { transform: scale(0.98); background: var(--card2); }
+        .mc-thumb { width: 60px; height: 60px; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; }
+        .mc-thumb.done::after { content: '✓'; position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; border-radius: inherit; }
+        .mc-info { flex: 1; }
+        .mc-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .mc-medal { font-size: 20px; opacity: 0.3; }
+        .mc-medal.active { opacity: 1; }
+        .mc-prog-text { font-size: 11px; color: var(--sub); margin-bottom: 4px; }
+        .mc-prog-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+        .mc-prog-fill { height: 100%; background: var(--bright); border-radius: 2px; transition: width 0.3s; }
 
-        /* === BOTTOM BAR === */
-        .bot{position:absolute;bottom:0;left:0;width:100%;z-index:30;padding:0 16px 28px;pointer-events:none}
-        .bot-del{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transform:translateY(80px);transition:transform .3s cubic-bezier(.25,.8,.25,1);pointer-events:all;box-shadow:0 6px 24px rgba(229,72,77,.3)}
-        .bot-del.show{transform:translateY(0)}
-        .bot-del:active{transform:translateY(0) scale(.97)}
+        /* スワイプ プレイ画面 */
+        #swipe-play { display: none; flex-direction: column; height: 100%; padding-bottom: 20px; }
+        .sp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .sp-prog-wrap { flex: 1; margin: 0 15px; }
+        .sp-counts { font-size: 11px; color: var(--sub); text-align: right; margin-bottom: 4px; }
+        .sp-img-container { flex: 1; background: var(--card); border-radius: var(--rl); position: relative; overflow: hidden; box-shadow: var(--sh); display: flex; align-items: center; justify-content: center; }
+        .sp-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--rl); transition: transform 0.3s ease, opacity 0.3s ease; }
+        /* スワイプアニメーション用クラス */
+        .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
+        .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
+        
+        .sp-actions { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
+        .sp-btn { width: 70px; height: 70px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .sp-btn:active { transform: scale(0.9); }
+        .btn-dislike { background: var(--card); color: var(--danger); border: 2px solid var(--danger); }
+        .btn-like { background: var(--card); color: var(--bright); border: 2px solid var(--bright); }
+        .sp-btn.btn-dislike:active { background: var(--danger); color: #fff; }
+        .sp-btn.btn-like:active { background: var(--bright); color: #fff; }
 
-        /* === SCAN OVERLAY === */
-        .overlay{position:absolute;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
-        .overlay.on{display:flex}
-        .spinner{width:56px;height:56px;border:2.5px solid rgba(0,93,77,.2);border-top-color:var(--ac2);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:24px}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .overlay h3{font-size:18px;font-weight:600;margin-bottom:6px}
-        .overlay .o-sub{font-size:13px;color:var(--tx2);margin-bottom:20px;min-height:20px}
-        .o-bar{width:200px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
-        .o-fill{height:100%;background:var(--ac2);border-radius:2px;width:0;transition:width .2s}
-        .o-stats{display:flex;gap:20px;margin-top:24px}
-        .o-stat{text-align:center}
-        .o-stat b{display:block;font-size:22px;color:var(--ac2)}
-        .o-stat span{font-size:10px;color:var(--tx2)}
-
-        /* === TOAST === */
-        .toast{position:absolute;top:52px;left:16px;right:16px;background:var(--sf);border:1px solid rgba(0,93,77,.2);border-radius:var(--r2);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.5);transform:translateY(-120%);transition:transform .35s cubic-bezier(.25,.8,.25,1)}
-        .toast.show{transform:translateY(0)}
-        .toast span{font-size:12.5px}.toast strong{color:var(--red)}
-        .toast button{background:none;border:none;color:var(--ac2);font-size:12.5px;font-weight:700;cursor:pointer}
-
-        /* === MODAL === */
-        .modal{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:150;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-        .modal.on{opacity:1;pointer-events:all}
-        .modal-box{width:100%;max-width:430px;background:var(--sf);border-radius:20px 20px 0 0;padding:20px 20px 36px;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
-        .modal.on .modal-box{transform:translateY(0)}
-        .modal-box h3{font-size:16px;font-weight:700;text-align:center;margin-bottom:4px}
-        .modal-box p{font-size:12.5px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
-        .modal-btn{width:100%;padding:14px;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px}
-        .modal-btn:active{transform:scale(.97)}
-        .modal-btn.danger{background:var(--red);color:#fff}
-        .modal-btn.cancel{background:rgba(255,255,255,.06);color:var(--tx)}
-
-        .file-in{display:none}
+        .empty { display:none; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; text-align:center; animation:fi .5s ease; }
+        .e-ic { width:76px; height:76px; background:linear-gradient(135deg,rgba(0,93,77,.18),rgba(0,184,148,.08)); border:1px solid rgba(0,93,77,.18); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:34px; margin-bottom:18px; }
+        
+        nav{position:absolute;bottom:0;left:0;width:100%;height:78px;background:rgba(4,16,14,.94);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);display:flex;justify-content:space-around;align-items:center;padding-bottom:18px;border-top:1px solid var(--bdr);z-index:40}
+        .ni{display:flex;flex-direction:column;align-items:center;color:var(--dim);font-size:10px;cursor:pointer;transition:color .25s;padding:4px 10px;font-weight:500}
+        .ni.on{color:var(--bright)}
+        .nic{font-size:22px;margin-bottom:2px}
+        .nd{width:4px;height:4px;border-radius:50%;background:var(--bright);margin-top:2px;opacity:0;transition:opacity .25s}
+        .ni.on .nd{opacity:1}
     </style>
 </head>
 <body>
 <div id="app">
-    <div class="hd">
-        <div class="hd-row">
-            <div class="hd-back" id="hd-back" onclick="go('home')">← 戻る</div>
-            <div class="hd-right">
-                <div class="hd-pill" id="sel-btn" onclick="toggleAll()">すべて選択</div>
+    <header>
+        <div class="h-top">
+            <div id="back" class="back" onclick="goBack()">‹</div>
+            <div id="act" class="h-act">
+                <button class="pill" id="sa-btn" onclick="toggleAll()">☑ すべて選択</button>
+            </div>
+            <div id="gear" class="gear">⚙</div>
+        </div>
+        <div class="h-tr">
+            <div><h1 id="title">ストレージ</h1><div id="sub" class="h-sub"></div></div>
+        </div>
+    </header>
+
+    <main id="home" class="view active">
+        <div>
+            <div class="sto-row">
+                <div class="sto-u"><strong id="sto-txt">42.5 GB</strong> / 128 GB</div>
+                <div class="sto-p" id="sto-pct">33%</div>
+            </div>
+            <div class="prog"><div class="pf" id="prog" style="width: 33%;"></div></div>
+
+            <div class="gh" id="home-grid">
+                <div class="gc full all-photos" onclick="go('all')">
+                    <div><h3>すべての写真</h3><p id="h-all-sz">42.5 GB</p><div class="cnt" id="h-all-cnt">5,200 枚</div></div>
+                </div>
+
+                <div class="gc photos" onclick="go('similar')">
+                    <div><h3>似ている写真</h3><p>24.4 GB</p><div class="cnt">1,088 枚</div></div>
+                </div>
+                <div class="gc raw" onclick="go('raw')">
+                    <div><h3>RAWデータ</h3><p>12 GB</p><div class="cnt">210 個</div></div>
+                </div>
+                <div class="gc videos" onclick="go('videos')">
+                    <div><h3>動画</h3><p>5.1 GB</p><div class="cnt">42 本</div></div>
+                </div>
+                <div class="gc screenshots" onclick="go('ss')">
+                    <div><h3>スクショ</h3><p>193 MB</p><div class="cnt">78 枚</div></div>
+                </div>
             </div>
         </div>
-        <h1 id="hd-title">Smart Cleaner</h1>
-        <div class="hd-sub" id="hd-sub"></div>
-    </div>
+    </main>
 
-    <!-- HOME -->
-    <div class="page on" id="p-home">
-        <div class="meter">
-            <div class="meter-row">
-                <div class="meter-val"><span id="m-used">0</span> 使用中</div>
-                <div class="meter-pct" id="m-pct">0%</div>
+    <main id="all" class="view">
+        <div id="all-grid" class="mg"></div>
+    </main>
+
+    <main id="similar" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
+    <main id="raw" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
+    <main id="videos" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
+    <main id="ss" class="view"><div class="empty" style="display:flex"><div class="e-ic">✨</div><h3>準備中</h3><p>デモ画面です</p></div></main>
+
+    <main id="swipe" class="view">
+        <div id="swipe-list-view">
+            <div class="swipe-header-stats">
+                <div class="stat-box"><div class="stat-ic">🏅</div><div><div class="stat-l">報酬</div><div class="stat-v">19/20</div></div></div>
+                <div class="stat-box"><div class="stat-ic">🧹</div><div><div class="stat-l">クリーニング済み</div><div class="stat-v">42.51 GB</div></div></div>
             </div>
-            <div class="meter-bar"><div class="meter-fill" id="m-fill" style="width:0"></div></div>
+            <div class="month-list" id="month-list-container">
+                </div>
         </div>
 
-        <div class="cats" id="cat-list">
-            <div class="cat" onclick="go('similar')">
-                <div class="cat-icon sim">🖼</div>
-                <div class="cat-info"><div class="cat-name">似ている写真</div><div class="cat-desc">重複・類似を自動検出</div></div>
-                <div class="cat-size" id="c-sim">—</div>
-                <div class="cat-arrow">›</div>
+        <div id="swipe-play">
+            <div class="sp-top">
+                <div class="sp-prog-wrap">
+                    <div class="sp-counts"><span id="sp-curr">0</span> / <span id="sp-total">0</span> 件を確認済み</div>
+                    <div class="mc-prog-bar"><div class="mc-prog-fill" id="sp-prog-bar" style="width: 0%;"></div></div>
+                </div>
             </div>
-            <div class="cat" onclick="go('ss')">
-                <div class="cat-icon ss">📱</div>
-                <div class="cat-info"><div class="cat-name">スクリーンショット</div><div class="cat-desc">不要なスクショを一括整理</div></div>
-                <div class="cat-size" id="c-ss">—</div>
-                <div class="cat-arrow">›</div>
+            <div class="sp-img-container">
+                <img id="sp-img" class="sp-img" src="" alt="Swipe Image">
+                <div class="sz-t" id="sp-size" style="bottom: 15px; left: 15px; font-size: 14px;">2.5 MB</div>
             </div>
-            <div class="cat" onclick="go('vid')">
-                <div class="cat-icon vid">🎬</div>
-                <div class="cat-info"><div class="cat-name">大きな動画</div><div class="cat-desc">容量の大きい動画を発見</div></div>
-                <div class="cat-size" id="c-vid">—</div>
-                <div class="cat-arrow">›</div>
-            </div>
-            <div class="cat" onclick="go('big')">
-                <div class="cat-icon big">📐</div>
-                <div class="cat-info"><div class="cat-name">大容量ファイル</div><div class="cat-desc">RAW・大きな写真を検出</div></div>
-                <div class="cat-size" id="c-big">—</div>
-                <div class="cat-arrow">›</div>
+            <div class="sp-actions">
+                <button class="sp-btn btn-dislike" onclick="handleSwipe('del')">👎</button>
+                <button class="sp-btn btn-like" onclick="handleSwipe('keep')">👍</button>
             </div>
         </div>
+    </main>
 
-        <div class="scan-cta" id="scan-cta">
-            <h3>📂 写真ライブラリをスキャン</h3>
-            <p>フォルダを許可して一括読み込み、<br>または個別にファイルを選択できます</p>
-            <div class="scan-btns">
-                <button class="s-btn pri" onclick="doFolder()">フォルダをスキャン</button>
-                <button class="s-btn sec" onclick="doFiles()">ファイルを選択</button>
-            </div>
-        </div>
-        <div class="scan-status" id="scan-ok"><p id="scan-ok-txt">読み込み済み</p></div>
-        <input type="file" id="inp-folder" class="file-in" multiple>
-        <input type="file" id="inp-files" class="file-in" accept="image/*,video/*,.cr2,.nef,.arw,.dng,.orf,.rw2" multiple>
-    </div>
+    <div id="del-bar" class="del-bar"><button class="btn-del"><span>🗑</span>削除</button></div>
 
-    <!-- SIMILAR -->
-    <div class="page" id="p-similar"><div id="sim-list"></div><div class="empty" id="sim-empty">似ている写真はありません</div></div>
-    <!-- SCREENSHOTS -->
-    <div class="page" id="p-ss"><div id="ss-grid" class="grid-3 grid"></div><div class="empty" id="ss-empty">スクリーンショットはありません</div></div>
-    <!-- VIDEOS -->
-    <div class="page" id="p-vid"><div id="vid-grid" class="grid"></div><div class="empty" id="vid-empty">大きな動画はありません</div></div>
-    <!-- BIG FILES -->
-    <div class="page" id="p-big"><div id="big-grid" class="grid"></div><div class="empty" id="big-empty">大容量ファイルはありません</div></div>
-
-    <div class="bot"><button class="bot-del" id="del-btn" onclick="confirmDel()">🗑 <span id="del-txt">削除</span></button></div>
-
-    <div class="overlay" id="scan-ov">
-        <div class="spinner"></div>
-        <h3>スキャン中...</h3>
-        <div class="o-sub" id="o-sub">ファイルを分析しています</div>
-        <div class="o-bar"><div class="o-fill" id="o-fill"></div></div>
-        <div class="o-stats">
-            <div class="o-stat"><b id="os-p">0</b><span>写真</span></div>
-            <div class="o-stat"><b id="os-s">0</b><span>スクショ</span></div>
-            <div class="o-stat"><b id="os-v">0</b><span>動画</span></div>
-            <div class="o-stat"><b id="os-b">0</b><span>大容量</span></div>
-        </div>
-    </div>
-
-    <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
-        <div class="modal-box">
-            <h3 id="mod-t"></h3><p id="mod-d"></p>
-            <button class="modal-btn danger" onclick="execDel()">削除する</button>
-            <button class="modal-btn cancel" onclick="closeModal()">キャンセル</button>
-        </div>
-    </div>
-
-    <div class="toast" id="toast"><span id="toast-t"></span><button onclick="undo()">元に戻す</button></div>
+    <nav>
+        <div class="ni on" data-t="home"><div class="nic">🏠</div><span>ホーム</span><div class="nd"></div></div>
+        <div class="ni" data-t="similar"><div class="nic">✉️</div><span>メール</span><div class="nd"></div></div>
+        <div class="ni" data-t="swipe"><div class="nic">🃏</div><span>スワイプ</span><div class="nd"></div></div>
+        <div class="ni" data-t="raw"><div class="nic">☁️</div><span>クラウド</span><div class="nd"></div></div>
+        <div class="ni" data-t="ss"><div class="nic">➕</div><span>追加</span><div class="nd"></div></div>
+    </nav>
 </div>
 
 <script>
-// =========================================================
-//  DATA
-// =========================================================
-const RAW_EXT = new Set(['cr2','nef','arw','dng','orf','rw2','pef','raf','srw','cr3','iiq','3fr','raw']);
-const VID_EXT = new Set(['mp4','mov','avi','mkv','webm','m4v','3gp','wmv']);
-const SS_PAT = ['screenshot','スクリーンショット','screen_shot','capture','スクショ','画面収録'];
+// デモ用画像リスト
+const ALL_PHOTOS = [
+    { src:'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80', sz: 3.2 },
+    { src:'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80', sz: 4.1 },
+    { src:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400&q=80', sz: 2.8 },
+    { src:'https://images.unsplash.com/photo-1621360841013-c76831f1a301?w=400&q=80', sz: 5.5 },
+    { src:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80', sz: 1.2 },
+    { src:'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=400&q=80', sz: 6.0 }
+];
 
-let data = { similar:[], ss:[], vid:[], big:[] };
-let tab = 'home';
-let undoBuf = [], undoTab = '', toastTmr;
+// スワイプ機能用の月別データ構造
+const SWIPE_MONTHS = [
+    { id: '2026-02', title: '2月, 2026', total: 1102, done: 697, thumb: 'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=200&q=80' },
+    { id: '2026-01', title: '1月, 2026', total: 1373, done: 1373, thumb: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&q=80' },
+    { id: '2025-12', title: '12月, 2025', total: 998, done: 998, thumb: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200&q=80' },
+    { id: '2025-11', title: '11月, 2025', total: 642, done: 642, thumb: 'https://images.unsplash.com/photo-1516807869374-4b53db6fcbf4?w=200&q=80' }
+];
 
-// =========================================================
-//  CLASSIFY
-// =========================================================
-function ext(name){ return name.split('.').pop().toLowerCase(); }
-function classify(file){
-    const e = ext(file.name), t = file.type||'', n = file.name.toLowerCase(), mb = file.size/1048576;
-    if(RAW_EXT.has(e)) return 'big';
-    if(t.startsWith('video/') || VID_EXT.has(e)) return 'vid';
-    if(t.startsWith('image/') || ['jpg','jpeg','png','webp','heic','gif','bmp'].includes(e)){
-        if(SS_PAT.some(p=>n.includes(p))) return 'ss';
-        if(e==='png' && mb < 3) return 'ss';
-        if(mb > 8) return 'big';
-        return 'photo';
-    }
-    return 'photo';
-}
-function fmtSz(b){
-    if(b<1024) return b+'B';
-    if(b<1048576) return (b/1024).toFixed(0)+'KB';
-    if(b<1073741824) return (b/1048576).toFixed(1)+'MB';
-    return (b/1073741824).toFixed(2)+'GB';
-}
+let currentView = 'home';
+let swipeActiveMonth = null;
+let swipeImages = []; // プレイ中の画像配列
 
-// =========================================================
-//  FILE INPUT
-// =========================================================
-async function doFolder(){
-    if('showDirectoryPicker' in window){
-        try{
-            const dh = await window.showDirectoryPicker({mode:'read'});
-            showScan(); const files = []; await walk(dh,files); await process(files);
-        }catch(e){ if(e.name!=='AbortError') fallbackFolder(); }
-    } else fallbackFolder();
-}
-function fallbackFolder(){
-    const i=document.getElementById('inp-folder');
-    i.setAttribute('webkitdirectory',''); i.setAttribute('directory','');
-    i.onchange=async function(){ if(this.files.length){showScan(); await process([...this.files]);} };
-    i.click();
-}
-async function walk(dh,files,d=0){
-    if(d>4)return;
-    for await(const entry of dh.values()){
-        if(entry.kind==='file'){try{const f=await entry.getFile();if(f.type.startsWith('image/')||f.type.startsWith('video/')||RAW_EXT.has(ext(f.name))||VID_EXT.has(ext(f.name)))files.push(f);}catch(e){}}
-        else if(entry.kind==='directory') await walk(entry,files,d+1);
-    }
-}
-function doFiles(){
-    const i=document.getElementById('inp-files');
-    i.removeAttribute('webkitdirectory'); i.removeAttribute('directory');
-    i.onchange=async function(){ if(this.files.length){showScan(); await process([...this.files]);} };
-    i.click();
-}
+function init() {
+    // すべての写真の描画
+    const grid = document.getElementById('all-grid');
+    grid.innerHTML = ALL_PHOTOS.map((p, i) => `
+        <div class="mi sel" data-sz="${p.sz}" style="animation-delay:${i*.05}s" onclick="this.classList.toggle('ck')">
+            <img src="${p.src}" loading="lazy"><div class="sz-t">${p.sz} MB</div><div class="chk">✓</div>
+        </div>
+    `).join('');
 
-// =========================================================
-//  SCAN
-// =========================================================
-function showScan(){
-    document.getElementById('scan-ov').classList.add('on');
-    ['os-p','os-s','os-v','os-b'].forEach(id=>document.getElementById(id).textContent='0');
-    document.getElementById('o-fill').style.width='0%';
-}
+    // スワイプ月別リストの描画
+    renderSwipeList();
 
-async function process(files){
-    const photos=[], ss=[], vid=[], big=[];
-    let cp=0, cs=0, cv=0, cb=0;
-    for(let i=0;i<files.length;i++){
-        const f=files[i], cat=classify(f);
-        const entry = { file:f, name:f.name, size:f.size, mb:+(f.size/1048576).toFixed(1), url:null };
-        if(f.type.startsWith('image/')||f.type.startsWith('video/')) entry.url = URL.createObjectURL(f);
-
-        if(cat==='ss'){ss.push(entry);cs++;}
-        else if(cat==='vid'){vid.push(entry);cv++;}
-        else if(cat==='big'){big.push(entry);cb++;}
-        else{photos.push(entry);cp++;}
-
-        const pct=((i+1)/files.length*100)|0;
-        document.getElementById('o-fill').style.width=pct+'%';
-        document.getElementById('o-sub').textContent=`${i+1} / ${files.length}`;
-        document.getElementById('os-p').textContent=cp;
-        document.getElementById('os-s').textContent=cs;
-        document.getElementById('os-v').textContent=cv;
-        document.getElementById('os-b').textContent=cb;
-        if(i%15===0) await new Promise(r=>setTimeout(r,0));
-    }
-
-    // 類似写真のグループ化（簡易:サイズ近い＋名前類似でグルーピング）
-    const simGroups = buildSimilarGroups(photos);
-
-    // 動画はサイズ大きい順
-    vid.sort((a,b)=>b.size-a.size);
-    big.sort((a,b)=>b.size-a.size);
-
-    data = { similar:simGroups, ss, vid, big };
-
-    document.getElementById('o-sub').textContent='完了！';
-    await new Promise(r=>setTimeout(r,600));
-    document.getElementById('scan-ov').classList.remove('on');
-
-    renderAll();
-    updateHome();
-    document.getElementById('scan-ok').classList.add('on');
-    document.getElementById('scan-ok-txt').textContent=`${files.length} ファイル読み込み済み・分類完了`;
-}
-
-function buildSimilarGroups(photos){
-    if(photos.length < 2) return photos.map(p=>[p]);
-    // サイズでソートして近いものをグループ化
-    const sorted = [...photos].sort((a,b)=>a.size-b.size);
-    const groups = [];
-    let g = [sorted[0]];
-    for(let i=1;i<sorted.length;i++){
-        const diff = Math.abs(sorted[i].size - sorted[i-1].size);
-        const ratio = diff / Math.max(sorted[i-1].size, 1);
-        // サイズが20%以内なら同グループ
-        if(ratio < 0.2 && g.length < 5){
-            g.push(sorted[i]);
-        } else {
-            groups.push(g); g = [sorted[i]];
-        }
-    }
-    groups.push(g);
-    return groups;
-}
-
-// =========================================================
-//  RENDER
-// =========================================================
-function renderAll(){
-    renderSimilar();
-    renderSS();
-    renderVid();
-    renderBig();
-}
-
-function renderSimilar(){
-    const el = document.getElementById('sim-list');
-    const emp = document.getElementById('sim-empty');
-    if(!data.similar.length || data.similar.every(g=>g.length<2)){ el.innerHTML=''; emp.style.display='block'; return; }
-    emp.style.display='none';
-    el.innerHTML = data.similar.filter(g=>g.length>=2).map((g,gi)=>{
-        const total = g.reduce((a,p)=>a+p.mb,0).toFixed(1);
-        const items = g.map((p,pi)=>`
-            <div class="item${pi>0?' on':''}" data-sz="${p.mb}" onclick="tog(this)">
-                ${p.url?`<img src="${p.url}">`:`<div style="width:100%;aspect-ratio:1;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:20px">📷</div>`}
-                <div class="sz">${p.mb}MB</div>
-                <div class="ck">✓</div>
-            </div>`).join('');
-        return `<div class="grp" data-gi="${gi}">
-            <div class="grp-head">
-                <div class="grp-title">${g.length} 枚が類似 · ${total}MB</div>
-                <div class="grp-btn" onclick="grpToggle(${gi})">ベスト以外を選択</div>
-            </div>
-            <div class="grid">${items}</div>
-        </div>`;
-    }).join('');
-}
-
-function renderSS(){
-    const el=document.getElementById('ss-grid'), emp=document.getElementById('ss-empty');
-    if(!data.ss.length){el.innerHTML='';emp.style.display='block';return;}
-    emp.style.display='none';
-    el.innerHTML=data.ss.map((s,i)=>`
-        <div class="item on" data-sz="${s.mb}" onclick="tog(this)" style="animation-delay:${i*.03}s">
-            ${s.url?`<img src="${s.url}">`:`<div style="width:100%;aspect-ratio:1;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:18px">📱</div>`}
-            <div class="sz">${s.mb}MB</div><div class="ck">✓</div>
-        </div>`).join('');
-}
-
-function renderVid(){
-    const el=document.getElementById('vid-grid'), emp=document.getElementById('vid-empty');
-    if(!data.vid.length){el.innerHTML='';emp.style.display='block';return;}
-    emp.style.display='none';
-    el.innerHTML=data.vid.map((v,i)=>`
-        <div class="item" data-sz="${v.mb}" onclick="tog(this)" style="animation-delay:${i*.03}s">
-            ${v.url?`<img src="${v.url}">`:`<div style="width:100%;aspect-ratio:1;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:22px">🎬</div>`}
-            <div class="play">▶</div><div class="sz">${fmtSz(v.size)}</div><div class="ck">✓</div>
-        </div>`).join('');
-}
-
-function renderBig(){
-    const el=document.getElementById('big-grid'), emp=document.getElementById('big-empty');
-    if(!data.big.length){el.innerHTML='';emp.style.display='block';return;}
-    emp.style.display='none';
-    el.innerHTML=data.big.map((b,i)=>`
-        <div class="item" data-sz="${b.mb}" onclick="tog(this)" style="animation-delay:${i*.03}s">
-            ${b.url?`<img src="${b.url}">`:`<div style="width:100%;aspect-ratio:1;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:20px">📐</div>`}
-            <div class="tag">${ext(b.name).toUpperCase()}</div><div class="sz">${fmtSz(b.size)}</div><div class="ck">✓</div>
-        </div>`).join('');
-}
-
-function updateHome(){
-    const simItems = document.querySelectorAll('#sim-list .item');
-    const ssItems = document.querySelectorAll('#ss-grid .item');
-    const vidItems = document.querySelectorAll('#vid-grid .item');
-    const bigItems = document.querySelectorAll('#big-grid .item');
-
-    const count = (els)=>{ let m=0; els.forEach(e=>m+=parseFloat(e.dataset.sz||0)); return m; };
-    const fmt = (mb)=> mb<1000 ? mb.toFixed(0)+'MB' : (mb/1000).toFixed(1)+'GB';
-
-    document.getElementById('c-sim').textContent = simItems.length ? `${simItems.length}枚 · ${fmt(count(simItems))}` : '—';
-    document.getElementById('c-ss').textContent = ssItems.length ? `${ssItems.length}枚 · ${fmt(count(ssItems))}` : '—';
-    document.getElementById('c-vid').textContent = vidItems.length ? `${vidItems.length}本 · ${fmt(count(vidItems))}` : '—';
-    document.getElementById('c-big').textContent = bigItems.length ? `${bigItems.length}個 · ${fmt(count(bigItems))}` : '—';
-
-    const totalMB = count(simItems)+count(ssItems)+count(vidItems)+count(bigItems);
-    document.getElementById('m-used').textContent = fmt(totalMB);
-    const pct = Math.min(100, (totalMB / 50000 * 100)).toFixed(0);
-    document.getElementById('m-pct').textContent = pct+'%';
-    document.getElementById('m-fill').style.width = pct+'%';
-}
-
-// =========================================================
-//  NAVIGATION
-// =========================================================
-function go(id){
-    tab = id;
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-    const back = document.getElementById('hd-back');
-    const sel = document.getElementById('sel-btn');
-    const title = document.getElementById('hd-title');
-    const sub = document.getElementById('hd-sub');
-
-    if(id==='home'){
-        document.getElementById('p-home').classList.add('on');
-        title.textContent='Smart Cleaner'; sub.style.display='none';
-        back.style.display='none'; sel.style.display='none';
-        document.getElementById('del-btn').classList.remove('show');
-        updateHome();
-    } else {
-        const cfg = {
-            similar:{p:'p-similar',t:'似ている写真'},
-            ss:{p:'p-ss',t:'スクリーンショット'},
-            vid:{p:'p-vid',t:'大きな動画'},
-            big:{p:'p-big',t:'大容量ファイル'}
-        };
-        const c = cfg[id];
-        document.getElementById(c.p).classList.add('on');
-        title.textContent = c.t;
-        back.style.display='block'; sel.style.display='block';
-        sub.style.display='block';
-        updateSub(); updateDelBtn();
-    }
-}
-
-function updateSub(){
-    const page = document.querySelector('.page.on');
-    const items = page.querySelectorAll('.item');
-    const checked = page.querySelectorAll('.item.on');
-    let mb=0; checked.forEach(i=>mb+=parseFloat(i.dataset.sz||0));
-    document.getElementById('hd-sub').textContent = `${checked.length} / ${items.length} 選択中 · ${mb<1000?mb.toFixed(1)+'MB':(mb/1000).toFixed(2)+'GB'}`;
-    // Update select all btn
-    const allOn = items.length>0 && items.length===checked.length;
-    document.getElementById('sel-btn').textContent = allOn ? '選択解除' : 'すべて選択';
-}
-
-// =========================================================
-//  SELECTION
-// =========================================================
-function tog(el){ el.classList.toggle('on'); updateSub(); updateDelBtn(); }
-
-function toggleAll(){
-    const page = document.querySelector('.page.on');
-    const items = page.querySelectorAll('.item');
-    const allOn = items.length>0 && [...items].every(i=>i.classList.contains('on'));
-    items.forEach(i=>i.classList.toggle('on',!allOn));
-    updateSub(); updateDelBtn();
-}
-
-function grpToggle(gi){
-    const grp = document.querySelector(`.grp[data-gi="${gi}"]`);
-    const items = grp.querySelectorAll('.item');
-    // First = best (off), rest = on
-    items.forEach((item,i)=> item.classList.toggle('on', i > 0));
-    updateSub(); updateDelBtn();
-}
-
-// =========================================================
-//  DELETE
-// =========================================================
-function updateDelBtn(){
-    const page = document.querySelector('.page.on');
-    const checked = page.querySelectorAll('.item.on');
-    const btn = document.getElementById('del-btn');
-    const txt = document.getElementById('del-txt');
-    if(checked.length){
-        let mb=0; checked.forEach(i=>mb+=parseFloat(i.dataset.sz||0));
-        const sz = mb<1000?mb.toFixed(1)+'MB':(mb/1000).toFixed(2)+'GB';
-        txt.textContent=`${checked.length} 件を削除 · ${sz}`;
-        btn.classList.add('show');
-    } else btn.classList.remove('show');
-}
-
-function confirmDel(){
-    const page = document.querySelector('.page.on');
-    const cnt = page.querySelectorAll('.item.on').length;
-    if(!cnt) return;
-    let mb=0; page.querySelectorAll('.item.on').forEach(i=>mb+=parseFloat(i.dataset.sz||0));
-    const sz=mb<1000?mb.toFixed(1)+'MB':(mb/1000).toFixed(2)+'GB';
-    document.getElementById('mod-t').textContent=`${cnt} 件を削除しますか？`;
-    document.getElementById('mod-d').textContent=`${sz} のストレージが解放されます`;
-    document.getElementById('modal').classList.add('on');
-}
-function closeModal(){ document.getElementById('modal').classList.remove('on'); }
-
-function execDel(){
-    closeModal();
-    const page = document.querySelector('.page.on');
-    const sel = page.querySelectorAll('.item.on');
-    undoBuf=[]; undoTab=tab;
-    sel.forEach(i=>undoBuf.push({html:i.outerHTML,parent:i.parentElement,next:i.nextElementSibling}));
-    const cnt=sel.length;
-    sel.forEach((it,i)=>{it.style.transition='all .25s';it.style.transitionDelay=i*.02+'s';it.style.transform='scale(.4)';it.style.opacity='0';});
-    setTimeout(()=>{
-        sel.forEach(i=>i.remove());
-        // Clean empty groups
-        document.querySelectorAll('.grp').forEach(g=>{if(!g.querySelectorAll('.item').length){g.style.transition='all .25s';g.style.opacity='0';g.style.maxHeight='0';g.style.overflow='hidden';g.style.margin='0';g.style.padding='0';setTimeout(()=>g.remove(),250);}});
-        updateDelBtn(); updateSub(); updateHome();
-        // Show empty if needed
-        const items = page.querySelectorAll('.item');
-        if(!items.length){
-            page.querySelectorAll('.empty').forEach(e=>e.style.display='block');
-        }
-    }, 250+sel.length*20);
-    showToast(cnt);
-}
-
-// =========================================================
-//  UNDO / TOAST
-// =========================================================
-function showToast(n){
-    const t=document.getElementById('toast');
-    document.getElementById('toast-t').innerHTML=`<strong>${n} 件</strong> 削除しました`;
-    t.classList.add('show');
-    clearTimeout(toastTmr);
-    toastTmr=setTimeout(()=>{t.classList.remove('show');undoBuf=[];},5000);
-}
-function undo(){
-    if(!undoBuf.length) return;
-    undoBuf.reverse().forEach(d=>{
-        const tmp=document.createElement('div');tmp.innerHTML=d.html;const el=tmp.firstElementChild;
-        el.style.cssText='';
-        if(d.next)d.parent.insertBefore(el,d.next);else d.parent.appendChild(el);
+    // ナビゲーションイベント
+    document.querySelectorAll('.ni').forEach(n => {
+        n.addEventListener('click', (e) => {
+            const t = e.currentTarget.dataset.t;
+            document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
+            e.currentTarget.classList.add('on');
+            go(t);
+        });
     });
-    undoBuf=[];
-    document.getElementById('toast').classList.remove('show');
-    clearTimeout(toastTmr);
-    updateDelBtn(); updateSub(); updateHome();
-    document.querySelector('.page.on').querySelectorAll('.empty').forEach(e=>e.style.display='none');
 }
 
-// =========================================================
-//  DEMO DATA (初期表示用)
-// =========================================================
-function loadDemo(){
-    const imgs = [
-        'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=250&q=75',
-        'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=250&q=75&blur=2',
-        'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=250&q=75&sepia=1',
-        'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=250&q=75',
-        'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=250&q=75&sepia=1',
-        'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=250&q=75',
-        'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=250&q=75&blur=2',
-    ];
-    const ss = [
-        'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=200&q=70',
-        'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&q=70',
-        'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=200&q=70',
-        'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=200&q=70',
-        'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?w=200&q=70',
-        'https://images.unsplash.com/photo-1588612143431-7e87ab06d71b?w=200&q=70',
-    ];
-    const vid = [
-        {src:'https://images.unsplash.com/photo-1520697921389-9a2f647035ce?w=250&q=75',gb:6.86,dur:'07:54'},
-        {src:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=250&q=75',gb:4.06,dur:'05:37'},
-        {src:'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?w=250&q=75',gb:3.52,dur:'04:44'},
-        {src:'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=250&q=75',gb:3.38,dur:'05:46'},
-    ];
-    const raw = [
-        {src:'https://images.unsplash.com/photo-1621360841013-c76831f1a301?w=250&q=75',mb:45.2,ext:'CR2'},
-        {src:'https://images.unsplash.com/photo-1600607688969-a5bfcd64fd28?w=250&q=75',mb:38.7,ext:'NEF'},
-        {src:'https://images.unsplash.com/photo-1588612143431-7e87ab06d71b?w=250&q=75',mb:52.1,ext:'ARW'},
-        {src:'https://images.unsplash.com/photo-1549608276-5786777e6587?w=250&q=75',mb:41.5,ext:'DNG'},
-        {src:'https://images.unsplash.com/photo-1551373884-8a0750074df7?w=250&q=75',mb:48.9,ext:'CR2'},
-        {src:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=250&q=75',mb:39.2,ext:'NEF'},
-    ];
-
-    // Similar
-    const el=document.getElementById('sim-list');
-    el.innerHTML = [
-        {photos:imgs.slice(0,3),mbs:[2.6,2.6,2.4]},
-        {photos:imgs.slice(3,5),mbs:[4.2,4.2]},
-        {photos:imgs.slice(5,7),mbs:[3.8,3.6]}
-    ].map((g,gi)=>{
-        const total = g.mbs.reduce((a,b)=>a+b,0).toFixed(1);
-        const items = g.photos.map((src,pi)=>`
-            <div class="item${pi>0?' on':''}" data-sz="${g.mbs[pi]}" onclick="tog(this)">
-                <img src="${src}" loading="lazy"><div class="sz">${g.mbs[pi]}MB</div><div class="ck">✓</div>
-            </div>`).join('');
-        return `<div class="grp" data-gi="${gi}">
-            <div class="grp-head"><div class="grp-title">${g.photos.length} 枚が類似 · ${total}MB</div><div class="grp-btn" onclick="grpToggle(${gi})">ベスト以外を選択</div></div>
-            <div class="grid">${items}</div></div>`;
+function renderSwipeList() {
+    const cont = document.getElementById('month-list-container');
+    cont.innerHTML = SWIPE_MONTHS.map(m => {
+        const pct = (m.done / m.total) * 100;
+        const isComp = m.done === m.total;
+        return `
+            <div class="month-card" onclick="startSwipe('${m.id}')">
+                <div class="mc-thumb ${isComp ? 'done' : ''}" style="background-image:url('${m.thumb}')"></div>
+                <div class="mc-info">
+                    <div class="mc-title">
+                        <span>${m.title}</span>
+                        <span class="mc-medal ${isComp ? 'active' : ''}">🏅</span>
+                    </div>
+                    <div class="mc-prog-text">${m.done}/${m.total} 件を確認済み</div>
+                    <div class="mc-prog-bar"><div class="mc-prog-fill" style="width: ${pct}%"></div></div>
+                </div>
+            </div>
+        `;
     }).join('');
-    document.getElementById('sim-empty').style.display='none';
-
-    // SS
-    document.getElementById('ss-grid').innerHTML = ss.map((src,i)=>`
-        <div class="item on" data-sz="1.8" onclick="tog(this)"><img src="${src}" loading="lazy"><div class="sz">1.8MB</div><div class="ck">✓</div></div>`).join('');
-    document.getElementById('ss-empty').style.display='none';
-
-    // Vid
-    document.getElementById('vid-grid').innerHTML = vid.map(v=>`
-        <div class="item" data-sz="${v.gb*1000}" onclick="tog(this)">
-            <img src="${v.src}" loading="lazy"><div class="play">▶</div>
-            <div class="sz">${v.gb}GB · ${v.dur}</div><div class="ck">✓</div>
-        </div>`).join('');
-    document.getElementById('vid-empty').style.display='none';
-
-    // Big
-    document.getElementById('big-grid').innerHTML = raw.map(r=>`
-        <div class="item" data-sz="${r.mb}" onclick="tog(this)">
-            <img src="${r.src}" loading="lazy"><div class="tag">${r.ext}</div><div class="sz">${r.mb}MB</div><div class="ck">✓</div>
-        </div>`).join('');
-    document.getElementById('big-empty').style.display='none';
-
-    updateHome();
 }
 
-// =========================================================
-//  INIT
-// =========================================================
-document.addEventListener('DOMContentLoaded',()=>{
-    loadDemo();
-    go('home');
-    setTimeout(()=>document.getElementById('m-fill').style.width = '67%', 200);
-});
+function go(id) {
+    currentView = id;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    
+    const titles = { home:'ストレージ', all:'すべての写真', swipe:'写真をスワイプ', similar:'メール', raw:'クラウド', ss:'追加', videos:'動画' };
+    document.getElementById('title').innerText = titles[id] || id;
+
+    const backBtn = document.getElementById('back');
+    const actBtn = document.getElementById('act');
+    const gearBtn = document.getElementById('gear');
+    
+    if (id === 'home' || id === 'swipe') {
+        backBtn.style.display = 'none';
+        actBtn.style.display = 'none';
+        gearBtn.style.display = 'flex';
+        
+        if (id === 'swipe') {
+            document.getElementById('swipe-list-view').style.display = 'block';
+            document.getElementById('swipe-play').style.display = 'none';
+        }
+    } else {
+        backBtn.style.display = 'block';
+        actBtn.style.display = (id === 'all') ? 'flex' : 'none';
+        gearBtn.style.display = 'none';
+    }
+}
+
+function goBack() {
+    if (document.getElementById('swipe-play').style.display === 'flex') {
+        // スワイププレイ中なら月別リストへ戻る
+        go('swipe');
+    } else {
+        go('home');
+        document.querySelectorAll('.ni').forEach(x => x.classList.remove('on'));
+        document.querySelector('.ni[data-t="home"]').classList.add('on');
+    }
+}
+
+// ----- スワイププレイ機能 -----
+function startSwipe(monthId) {
+    const month = SWIPE_MONTHS.find(m => m.id === monthId);
+    if (month.done >= month.total) {
+        alert("この月はすでに整理完了しています！");
+        return;
+    }
+    
+    swipeActiveMonth = month;
+    // デモ用に残りの未確認件数分の画像をALL_PHOTOSからランダムに生成するフリ
+    swipeImages = [...ALL_PHOTOS, ...ALL_PHOTOS].sort(() => 0.5 - Math.random());
+    
+    document.getElementById('title').innerText = month.title;
+    document.getElementById('back').style.display = 'block';
+    document.getElementById('gear').style.display = 'none';
+    
+    document.getElementById('swipe-list-view').style.display = 'none';
+    document.getElementById('swipe-play').style.display = 'flex';
+    
+    updateSwipeCard();
+}
+
+function updateSwipeCard() {
+    const month = swipeActiveMonth;
+    if (!month) return;
+    
+    // UI更新
+    document.getElementById('sp-curr').innerText = month.done;
+    document.getElementById('sp-total').innerText = month.total;
+    const pct = (month.done / month.total) * 100;
+    document.getElementById('sp-prog-bar').style.width = pct + '%';
+    
+    if (month.done >= month.total || swipeImages.length === 0) {
+        // 完了処理
+        renderSwipeList(); // リストの進捗更新
+        alert("この月の整理が完了しました！素晴らしい！🎉");
+        goBack();
+        return;
+    }
+    
+    // 画像セット
+    const imgEl = document.getElementById('sp-img');
+    const currentImg = swipeImages[0];
+    
+    // アニメーションのリセット
+    imgEl.className = 'sp-img'; 
+    setTimeout(() => {
+        imgEl.src = currentImg.src;
+        document.getElementById('sp-size').innerText = currentImg.sz + " MB";
+    }, 50);
+}
+
+function handleSwipe(action) {
+    const imgEl = document.getElementById('sp-img');
+    
+    // CSSでスワイプして消えるアニメーション
+    if (action === 'del') {
+        imgEl.classList.add('swipe-left');
+        // ※実際のアプリならここで削除APIを呼ぶか、削除リストに追加する
+    } else {
+        imgEl.classList.add('swipe-right');
+    }
+    
+    // 進捗を進める
+    swipeActiveMonth.done += 1;
+    swipeImages.shift(); // 最初の画像を削除
+    
+    // アニメーション完了後に次の画像へ
+    setTimeout(() => {
+        updateSwipeCard();
+    }, 300);
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
