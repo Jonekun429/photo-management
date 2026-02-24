@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Cleaner Pro - Sample Mode Update</title>
+    <title>Cleaner Pro - Async Loading Update</title>
     <style>
         :root {
             --bg:#04100e;--card:#0c1f1b;--card2:#153029;--text:#eaf5f2;--sub:#5a7d75;--dim:#3d5c54;
@@ -70,11 +70,15 @@
         .mi{aspect-ratio:1/1;position:relative;background:var(--card2);overflow:hidden;cursor:pointer;}
         .mi img{width:100%;height:100%;object-fit:cover;display:block;}
 
-        /* --- プレビュー用モーダル --- */
+        /* --- モーダル・ローディング --- */
         .preview-modal { position:absolute; inset:0; background:rgba(0,0,0,0.95); z-index:999; display:none; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; }
         .preview-modal.show { display:flex; opacity:1; }
         .preview-img { max-width:100%; max-height:85%; object-fit:contain; border-radius:10px; }
         .preview-close { position:absolute; top:40px; right:20px; width:40px; height:40px; background:rgba(255,255,255,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; cursor:pointer; backdrop-filter:blur(5px); }
+
+        /* 追加: ローディングアニメーション */
+        .scan-spinner { width: 50px; height: 50px; border: 4px solid rgba(0, 184, 148, 0.2); border-top-color: var(--bright); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- 似ている画像 UI --- */
         .sim-group { background:var(--card); border:1px solid var(--bdr); border-radius:var(--rl); padding:15px; margin-bottom:20px; }
@@ -280,6 +284,12 @@
         <img id="preview-img" class="preview-img" src="" onclick="event.stopPropagation()">
     </div>
 
+    <div id="loading-overlay" class="preview-modal" style="background:rgba(4,16,14,0.95);">
+        <div class="scan-spinner"></div>
+        <h3 style="color:#fff; margin-top:24px; font-size:18px;">読み込み中...</h3>
+        <p id="loading-txt" style="color:var(--sub); font-size:13px; margin-top:8px;">0 / 0 枚</p>
+    </div>
+
     <nav>
         <div class="ni on" data-t="home" onclick="navTo('home')"><div class="nic">🏠</div><span>ホーム</span><div class="nd"></div></div>
         <div class="ni" data-t="all" onclick="navTo('all')"><div class="nic">📁</div><span>すべて</span><div class="nd"></div></div>
@@ -292,15 +302,7 @@
 // --- グローバル変数と状態管理 ---
 let isSampleMode = false;
 
-// 実際のユーザーデータ（退避用）
-let realState = {
-    globalFiles: [],
-    swipeMonthsData: {},
-    totalInitialMB: 0,
-    cleanedTotalMB: 0
-};
-
-// アプリが現在表示しているデータ
+let realState = { globalFiles: [], swipeMonthsData: {}, totalInitialMB: 0, cleanedTotalMB: 0 };
 let globalFiles = []; 
 let swipeMonthsData = {}; 
 let totalInitialMB = 0;
@@ -309,7 +311,6 @@ let cleanedTotalMB = 0;
 let currentView = 'home';
 let swipeActiveMonthKey = null;
 
-// サンプル用のダミー画像URL
 const DEMO_URLS = [
     'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80',
     'https://images.unsplash.com/photo-1531306728370-53bfd6202e88?w=400&q=80',
@@ -318,7 +319,6 @@ const DEMO_URLS = [
     'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80'
 ];
 
-// サンプル用「似ている写真」データ
 const DEMO_SIMILAR_DATA = [
     { id: 'g1', count: 3, saved: '5.2 MB', photos: [{ src: DEMO_URLS[0], isBest: true }, { src: DEMO_URLS[0]+'&blur=2', isBest: false }, { src: DEMO_URLS[0]+'&sepia=1', isBest: false }] },
     { id: 'g2', count: 2, saved: '3.8 MB', photos: [{ src: DEMO_URLS[2], isBest: true }, { src: DEMO_URLS[2]+'&blur=3', isBest: false }] }
@@ -330,36 +330,26 @@ function toggleSampleMode() {
     const badge = document.getElementById('mode-badge');
 
     if (!isSampleMode) {
-        // サンプルモードをONにする
         isSampleMode = true;
-        
-        // 現在のリアルデータを退避
         realState.globalFiles = [...globalFiles];
         realState.swipeMonthsData = Object.assign({}, swipeMonthsData);
         realState.totalInitialMB = totalInitialMB;
         realState.cleanedTotalMB = cleanedTotalMB;
 
-        // UIをサンプルモード用に変更
         btn.innerHTML = '❌ サンプルモードを終了';
-        btn.classList.add('danger');
-        btn.classList.remove('secondary');
+        btn.classList.add('danger'); btn.classList.remove('secondary');
         badge.classList.add('show');
 
         loadSampleData();
     } else {
-        // サンプルモードをOFFにする
         isSampleMode = false;
-
-        // 退避していたリアルデータを復元
         globalFiles = [...realState.globalFiles];
         swipeMonthsData = Object.assign({}, realState.swipeMonthsData);
         totalInitialMB = realState.totalInitialMB;
         cleanedTotalMB = realState.cleanedTotalMB;
 
-        // UIを元に戻す
         btn.innerHTML = '🪄 サンプルモードで体験';
-        btn.classList.add('secondary');
-        btn.classList.remove('danger');
+        btn.classList.add('secondary'); btn.classList.remove('danger');
         badge.classList.remove('show');
 
         refreshAllViews();
@@ -367,24 +357,15 @@ function toggleSampleMode() {
     }
 }
 
-// サンプルデータの生成
 function loadSampleData() {
-    globalFiles = [];
-    swipeMonthsData = {};
-    totalInitialMB = 0;
-    cleanedTotalMB = 0;
-
-    // 2026年1月と2月のダミーデータを生成
+    globalFiles = []; swipeMonthsData = {}; totalInitialMB = 0; cleanedTotalMB = 0;
     createDemoMonth('2026-02', '2026年2月', 6);
     createDemoMonth('2026-01', '2026年1月', 4);
-
     refreshAllViews();
 }
 
 function createDemoMonth(mKey, title, count) {
-    if(!swipeMonthsData[mKey]) {
-        swipeMonthsData[mKey] = { id: mKey, title: title, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
-    }
+    if(!swipeMonthsData[mKey]) swipeMonthsData[mKey] = { id: mKey, title: title, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
     for(let i=0; i<count; i++) {
         let sz = Math.round((Math.random() * 3 + 1)*10)/10;
         totalInitialMB += sz;
@@ -396,44 +377,63 @@ function createDemoMonth(mKey, title, count) {
     }
 }
 
-// 全ビューの再描画
 function refreshAllViews() {
-    updateHomeStats();
-    renderAllPhotos();
-    renderSwipeList();
-    renderSimilar();
+    updateHomeStats(); renderAllPhotos(); renderSwipeList(); renderSimilar();
 }
 
-// --- ファイル読み込み処理 (自分の写真を追加) ---
-function handleFiles(inputElement) {
+// --- ★修正版：非同期チャンク処理によるファイル読み込み（フリーズ防止） ---
+async function handleFiles(inputElement) {
     const filesList = inputElement.files;
     if(!filesList.length) return;
 
-    // ★重要: もしサンプルモード中に写真をアップロードしたら、自動でサンプルモードを終了する
-    if (isSampleMode) {
-        toggleSampleMode();
-    }
+    if (isSampleMode) toggleSampleMode();
 
-    for(let f of filesList) {
-        if(f.type && !f.type.startsWith('image/') && !f.type.startsWith('video/')) continue;
-        
-        let d = f.lastModified ? new Date(f.lastModified) : new Date();
-        let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
-        totalInitialMB += sz;
-        
-        let photoObj = { id: Math.random().toString(36).substr(2,9), url: URL.createObjectURL(f), szMB: sz, monthKey: mKey };
-        globalFiles.push(photoObj);
+    // ローディング画面を表示
+    const loader = document.getElementById('loading-overlay');
+    const loaderTxt = document.getElementById('loading-txt');
+    loader.classList.add('show');
+    
+    const total = filesList.length;
+    let processed = 0;
+    const chunkSize = 5; // 5件ずつ処理して画面のフリーズを防ぐ
+    
+    // FileListを配列に変換
+    const filesArray = Array.from(filesList);
 
-        if(!swipeMonthsData[mKey]) {
-            swipeMonthsData[mKey] = { id: mKey, title: `${d.getFullYear()}年${d.getMonth()+1}月`, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
-        }
-        swipeMonthsData[mKey].total++;
-        swipeMonthsData[mKey].photos.push(photoObj);
+    for (let i = 0; i < total; i += chunkSize) {
+        const chunk = filesArray.slice(i, i + chunkSize);
+
+        // PromiseとsetTimeoutを使ってメインスレッドを解放（フリーズ回避の肝）
+        await new Promise(resolve => setTimeout(() => {
+            for(let f of chunk) {
+                if(f.type && !f.type.startsWith('image/') && !f.type.startsWith('video/')) continue;
+                
+                let d = f.lastModified ? new Date(f.lastModified) : new Date();
+                let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                let sz = parseFloat((f.size / 1024 / 1024).toFixed(2));
+                totalInitialMB += sz;
+                
+                let photoObj = { id: Math.random().toString(36).substr(2,9), url: URL.createObjectURL(f), szMB: sz, monthKey: mKey };
+                globalFiles.push(photoObj);
+
+                if(!swipeMonthsData[mKey]) {
+                    swipeMonthsData[mKey] = { id: mKey, title: `${d.getFullYear()}年${d.getMonth()+1}月`, total: 0, done: 0, photos: [], kept: [], deleted: [], savedMB: 0, isCleaned: false };
+                }
+                swipeMonthsData[mKey].total++;
+                swipeMonthsData[mKey].photos.push(photoObj);
+            }
+            
+            processed += chunk.length;
+            loaderTxt.innerText = `${Math.min(processed, total)} / ${total} 枚を読み込み中...`;
+            resolve();
+        }, 10)); // 10msの意図的な休みを入れてUIが固まるのを防ぐ
     }
 
     inputElement.value = ''; // 連続アップロード対応
     refreshAllViews();
+    
+    // 処理完了したらローディングを隠してスワイプ画面へ
+    loader.classList.remove('show');
     navTo('swipe'); 
 }
 
@@ -474,13 +474,9 @@ function go(id) {
 function goBack() {
     if (document.getElementById('swipe-play').style.display === 'flex') {
         navTo('swipe'); renderSwipeList();
-    } else {
-        navTo('home');
-    }
+    } else { navTo('home'); }
 }
-function goBackToSwipe() {
-    navTo('swipe'); renderSwipeList();
-}
+function goBackToSwipe() { navTo('swipe'); renderSwipeList(); }
 
 function updateHomeStats() {
     let currentTotalMB = globalFiles.reduce((sum, p) => sum + p.szMB, 0);
@@ -620,7 +616,6 @@ function renderSimilar() {
     const cont = document.getElementById('similar-container');
     const headerText = document.getElementById('similar-header-text');
     
-    // サンプルモードOFF時は「空」にする
     if (!isSampleMode) {
         headerText.style.display = 'none';
         cont.innerHTML = `<div class="empty" style="display:flex; padding:20px;"><p>現在、似ている写真は検出されていません。<br>（※「サンプルモードで体験」をお試しください）</p></div>`;
@@ -628,7 +623,6 @@ function renderSimilar() {
         return;
     }
 
-    // サンプルモードON時
     headerText.style.display = 'block';
     document.getElementById('h-sim-txt').innerText = 'デモデータ';
     cont.innerHTML = DEMO_SIMILAR_DATA.map(g => {
