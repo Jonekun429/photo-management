@@ -106,13 +106,60 @@ a{color:var(--ac);text-decoration:none}
 .item .sz{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;z-index:2}
 .item .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(0,0,0,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;z-index:2}
 
-.grp{margin-bottom:3px}
-.grp-hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--sf)}
-.grp-hd span{font-size:13px;font-weight:600;color:var(--tx2)}
-.grp-hd button{font-size:12px;color:var(--ac);font-weight:600;padding:4px 0}
-.grp-hd button:active{opacity:.5}
-.grp .item:first-child .ck{display:none}
-.grp .item:first-child::after{content:'BEST';position:absolute;top:8px;right:8px;background:var(--ac);color:#fff;font-size:9px;font-weight:800;padding:4px 8px;border-radius:5px;z-index:3;letter-spacing:1px}
+/* ============ SIMILAR PHOTOS (Cleaner Guru inspired, original UI) ============ */
+.sim-header{padding:16px 20px 8px}
+.sim-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.sim-sub{font-size:13px;color:var(--tx2);margin-top:2px}
+.sim-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sim-pill{display:flex;align-items:center;gap:6px;background:var(--sf);border:none;border-radius:24px;padding:9px 16px;font-size:13px;font-weight:600;color:var(--tx);box-shadow:var(--sh);font-family:var(--font);cursor:pointer}
+.sim-pill:active{opacity:.6;transform:scale(.97)}
+.sim-pill .sp-icon{font-size:14px;color:var(--tx2)}
+.sim-filter-tag{display:flex;align-items:center;gap:8px;margin-top:8px;background:var(--acL);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;color:var(--ac)}
+.sim-filter-tag button{background:none;border:none;font-size:14px;color:var(--ac);cursor:pointer;padding:2px}
+
+/* Calendar Modal */
+.cal-modal{position:absolute;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
+.cal-modal.on{display:flex}
+.cal-box{display:flex;flex-direction:column;height:100%}
+.cal-hdr{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + var(--safe)) 16px 12px;flex-shrink:0}
+.cal-cancel{background:none;border:none;font-family:var(--font);font-size:15px;color:var(--ac);font-weight:600;cursor:pointer}
+.cal-title{font-size:16px;font-weight:700}
+.cal-done{background:none;border:none;font-family:var(--font);font-size:15px;color:var(--tx3);font-weight:600;cursor:pointer}
+.cal-done.active{color:var(--ac)}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:8px 12px;background:var(--sf2);margin:0 16px;border-radius:8px;flex-shrink:0}
+.cal-weekdays span{font-size:12px;font-weight:600;color:var(--tx2);padding:6px 0}
+.cal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 100px;scrollbar-width:none}
+.cal-scroll::-webkit-scrollbar{display:none}
+.cal-month-title{font-size:17px;font-weight:700;padding:20px 0 8px;color:var(--tx)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px}
+.cal-day{padding:12px 0;font-size:15px;font-weight:500;color:var(--tx);cursor:pointer;border-radius:50%;position:relative;transition:all .12s;-webkit-tap-highlight-color:transparent;user-select:none}
+.cal-day:active{transform:scale(.9)}
+.cal-day.empty{cursor:default}
+.cal-day.has-photos{color:var(--tx);font-weight:700}
+.cal-day.has-photos::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:var(--ac);border-radius:50%}
+.cal-day.no-photos{color:var(--tx3);cursor:default;pointer-events:none}
+.cal-day.selected{background:var(--ac);color:#fff;font-weight:700}
+.cal-day.selected::after{background:#fff}
+
+.grp{margin-bottom:20px;padding:0 16px}
+.grp-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 0 8px}
+.grp-hd .grp-count{font-size:16px;font-weight:700;color:var(--tx)}
+.grp-hd .grp-desel{font-size:13px;color:var(--tx2);font-weight:500;cursor:pointer;padding:4px 0;background:none;border:none;font-family:var(--font)}
+.grp-hd .grp-desel:active{opacity:.5}
+
+/* 横スクロールカルーセル */
+.grp-scroll{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.grp-scroll::-webkit-scrollbar{display:none}
+.grp-scroll .item{flex-shrink:0;width:calc(50% - 4px);min-width:150px;scroll-snap-align:start;border-radius:var(--r2)}
+.grp-scroll .item img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:var(--r2);transition:filter .15s}
+
+/* 👍 Best バッジ (オリジナル) */
+.grp-scroll .item .best-badge{position:absolute;bottom:12px;left:10px;background:var(--sf);color:var(--tx);font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;z-index:3;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.grp-scroll .item .best-badge .best-icon{font-size:14px}
+
+/* チェックボックス右下 (角丸四角) */
+.grp-scroll .item .ck{position:absolute;bottom:12px;right:10px;top:auto;width:30px;height:30px;border:2.5px solid rgba(255,255,255,.8);border-radius:8px;font-size:15px;font-weight:700;background:rgba(0,0,0,.15)}
+.grp-scroll .item.on .ck{background:var(--red);border-color:var(--red);color:#fff;border-radius:50%}
 
 /* ============ CONTACTS ============ */
 .con-grp{background:var(--sf);border-radius:var(--r);margin:10px 16px;padding:16px;box-shadow:var(--sh)}
@@ -132,12 +179,36 @@ a{color:var(--ac);text-decoration:none}
 .con-merge-btn.done{background:var(--acL);color:var(--ac)}
 .con-sec-title{padding:16px 16px 8px;font-size:13px;font-weight:600;color:var(--tx2)}
 
-/* ============ SWIPE ============ */
-.sw-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 20px}
-.sw-prog{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:14px;color:var(--tx2);font-weight:500}
-.sw-pbar{width:180px;height:5px;background:var(--acL);border-radius:3px;overflow:hidden}
-.sw-pfill{height:100%;background:var(--ac);border-radius:3px;transition:width .3s}
-.sw-card{position:relative;width:280px;height:350px;border-radius:var(--r);overflow:hidden;box-shadow:0 8px 32px rgba(0,60,50,.12);background:var(--sf);touch-action:none;user-select:none;transition:transform .12s,opacity .3s}
+/* ============ SWIPE (Cleaner Guru inspired) ============ */
+/* Monthly list */
+.sw-header{padding:16px 20px 8px}
+.sw-header h2{font-size:22px;font-weight:800}
+.sw-stats-row{display:flex;gap:10px;padding:8px 20px 16px}
+.sw-stat-card{flex:1;background:var(--sf);border-radius:var(--r2);padding:12px 14px;box-shadow:var(--sh)}
+.sw-stat-card .ss-label{font-size:11px;color:var(--tx2)}
+.sw-stat-card .ss-val{font-size:18px;font-weight:700;margin-top:2px}
+.sw-month-list{padding:0 16px}
+.sw-month{background:var(--sf);border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh);cursor:pointer;transition:all .1s}
+.sw-month:active{transform:scale(.98);opacity:.9}
+.sw-month-thumb{width:64px;height:64px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--sf2);position:relative}
+.sw-month-thumb img{width:100%;height:100%;object-fit:cover}
+.sw-month-thumb .sw-check-done{position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff}
+.sw-month-body{flex:1;min-width:0}
+.sw-month-name{font-size:16px;font-weight:700}
+.sw-month-prog{font-size:12px;color:var(--ac);margin-top:3px}
+.sw-month-bar{height:4px;background:var(--acL);border-radius:2px;margin-top:6px;overflow:hidden}
+.sw-month-bar-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .3s}
+
+/* Card swipe view */
+.sw-card-view{display:none;flex-direction:column;height:100%}
+.sw-card-view.on{display:flex}
+.sw-card-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px}
+.sw-card-hdr h3{font-size:17px;font-weight:700}
+.sw-card-hdr .sw-prog-txt{font-size:13px;color:var(--tx2)}
+.sw-card-prog-bar{height:4px;background:var(--acL);margin:0 20px;border-radius:2px;overflow:hidden}
+.sw-card-prog-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .3s}
+.sw-card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;position:relative;overflow:hidden}
+.sw-card{width:min(300px,80vw);height:min(400px,60vh);border-radius:var(--r);overflow:hidden;box-shadow:0 8px 32px rgba(0,60,50,.12);background:var(--sf);touch-action:none;user-select:none;transition:transform .12s,opacity .3s;position:relative}
 .sw-card img{width:100%;height:100%;object-fit:cover}
 .sw-card .sc-info{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff}
 .sw-card .sc-n{font-size:14px;font-weight:600}
@@ -145,15 +216,38 @@ a{color:var(--ac);text-decoration:none}
 .sw-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;font-weight:800;opacity:0;transition:opacity .15s;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.3)}
 .sw-hint.kp{color:#22C55E}
 .sw-hint.dl{color:var(--red)}
-.sw-acts{display:flex;gap:28px;margin-top:28px}
-.sw-ab{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:var(--sh);transition:all .1s}
-.sw-ab:active{transform:scale(.88)}
-.sw-ab.db{background:var(--redL);color:var(--red)}
-.sw-ab.kb{background:var(--acL);color:var(--ac)}
-.sw-done{text-align:center;padding:60px 20px}
-.sw-done .sd-ic{font-size:48px;margin-bottom:16px}
-.sw-done h3{font-size:20px;font-weight:700;color:var(--ac);margin-bottom:6px}
-.sw-done p{font-size:14px;color:var(--tx2)}
+/* Delete / Keep buttons */
+.sw-btn-row{display:flex;gap:12px;padding:12px 20px;flex-shrink:0}
+.sw-btn{flex:1;padding:16px;border-radius:var(--r2);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .1s;border:none;font-family:var(--font);cursor:pointer}
+.sw-btn:active{transform:scale(.96)}
+.sw-btn.del{background:var(--red);color:#fff}
+.sw-btn.keep{background:var(--ac);color:#fff}
+/* Bottom toolbar with thumbnails */
+.sw-toolbar{display:flex;align-items:center;padding:8px 12px calc(8px + var(--safB));background:var(--sf);border-top:1px solid var(--bdr);flex-shrink:0;gap:8px}
+.sw-undo-btn{width:44px;height:44px;border-radius:50%;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;cursor:pointer;border:none}
+.sw-undo-btn:active{transform:scale(.9)}
+.sw-thumbstrip{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.sw-thumbstrip::-webkit-scrollbar{display:none}
+.sw-thumb{width:44px;height:44px;border-radius:8px;overflow:hidden;flex-shrink:0;opacity:.7}
+.sw-thumb img{width:100%;height:100%;object-fit:cover}
+.sw-thumb.current{opacity:1;border:2px solid var(--ac)}
+.sw-trash-btn{width:44px;height:44px;border-radius:50%;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;cursor:pointer;position:relative;border:none}
+.sw-trash-btn:active{transform:scale(.9)}
+.sw-trash-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* Trash modal */
+.sw-trash-modal{position:absolute;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
+.sw-trash-modal.on{display:flex}
+.sw-trash-hdr{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + var(--safe)) 16px 8px}
+.sw-trash-hdr h3{font-size:17px;font-weight:700}
+.sw-trash-hint{text-align:center;font-size:13px;color:var(--tx2);padding:8px 20px;background:var(--sf);margin:0 16px;border-radius:20px}
+.sw-trash-grid{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;padding:16px;overflow-y:auto;align-content:start}
+.sw-trash-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;cursor:pointer}
+.sw-trash-item img{width:100%;height:100%;object-fit:cover}
+.sw-trash-actions{padding:12px 16px calc(12px + var(--safB));display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.sw-trash-actions button{width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;border:none;font-family:var(--font);cursor:pointer}
+.sw-trash-actions .trash-empty{background:#5B5FE6;color:#fff}
+.sw-trash-actions .trash-restore{background:none;color:var(--ac)}
 
 /* ============ SETTINGS ============ */
 .s-sec{padding:0 20px;margin-bottom:12px}
@@ -196,6 +290,8 @@ a{color:var(--ac);text-decoration:none}
 .del-btn{width:100%;padding:16px;background:var(--red);color:#fff;border-radius:var(--r2);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transform:translateY(80px);pointer-events:all;transition:transform .25s cubic-bezier(.25,.8,.25,1);box-shadow:0 4px 16px rgba(217,79,79,.2)}
 .del-btn.show{transform:translateY(0)}
 .del-btn:active{transform:translateY(0) scale(.97)}
+/* Similar page uses indigo */
+.del-btn.indigo{background:#5B5FE6;box-shadow:0 4px 16px rgba(91,95,230,.3)}
 
 .scan-ov{position:absolute;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
 .scan-ov.on{display:flex}
@@ -289,7 +385,18 @@ a{color:var(--ac);text-decoration:none}
 
     <!-- SIMILAR -->
     <div class="pg" id="p-similar">
-        <div class="d-bar"><div class="d-info" id="sim-info"></div><button class="d-pill" onclick="toggleAll()">すべて選択</button></div>
+        <div class="sim-header">
+            <div class="sim-title">似ている写真</div>
+            <div class="sim-sub" id="sim-sub">— 枚の写真 (— GB)</div>
+            <div class="sim-actions">
+                <button class="sim-pill" onclick="toggleAllSimilar()"><span class="sp-icon">✕</span> すべての選択を解除</button>
+                <button class="sim-pill" onclick="openCalendar()"><span class="sp-icon">📅</span> 日付を選択</button>
+            </div>
+            <div class="sim-filter-tag" id="sim-filter-tag" style="display:none">
+                <span id="sim-filter-label"></span>
+                <button onclick="clearDateFilter()">✕</button>
+            </div>
+        </div>
         <div id="sim-list"></div>
         <div class="empty" id="sim-e">スキャンしてください</div>
     </div>
@@ -317,49 +424,81 @@ a{color:var(--ac);text-decoration:none}
 
     <!-- SWIPE -->
     <div class="pg" id="p-swipe">
+        <!-- Monthly list view -->
+        <div id="sw-list-view">
+            <div class="sw-header"><h2>写真をスワイプ</h2></div>
+            <div class="sw-stats-row">
+                <div class="sw-stat-card"><div class="ss-label">確認済み</div><div class="ss-val" id="sw-total-done">0 / 0</div></div>
+                <div class="sw-stat-card"><div class="ss-label">クリーニング済み</div><div class="ss-val" id="sw-total-cleaned">0 MB</div></div>
+            </div>
+            <div class="sw-month-list" id="sw-month-list"></div>
+        </div>
 
-    <!-- CONTACTS -->
-    <div class="pg" id="p-contacts">
-        <div class="d-bar">
-            <div class="d-info" id="con-info">連絡先をスキャンしてください</div>
-            <button class="d-pill" onclick="scanContacts()">スキャン</button>
-        </div>
-        <div id="con-scan-msg" style="text-align:center;padding:40px 20px;color:var(--tx2)">
-            <div style="font-size:40px;margin-bottom:12px">👤</div>
-            <div style="font-size:15px;font-weight:600;margin-bottom:6px">連絡先をスキャン</div>
-            <div style="font-size:13px;line-height:1.6">タップして連絡先へのアクセスを許可すると、<br>重複・不完全な連絡先を検出します。</div>
-            <button onclick="scanContacts()" style="margin-top:16px;padding:12px 24px;background:var(--ac);color:#fff;border-radius:var(--r2);font-size:14px;font-weight:700;box-shadow:0 4px 12px rgba(0,93,77,.2)">スキャン開始</button>
-        </div>
-        <div id="con-results" style="display:none">
-            <div id="con-dupes"></div>
-            <div id="con-incomplete"></div>
+        <!-- Card swipe view (per month) -->
+        <div class="sw-card-view" id="sw-card-view">
+            <div class="sw-card-hdr">
+                <h3 id="sw-card-month-title"></h3>
+                <span class="sw-prog-txt" id="sw-card-prog-txt">0 / 0</span>
+            </div>
+            <div class="sw-card-prog-bar"><div class="sw-card-prog-fill" id="sw-card-prog-fill"></div></div>
+            <div class="sw-card-area">
+                <div class="sw-card" id="sw-card">
+                    <img id="sw-img" src="" alt="">
+                    <div class="sw-hint kp" id="sw-kp">KEEP</div>
+                    <div class="sw-hint dl" id="sw-dl">DEL</div>
+                    <div class="sc-info">
+                        <div class="sc-n" id="sw-name"></div>
+                        <div class="sc-s" id="sw-size"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sw-btn-row">
+                <button class="sw-btn del" onclick="swipeAction('del')">👎 削除</button>
+                <button class="sw-btn keep" onclick="swipeAction('keep')">👍 保持</button>
+            </div>
+            <div class="sw-toolbar">
+                <button class="sw-undo-btn" onclick="swipeUndo()">↩</button>
+                <div class="sw-thumbstrip" id="sw-thumbstrip"></div>
+                <button class="sw-trash-btn" onclick="openSwipeTrash()">🗑<span class="sw-trash-badge" id="sw-trash-badge" style="display:none">0</span></button>
+            </div>
         </div>
     </div>
 
-    <!-- SWIPE (moved after contacts) -->
-        <div class="sw-wrap" id="sw-wrap">
-            <div class="sw-prog">
-                <span id="sw-cnt">0 / 0</span>
-                <div class="sw-pbar"><div class="sw-pfill" id="sw-bar"></div></div>
-            </div>
-            <div class="sw-card" id="sw-card">
-                <img id="sw-img" src="" alt="">
-                <div class="sw-hint kp" id="sw-kp">KEEP</div>
-                <div class="sw-hint dl" id="sw-dl">DEL</div>
-                <div class="sc-info">
-                    <div class="sc-n" id="sw-name"></div>
-                    <div class="sc-s" id="sw-size"></div>
-                </div>
-            </div>
-            <div class="sw-acts">
-                <button class="sw-ab db" onclick="swipeAction('del')">🗑</button>
-                <button class="sw-ab kb" onclick="swipeAction('keep')">💚</button>
-            </div>
+    <!-- SWIPE TRASH MODAL -->
+    <div class="sw-trash-modal" id="sw-trash-modal">
+        <div class="sw-trash-hdr">
+            <button onclick="closeSwipeTrash()" style="font-size:22px;background:none;border:none;cursor:pointer;color:var(--tx)">✕</button>
+            <h3 id="sw-trash-title">ゴミ箱 (0 MB)</h3>
+            <div></div>
         </div>
-        <div class="sw-done" id="sw-done" style="display:none">
-            <div class="sd-ic">✨</div>
-            <h3>完了！</h3>
-            <p id="sw-result"></p>
+        <div class="sw-trash-hint">💡 写真をタップして復元する</div>
+        <div class="sw-trash-grid" id="sw-trash-grid"></div>
+        <div class="sw-trash-actions">
+            <button class="trash-empty" onclick="emptySwipeTrash()">🗑 ゴミ箱を空にする</button>
+            <button class="trash-restore" onclick="restoreAllSwipeTrash()">すべて復元する</button>
+        </div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="pg" id="p-contacts">
+        <div id="con-perm" style="padding:40px 20px;text-align:center">
+            <div style="font-size:48px;margin-bottom:16px">👤</div>
+            <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">連絡先を整理する</h3>
+            <p style="font-size:14px;color:var(--tx2);line-height:1.6;margin-bottom:24px">重複した連絡先の結合や、<br>不完全な連絡先の削除ができます。</p>
+            <div style="background:var(--sf);border-radius:var(--r);padding:20px;box-shadow:var(--sh);text-align:left;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:12px">アクセスを許可すると：</div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--acL);border-radius:8px;display:flex;align-items:center;justify-content:center">👥</div><div><div style="font-size:14px;font-weight:600">重複を検出</div><div style="font-size:12px;color:var(--tx2)">同名・同番号・同メールを自動検出</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--amberL);border-radius:8px;display:flex;align-items:center;justify-content:center">🔗</div><div><div style="font-size:14px;font-weight:600">結合する</div><div style="font-size:12px;color:var(--tx2)">情報を1つにまとめて整理</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0"><div style="width:32px;height:32px;background:var(--redL);border-radius:8px;display:flex;align-items:center;justify-content:center">🧹</div><div><div style="font-size:14px;font-weight:600">不完全を削除</div><div style="font-size:12px;color:var(--tx2)">名前なし・番号なしを一括削除</div></div></div>
+            </div>
+            <button onclick="scanContacts()" style="width:100%;padding:15px;background:var(--ac);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:700;box-shadow:0 4px 12px rgba(0,93,77,.2);font-family:var(--font)">連絡先へのアクセスを許可</button>
+            <p style="font-size:11px;color:var(--tx3);margin-top:10px;line-height:1.5">※ 端末の設定画面が開きます。</p>
+        </div>
+        <div id="con-results" style="display:none">
+            <div class="d-bar"><div class="d-info" id="con-info"></div></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px" id="con-summary"></div>
+            <div id="con-dupes"></div>
+            <div id="con-incomplete"></div>
         </div>
     </div>
 
@@ -435,13 +574,26 @@ a{color:var(--ac);text-decoration:none}
         <button class="pc-x" onclick="goBack()">✕</button>
         <h2>✉️ お問い合わせ</h2>
         <p>ご質問・ご要望・不具合報告は下記までお送りください。</p>
-        <p style="text-align:center;padding:20px 0"><a href="mailto:jone.lab.app@gmail.com" style="font-size:16px;font-weight:700">✉️ jone.lab.app&#64;gmail.com</a></p>
+        <p style="text-align:center;padding:20px 0"><a href="/cdn-cgi/l/email-protection#315b5e5f541f5d50531f50414171565c50585d1f525e5c" style="font-size:16px;font-weight:700">✉️ jone.lab.app&#64;gmail.com</a></p>
         <h3>不具合報告の際のお願い</h3>
         <ul><li>端末名・OSバージョン</li><li>問題の詳細</li><li>再現手順</li></ul>
     </div></div></div>
 
     <!-- OVERLAYS -->
     <div class="del-bar"><button class="del-btn" id="del-btn" onclick="confirmDel()">🗑 <span id="del-txt">削除</span></button></div>
+
+    <!-- CALENDAR MODAL -->
+    <div class="cal-modal" id="cal-modal">
+        <div class="cal-box">
+            <div class="cal-hdr">
+                <button class="cal-cancel" onclick="closeCalendar()">キャンセル</button>
+                <span class="cal-title">日付を選択</span>
+                <button class="cal-done" id="cal-done" onclick="applyDateFilter()">完了</button>
+            </div>
+            <div class="cal-weekdays"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+            <div class="cal-scroll" id="cal-scroll"></div>
+        </div>
+    </div>
     <div class="scan-ov" id="scan-ov"><div class="spinner"></div><h3>スキャン中...</h3><div class="sub" id="ov-sub"></div><div class="o-bar"><div class="o-fill" id="ov-fill"></div></div><div class="o-stats"><div class="o-stat"><b id="os-p">0</b><span>写真</span></div><div class="o-stat"><b id="os-s">0</b><span>スクショ</span></div><div class="o-stat"><b id="os-v">0</b><span>動画</span></div><div class="o-stat"><b id="os-b">0</b><span>大容量</span></div></div></div>
     <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox"><h3 id="mod-t"></h3><p id="mod-d"></p><button class="mbtn dng" onclick="execDel()">削除する</button><button class="mbtn can" onclick="closeModal()">キャンセル</button></div></div>
     <div class="toast" id="toast"><span id="toast-t"></span><button onclick="undo()">元に戻す</button></div>
@@ -458,7 +610,7 @@ a{color:var(--ac);text-decoration:none}
     <input type="file" id="inp-files" class="file-in" accept="image/*,video/*,.cr2,.nef,.arw,.dng" multiple>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ============================================================
    CONFIG
    ============================================================ */
@@ -559,6 +711,7 @@ function go(id) {
     back.style.display = 'none';
     selBtn.style.display = 'none';
     document.getElementById('del-btn').classList.remove('show');
+    document.getElementById('del-btn').classList.remove('indigo');
 
     const pages = {
         home:    { title: '写真クリーナー', page: 'p-home' },
@@ -567,7 +720,7 @@ function go(id) {
         vid:     { title: '大きな動画', page: 'p-vid', detail: true },
         big:     { title: '大容量ファイル', page: 'p-big', detail: true },
         contacts:{ title: '連絡先を整理', page: 'p-contacts', back: true },
-        swipe:   { title: 'スワイプ整理', page: 'p-swipe', back: true },
+        swipe:   { title: 'スワイプ整理', page: 'p-swipe' },
         settings:{ title: '設定', page: 'p-settings' },
     };
 
@@ -579,8 +732,12 @@ function go(id) {
 
     if (cfg.detail) {
         back.style.display = 'block';
-        updateDetailInfo();
-        updateDeleteBtn();
+        if (id === 'similar') {
+            updateSimDeleteBar();
+        } else {
+            updateDetailInfo();
+            updateDeleteBtn();
+        }
     }
 
     if (cfg.back) {
@@ -688,6 +845,14 @@ function grpToggle(gi) {
     const grp = document.querySelector('.grp[data-gi="' + gi + '"]');
     if (!grp) return;
     grp.querySelectorAll('.item').forEach((it, i) => it.classList.toggle('on', i > 0));
+    updateDetailInfo();
+    updateDeleteBtn();
+}
+
+function grpDeselectAll(gi) {
+    const grp = document.querySelector('.grp[data-gi="' + gi + '"]');
+    if (!grp) return;
+    grp.querySelectorAll('.item').forEach(function(it) { it.classList.remove('on'); });
     updateDetailInfo();
     updateDeleteBtn();
 }
@@ -807,89 +972,265 @@ function smartClean() {
 }
 
 /* ============================================================
-   SWIPE
+   SWIPE (Monthly list → Card → Trash)
    ============================================================ */
-function initSwipe() {
-    swipePhotos = [...document.querySelectorAll('#sim-list .item, #ss-grid .item, #vid-grid .item, #big-grid .item')];
-    swipeIndex = 0;
-    swipeDeleted = 0;
-    document.getElementById('sw-wrap').style.display = 'flex';
-    document.getElementById('sw-done').style.display = 'none';
+var swipeAllPhotos = [];    // all photos with month/url/mb/src
+var swipeByMonth = {};      // { "2026-03": [...] }
+var swipeMonthOrder = [];   // ["2026-03", "2026-02", ...]
+var swCurrentMonth = '';
+var swCurrentPhotos = [];
+var swIndex = 0;
+var swTrash = [];           // deleted items
+var swHistory = [];         // for undo
+var swReviewed = {};        // { "2026-03": count }
+var swTotalCleaned = 0;
 
-    if (swipePhotos.length === 0) {
-        document.getElementById('sw-wrap').style.display = 'none';
-        document.getElementById('sw-done').style.display = 'block';
-        document.getElementById('sw-result').textContent = 'スキャンしてから使ってください';
-        return;
-    }
+function initSwipe() {
+    // Collect all photos from all grids
+    swipeAllPhotos = [];
+    var items = document.querySelectorAll('#sim-list .item, #ss-grid .item, #vid-grid .item, #big-grid .item');
+    items.forEach(function(it) {
+        var img = it.querySelector('img');
+        var src = img ? img.src : '';
+        var mb = parseFloat(it.dataset.sz || 0);
+        // Use demo dates or file date
+        var date = it.dataset.date || '2026-03-01';
+        swipeAllPhotos.push({ src: src, mb: mb, date: date, el: it });
+    });
+
+    // Group by month
+    swipeByMonth = {};
+    swipeAllPhotos.forEach(function(p) {
+        var ym = p.date.substring(0, 7);
+        if (!swipeByMonth[ym]) swipeByMonth[ym] = [];
+        swipeByMonth[ym].push(p);
+    });
+
+    swipeMonthOrder = Object.keys(swipeByMonth).sort().reverse();
+    swTrash = [];
+    swHistory = [];
+    swReviewed = {};
+    swTotalCleaned = 0;
+
+    // Show monthly list
+    document.getElementById('sw-list-view').style.display = 'block';
+    document.getElementById('sw-card-view').classList.remove('on');
+    renderMonthList();
+}
+
+function renderMonthList() {
+    var list = document.getElementById('sw-month-list');
+    var totalPhotos = swipeAllPhotos.length;
+    var totalReviewed = 0;
+    Object.values(swReviewed).forEach(function(v) { totalReviewed += v; });
+
+    document.getElementById('sw-total-done').textContent = totalReviewed + ' / ' + totalPhotos;
+    document.getElementById('sw-total-cleaned').textContent = fmtMB(swTotalCleaned);
+
+    list.innerHTML = swipeMonthOrder.map(function(ym) {
+        var photos = swipeByMonth[ym];
+        var parts = ym.split('-');
+        var monthName = parseInt(parts[1]) + '月, ' + parts[0];
+        var reviewed = swReviewed[ym] || 0;
+        var pct = Math.round(reviewed / photos.length * 100);
+        var isDone = reviewed >= photos.length;
+        var thumb = photos[0] && photos[0].src ? photos[0].src : '';
+
+        return '<div class="sw-month" onclick="enterSwipeMonth(\'' + ym + '\')">' +
+            '<div class="sw-month-thumb">' +
+            (thumb ? '<img src="' + thumb + '">' : '') +
+            (isDone ? '<div class="sw-check-done">✓</div>' : '') +
+            '</div>' +
+            '<div class="sw-month-body">' +
+            '<div class="sw-month-name">' + monthName + '</div>' +
+            '<div class="sw-month-prog">' + reviewed + '/' + photos.length + ' 件を確認済み</div>' +
+            '<div class="sw-month-bar"><div class="sw-month-bar-fill" style="width:' + pct + '%"></div></div>' +
+            '</div></div>';
+    }).join('');
+}
+
+function enterSwipeMonth(ym) {
+    swCurrentMonth = ym;
+    swCurrentPhotos = swipeByMonth[ym].slice();
+    swIndex = swReviewed[ym] || 0;
+    swHistory = [];
+
+    var parts = ym.split('-');
+    document.getElementById('sw-card-month-title').textContent = parseInt(parts[1]) + '月 ' + parts[0];
+
+    document.getElementById('sw-list-view').style.display = 'none';
+    document.getElementById('sw-card-view').classList.add('on');
+
+    // Build thumbnail strip
+    var strip = document.getElementById('sw-thumbstrip');
+    strip.innerHTML = swCurrentPhotos.map(function(p, i) {
+        return '<div class="sw-thumb' + (i === swIndex ? ' current' : '') + '" data-i="' + i + '">' +
+            (p.src ? '<img src="' + p.src + '">' : '') + '</div>';
+    }).join('');
+
     showSwipeCard();
 }
 
 function showSwipeCard() {
-    if (swipeIndex >= swipePhotos.length) {
-        document.getElementById('sw-wrap').style.display = 'none';
-        document.getElementById('sw-done').style.display = 'block';
-        document.getElementById('sw-result').textContent = swipeDeleted + '件を削除対象にしました';
+    if (swIndex >= swCurrentPhotos.length) {
+        // Month complete
+        swReviewed[swCurrentMonth] = swCurrentPhotos.length;
+        exitSwipeCard();
         return;
     }
 
-    const it = swipePhotos[swipeIndex];
-    const img = it.querySelector('img');
-    document.getElementById('sw-img').src = img ? img.src : '';
-    document.getElementById('sw-name').textContent = '写真 ' + (swipeIndex + 1);
-    document.getElementById('sw-size').textContent = (it.dataset.sz || '?') + ' MB';
-    document.getElementById('sw-cnt').textContent = (swipeIndex + 1) + ' / ' + swipePhotos.length;
-    document.getElementById('sw-bar').style.width = (swipeIndex / swipePhotos.length * 100) + '%';
+    var p = swCurrentPhotos[swIndex];
+    document.getElementById('sw-img').src = p.src || '';
+    document.getElementById('sw-name').textContent = '写真 ' + (swIndex + 1);
+    document.getElementById('sw-size').textContent = p.mb.toFixed(1) + ' MB';
+    document.getElementById('sw-card-prog-txt').textContent = (swIndex + 1) + ' / ' + swCurrentPhotos.length;
+    document.getElementById('sw-card-prog-fill').style.width = (swIndex / swCurrentPhotos.length * 100) + '%';
 
-    // Reset card position
-    const card = document.getElementById('sw-card');
+    var card = document.getElementById('sw-card');
     card.style.transform = '';
     card.style.opacity = '1';
     document.getElementById('sw-kp').style.opacity = '0';
     document.getElementById('sw-dl').style.opacity = '0';
+
+    // Update thumbnail highlight
+    document.querySelectorAll('.sw-thumb').forEach(function(t) {
+        t.classList.toggle('current', parseInt(t.dataset.i) === swIndex);
+    });
+
+    updateTrashBadge();
 }
 
 function swipeAction(action) {
-    const card = document.getElementById('sw-card');
+    if (swIndex >= swCurrentPhotos.length) return;
+    var card = document.getElementById('sw-card');
+    var p = swCurrentPhotos[swIndex];
+
+    swHistory.push({ index: swIndex, action: action, photo: p });
+
     if (action === 'del') {
         card.style.transform = 'translateX(-200px) rotate(-15deg)';
         card.style.opacity = '0';
-        swipePhotos[swipeIndex].classList.add('on');
-        swipeDeleted++;
+        swTrash.push(p);
+        swTotalCleaned += p.mb;
+        // Mark in original grid
+        if (p.el) p.el.classList.add('on');
     } else {
         card.style.transform = 'translateX(200px) rotate(15deg)';
         card.style.opacity = '0';
-        swipePhotos[swipeIndex].classList.remove('on');
+        if (p.el) p.el.classList.remove('on');
     }
-    setTimeout(() => { swipeIndex++; showSwipeCard(); }, 250);
+
+    swReviewed[swCurrentMonth] = (swReviewed[swCurrentMonth] || 0) + 1;
+
+    setTimeout(function() {
+        swIndex++;
+        showSwipeCard();
+    }, 250);
+}
+
+function swipeUndo() {
+    if (!swHistory.length) return;
+    var last = swHistory.pop();
+    swIndex = last.index;
+
+    if (last.action === 'del') {
+        // Remove from trash
+        var ti = swTrash.indexOf(last.photo);
+        if (ti >= 0) swTrash.splice(ti, 1);
+        swTotalCleaned -= last.photo.mb;
+        if (last.photo.el) last.photo.el.classList.remove('on');
+    }
+
+    swReviewed[swCurrentMonth] = Math.max(0, (swReviewed[swCurrentMonth] || 0) - 1);
+    showSwipeCard();
+}
+
+function exitSwipeCard() {
+    document.getElementById('sw-card-view').classList.remove('on');
+    document.getElementById('sw-list-view').style.display = 'block';
+    renderMonthList();
+    updateHome();
+}
+
+function updateTrashBadge() {
+    var badge = document.getElementById('sw-trash-badge');
+    if (swTrash.length > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = swTrash.length;
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+// Trash modal
+function openSwipeTrash() {
+    var modal = document.getElementById('sw-trash-modal');
+    modal.classList.add('on');
+    var totalMB = 0;
+    swTrash.forEach(function(p) { totalMB += p.mb; });
+    document.getElementById('sw-trash-title').textContent = 'ゴミ箱 (' + fmtMB(totalMB) + ')';
+
+    document.getElementById('sw-trash-grid').innerHTML = swTrash.map(function(p, i) {
+        return '<div class="sw-trash-item" onclick="restoreFromTrash(' + i + ')">' +
+            (p.src ? '<img src="' + p.src + '">' : '<div style="width:100%;height:100%;background:var(--sf2);display:flex;align-items:center;justify-content:center">📷</div>') +
+            '</div>';
+    }).join('');
+}
+
+function closeSwipeTrash() {
+    document.getElementById('sw-trash-modal').classList.remove('on');
+}
+
+function restoreFromTrash(i) {
+    if (i < 0 || i >= swTrash.length) return;
+    var p = swTrash.splice(i, 1)[0];
+    swTotalCleaned -= p.mb;
+    if (p.el) p.el.classList.remove('on');
+    openSwipeTrash(); // refresh
+    updateTrashBadge();
+}
+
+function emptySwipeTrash() {
+    if (!swTrash.length) return;
+    if (isNative) {
+        var uris = swTrash.map(function(p) { return p.el ? p.el.dataset.uri : ''; }).filter(Boolean);
+        if (uris.length) Android.deleteFiles(JSON.stringify(uris));
+    }
+    swTrash = [];
+    closeSwipeTrash();
+    updateTrashBadge();
+    updateHome();
+}
+
+function restoreAllSwipeTrash() {
+    swTrash.forEach(function(p) {
+        swTotalCleaned -= p.mb;
+        if (p.el) p.el.classList.remove('on');
+    });
+    swTrash = [];
+    closeSwipeTrash();
+    updateTrashBadge();
 }
 
 // Touch swipe support
 (function() {
-    let startX = 0, deltaX = 0, active = false;
-
-    document.addEventListener('touchstart', e => {
+    var startX = 0, deltaX = 0, active = false;
+    document.addEventListener('touchstart', function(e) {
         if (!e.target.closest('#sw-card')) return;
-        startX = e.touches[0].clientX;
-        deltaX = 0;
-        active = true;
+        startX = e.touches[0].clientX; deltaX = 0; active = true;
     });
-
-    document.addEventListener('touchmove', e => {
+    document.addEventListener('touchmove', function(e) {
         if (!active) return;
         deltaX = e.touches[0].clientX - startX;
-        const card = document.getElementById('sw-card');
+        var card = document.getElementById('sw-card');
         card.style.transform = 'translateX(' + deltaX + 'px) rotate(' + (deltaX * 0.05) + 'deg)';
         document.getElementById('sw-kp').style.opacity = deltaX > 40 ? '1' : '0';
         document.getElementById('sw-dl').style.opacity = deltaX < -40 ? '1' : '0';
     });
-
-    document.addEventListener('touchend', () => {
-        if (!active) return;
-        active = false;
-        if (Math.abs(deltaX) > 80) {
-            swipeAction(deltaX > 0 ? 'keep' : 'del');
-        } else {
+    document.addEventListener('touchend', function() {
+        if (!active) return; active = false;
+        if (Math.abs(deltaX) > 80) swipeAction(deltaX > 0 ? 'keep' : 'del');
+        else {
             document.getElementById('sw-card').style.transform = '';
             document.getElementById('sw-kp').style.opacity = '0';
             document.getElementById('sw-dl').style.opacity = '0';
@@ -999,15 +1340,27 @@ function scanContacts() {
 }
 
 function showContactScan() {
-    document.getElementById('con-scan-msg').innerHTML = '<div class="spinner" style="margin:0 auto 16px"></div><div style="font-size:14px;color:var(--tx2)">連絡先をスキャン中...</div>';
+    document.getElementById('con-perm').innerHTML = '<div style="text-align:center;padding:40px 20px"><div class="spinner" style="margin:0 auto 16px"></div><div style="font-size:15px;font-weight:600">連絡先をスキャン中...</div><div style="font-size:13px;color:var(--tx2);margin-top:4px">しばらくお待ちください</div></div>';
 }
 
 function onContactScanComplete(jsonStr) {
     try {
         var data = JSON.parse(jsonStr);
-        document.getElementById('con-scan-msg').style.display = 'none';
+        document.getElementById('con-perm').style.display = 'none';
         document.getElementById('con-results').style.display = 'block';
-        document.getElementById('con-info').innerHTML = '重複 <strong>' + data.duplicateCount + '件</strong> · 不完全 ' + data.incompleteCount + '件 / 全' + data.totalContacts + '件';
+        document.getElementById('con-info').innerHTML = '全 ' + data.totalContacts + '件の連絡先をスキャン完了';
+
+        // Summary cards (Cleaner Guru風)
+        var sumHtml = '<div style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:4px">管理する連絡先</div>';
+        sumHtml += '<div style="background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)">';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic grn">👥</div><div class="si-body"><div class="si-t">重複</div><div class="si-d">名前・番号・メールアドレス</div></div><div style="font-size:16px;font-weight:700;color:var(--ac)">' + data.duplicateCount + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic" style="background:var(--redL);color:var(--red)">🚫</div><div class="si-body"><div class="si-t">不完全な連絡先</div><div class="si-d">名前なし・番号なし・メールなし</div></div><div style="font-size:16px;font-weight:700;color:var(--red)">' + data.incompleteCount + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '</div>';
+        sumHtml += '<div style="font-size:13px;font-weight:600;color:var(--tx2);margin-top:16px;margin-bottom:4px">フルディレクトリ</div>';
+        sumHtml += '<div style="background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)">';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic blu">📞</div><div class="si-body"><div class="si-t">全ての連絡先</div></div><div style="font-size:16px;font-weight:700">' + data.totalContacts + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '</div>';
+        document.getElementById('con-summary').innerHTML = sumHtml;
 
         // Duplicate groups
         var dupHtml = '';
@@ -1041,16 +1394,17 @@ function onContactScanComplete(jsonStr) {
         var incHtml = '';
         if (data.incompleteContacts && data.incompleteContacts.length) {
             incHtml = '<div class="con-sec-title">不完全な連絡先 (' + data.incompleteContacts.length + '件)</div>';
-            incHtml += '<div class="con-grp"><div style="font-size:13px;color:var(--tx2);margin-bottom:12px">名前や電話番号がない連絡先です</div>';
-            data.incompleteContacts.slice(0, 20).forEach(function(c) {
+            incHtml += '<div class="con-grp"><div style="font-size:13px;color:var(--tx2);margin-bottom:12px">名前・電話番号・メールアドレスが欠けている連絡先です</div>';
+            data.incompleteContacts.forEach(function(c) {
+                var reason = [];
+                if (!c.name) reason.push('名前なし');
+                if (!c.phones.length) reason.push('番号なし');
+                if (!c.emails.length) reason.push('メールなし');
                 incHtml += '<div class="con-item">' +
                     '<div class="con-avatar">' + (c.name ? c.name.charAt(0) : '?') + '</div>' +
                     '<div class="con-detail"><div class="con-name">' + (c.name || '名前なし') + '</div>' +
-                    '<div class="con-meta">' + (c.phones.length ? c.phones[0] : 'データなし') + '</div></div></div>';
+                    '<div class="con-meta">' + reason.join(' · ') + '</div></div></div>';
             });
-            if (data.incompleteContacts.length > 20) {
-                incHtml += '<div style="padding:8px 0;font-size:12px;color:var(--tx2);text-align:center">他 ' + (data.incompleteContacts.length - 20) + '件</div>';
-            }
             var ids = data.incompleteContacts.map(function(c) { return c.id; });
             incHtml += '<button class="con-merge-btn" style="background:var(--red)" onclick="deleteIncomplete(\'' + JSON.stringify(ids).replace(/'/g, "\\'") + '\')">不完全な連絡先をすべて削除</button></div>';
         }
@@ -1095,32 +1449,39 @@ function onContactDeleteComplete(deleted, total) {
 }
 
 function showContactDemo() {
-    // Web用デモデータ
     var demo = {
         totalContacts: 342,
-        duplicateCount: 8,
+        duplicateCount: 12,
         incompleteCount: 5,
         duplicateGroups: [
-            { matchType: 'name', primaryIndex: 0, contacts: [
-                { id: 1, name: '田中太郎', phones: ['090-1234-5678','03-1111-2222'], emails: ['tanaka@email.com'], dataCount: 3 },
-                { id: 2, name: '田中太郎', phones: ['090-1234-5678'], emails: [], dataCount: 1 }
+            { matchType:'name', primaryIndex:0, contacts:[
+                {id:1,name:'田中太郎',phones:['090-1234-5678','03-1111-2222'],emails:['tanaka@email.com'],dataCount:3},
+                {id:2,name:'田中太郎',phones:['090-1234-5678'],emails:[],dataCount:1}
             ]},
-            { matchType: 'phone', primaryIndex: 0, contacts: [
-                { id: 3, name: '佐藤花子', phones: ['080-9876-5432'], emails: ['sato@email.com'], dataCount: 2 },
-                { id: 4, name: 'Hanako S', phones: ['080-9876-5432'], emails: [], dataCount: 1 }
+            { matchType:'phone', primaryIndex:0, contacts:[
+                {id:3,name:'佐藤花子',phones:['080-9876-5432'],emails:['sato@email.com'],dataCount:2},
+                {id:4,name:'Hanako S',phones:['080-9876-5432'],emails:[],dataCount:1}
             ]},
-            { matchType: 'name', primaryIndex: 0, contacts: [
-                { id: 5, name: '鈴木一郎', phones: ['070-1111-2222'], emails: ['suzuki@work.com','suzuki@personal.com'], dataCount: 3 },
-                { id: 6, name: '鈴木一郎', phones: ['070-1111-2222'], emails: ['suzuki@work.com'], dataCount: 2 },
-                { id: 7, name: '鈴木一郎', phones: [], emails: ['suzuki@personal.com'], dataCount: 1 }
+            { matchType:'name', primaryIndex:0, contacts:[
+                {id:5,name:'鈴木一郎',phones:['070-1111-2222'],emails:['suzuki@work.com','suzuki@personal.com'],dataCount:3},
+                {id:6,name:'鈴木一郎',phones:['070-1111-2222'],emails:['suzuki@work.com'],dataCount:2},
+                {id:7,name:'鈴木一郎',phones:[],emails:['suzuki@personal.com'],dataCount:1}
+            ]},
+            { matchType:'email', primaryIndex:0, contacts:[
+                {id:8,name:'山田美咲',phones:['090-5555-6666'],emails:['yamada@gmail.com'],dataCount:2},
+                {id:9,name:'Misaki Y',phones:[],emails:['yamada@gmail.com'],dataCount:1}
+            ]},
+            { matchType:'name', primaryIndex:0, contacts:[
+                {id:10,name:'高橋健太',phones:['080-3333-4444','03-9999-8888'],emails:['takahashi@corp.jp'],dataCount:4},
+                {id:11,name:'高橋健太',phones:['080-3333-4444'],emails:[],dataCount:1}
             ]}
         ],
         incompleteContacts: [
-            { id: 101, name: '', phones: ['090-0000-0000'], emails: [] },
-            { id: 102, name: '（不明）', phones: [], emails: [] },
-            { id: 103, name: 'test', phones: [], emails: [] },
-            { id: 104, name: '', phones: [], emails: ['unknown@test.com'] },
-            { id: 105, name: 'メモ用', phones: [], emails: [] }
+            {id:101,name:'',phones:['090-0000-0000'],emails:[]},
+            {id:102,name:'（不明）',phones:[],emails:[]},
+            {id:103,name:'test',phones:[],emails:[]},
+            {id:104,name:'',phones:[],emails:['unknown@test.com']},
+            {id:105,name:'メモ用',phones:[],emails:[]}
         ]
     };
     onContactScanComplete(JSON.stringify(demo));
@@ -1135,16 +1496,27 @@ function updateScanProgress(pct, msg) { document.getElementById('ov-fill').style
 function onAIAnalysisComplete(jsonStr) {
     document.getElementById('scan-ov').classList.remove('on');
     try {
-        const data = JSON.parse(jsonStr);
+        var data = JSON.parse(jsonStr);
         if (data.similarGroups && data.similarGroups.length) {
-            document.getElementById('sim-list').innerHTML = data.similarGroups.map((g, gi) => {
-                const items = g.items.map((p, pi) =>
-                    '<div class="item' + (!p.isBest ? ' on' : '') + '" data-sz="' + p.mb + '" data-uri="' + p.uri + '" onclick="tog(this)">' +
-                    (p.uri ? '<img src="' + p.uri + '" loading="lazy">' : '<div class="ph">📷</div>') +
-                    '<div class="sz">' + p.mb + 'MB</div><div class="ck">✓</div></div>'
-                ).join('');
-                return '<div class="grp" data-gi="' + gi + '"><div class="grp-hd"><span>' + g.items.length + '枚が類似 · 節約' + g.savingsMB + 'MB</span>' +
-                    '<button onclick="grpToggle(' + gi + ')">ベスト以外を選択</button></div><div class="grid">' + items + '</div></div>';
+            var totalPhotos = 0, totalMB = 0;
+            data.similarGroups.forEach(function(g) {
+                g.items.forEach(function(p) { totalPhotos++; totalMB += p.mb; });
+            });
+            var subEl = document.getElementById('sim-sub');
+            if (subEl) subEl.textContent = totalPhotos + ' 枚の写真 (' + fmtMB(totalMB) + ')';
+
+            document.getElementById('sim-list').innerHTML = data.similarGroups.map(function(g, gi) {
+                var items = g.items.map(function(p, pi) {
+                    var isBest = !!p.isBest;
+                    return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" data-uri="' + (p.uri||'') + '" onclick="togSim(this)">' +
+                        (p.uri ? '<img src="' + p.uri + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
+                        (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
+                        '<div class="ck">✓</div></div>';
+                }).join('');
+                return '<div class="grp" data-gi="' + gi + '">' +
+                    '<div class="grp-hd"><span class="grp-count">' + g.items.length + ' 似ています</span>' +
+                    '<button class="grp-desel" onclick="grpDeselectAll(' + gi + ')">すべての選択を解除</button></div>' +
+                    '<div class="grp-scroll">' + items + '</div></div>';
             }).join('');
         }
         if (data.screenshots) renderNativeList('ss-grid', data.screenshots, true);
@@ -1178,28 +1550,256 @@ function renderResults(photos, ss, vid, big) {
 }
 
 function renderSimilar(photos) {
-    const el = document.getElementById('sim-list');
-    if (photos.length < 2) { el.innerHTML = ''; return; }
-    const sorted = [...photos].sort((a, b) => a.size - b.size);
-    const groups = [];
-    let g = [sorted[0]];
-    for (let i = 1; i < sorted.length; i++) {
-        const ratio = Math.abs(sorted[i].size - sorted[i - 1].size) / Math.max(sorted[i - 1].size, 1);
-        if (ratio < 0.25 && g.length < 5) g.push(sorted[i]);
+    var el = document.getElementById('sim-list');
+    if (photos.length < 2) { el.innerHTML = ''; allSimPhotos = []; return; }
+    var sorted = photos.slice().sort(function(a,b){ return a.size - b.size; });
+    var groups = [], g = [sorted[0]];
+    for (var i = 1; i < sorted.length; i++) {
+        var ratio = Math.abs(sorted[i].size - sorted[i-1].size) / Math.max(sorted[i-1].size, 1);
+        if (ratio < 0.25 && g.length < 8) g.push(sorted[i]);
         else { groups.push(g); g = [sorted[i]]; }
     }
     groups.push(g);
 
-    el.innerHTML = groups.filter(g => g.length >= 2).map((g, gi) => {
-        const total = g.reduce((a, p) => a + p.mb, 0).toFixed(1);
-        const items = g.map((p, pi) =>
-            '<div class="item' + (pi > 0 ? ' on' : '') + '" data-sz="' + p.mb + '" onclick="tog(this)">' +
-            (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div class="ph">📷</div>') +
-            '<div class="sz">' + p.mb + 'MB</div><div class="ck">✓</div></div>'
-        ).join('');
-        return '<div class="grp" data-gi="' + gi + '"><div class="grp-hd"><span>' + g.length + '枚が類似 · ' + total + 'MB</span>' +
-            '<button onclick="grpToggle(' + gi + ')">ベスト以外を選択</button></div><div class="grid">' + items + '</div></div>';
+    var validGroups = groups.filter(function(g){ return g.length >= 2; });
+
+    // Store all photos with groupId for calendar filter
+    allSimPhotos = [];
+    validGroups.forEach(function(g, gi) {
+        g.forEach(function(p) { allSimPhotos.push({url:p.url,mb:p.mb,size:p.size,date:p.date||null,groupId:gi}); });
+    });
+
+    // Reset filter
+    activeFilter = null;
+    calSelectedDates = {};
+    document.getElementById('sim-filter-tag').style.display = 'none';
+
+    // Stats
+    var totalPhotos = 0, totalMB = 0;
+    validGroups.forEach(function(g) {
+        g.forEach(function(p) { totalPhotos++; totalMB += p.mb; });
+    });
+    var subEl = document.getElementById('sim-sub');
+    if (subEl) subEl.textContent = totalPhotos + ' 枚の写真 (' + fmtMB(totalMB) + ')';
+
+    el.innerHTML = validGroups.map(function(g, gi) {
+        var items = g.map(function(p, pi) {
+            var isBest = (pi === 0);
+            return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" onclick="togSim(this)">' +
+                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
+                (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
+                '<div class="ck">✓</div></div>';
+        }).join('');
+        return '<div class="grp" data-gi="' + gi + '">' +
+            '<div class="grp-hd"><span class="grp-count">' + g.length + ' 似ています</span>' +
+            '<button class="grp-desel" onclick="grpDeselectAll(' + gi + ')">すべての選択を解除</button></div>' +
+            '<div class="grp-scroll">' + items + '</div></div>';
     }).join('');
+
+    updateSimDeleteBar();
+}
+
+function togSim(el) {
+    el.classList.toggle('on');
+    updateSimDeleteBar();
+}
+
+function toggleAllSimilar() {
+    var items = document.querySelectorAll('#sim-list .item');
+    items.forEach(function(it) { it.classList.remove('on'); });
+    updateSimDeleteBar();
+}
+
+function updateSimDeleteBar() {
+    var sel = document.querySelectorAll('#sim-list .item.on');
+    var btn = document.getElementById('del-btn');
+    var txt = document.getElementById('del-txt');
+    btn.classList.add('indigo');
+    if (sel.length && currentTab === 'similar') {
+        var mb = 0; sel.forEach(function(i) { mb += parseFloat(i.dataset.sz || 0); });
+        txt.textContent = sel.length + ' の類似アイテムを削除 (' + fmtMB(mb) + ')';
+        btn.classList.add('show');
+    } else if (currentTab === 'similar') {
+        btn.classList.remove('show');
+    }
+}
+
+/* ============================================================
+   CALENDAR DATE FILTER
+   ============================================================ */
+var allSimPhotos = [];       // 全グループの写真（日付付き）
+var calSelectedDates = {};   // { "2026-03-12": true }
+var calPhotoDates = {};      // { "2026-03-12": count }
+var activeFilter = null;     // null = フィルターなし
+
+function openCalendar() {
+    calSelectedDates = {};
+    buildCalendar();
+    document.getElementById('cal-modal').classList.add('on');
+}
+
+function closeCalendar() {
+    document.getElementById('cal-modal').classList.remove('on');
+}
+
+function buildCalendar() {
+    var scroll = document.getElementById('cal-scroll');
+    calPhotoDates = {};
+    allSimPhotos.forEach(function(p) {
+        if (!p.date) return;
+        calPhotoDates[p.date] = (calPhotoDates[p.date] || 0) + 1;
+    });
+
+    var now = new Date();
+    var html = '';
+    for (var m = 0; m < 12; m++) {
+        var year = now.getFullYear();
+        var month = now.getMonth() - m;
+        while (month < 0) { month += 12; year--; }
+
+        html += '<div class="cal-month-title">' + (month + 1) + '月 ' + year + '</div>';
+        html += '<div class="cal-grid">';
+
+        var firstDay = new Date(year, month, 1).getDay();
+        for (var e = 0; e < firstDay; e++) html += '<div class="cal-day empty"></div>';
+
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (var d = 1; d <= daysInMonth; d++) {
+            var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            var photoCount = calPhotoDates[dateStr] || 0;
+            var isSelected = !!calSelectedDates[dateStr];
+            var cls = 'cal-day';
+            if (photoCount > 0) {
+                cls += ' has-photos';
+                if (isSelected) cls += ' selected';
+                html += '<div class="' + cls + '" data-date="' + dateStr + '" data-count="' + photoCount + '" onclick="toggleCalDay(this)">' + d + '</div>';
+            } else {
+                cls += ' no-photos';
+                html += '<div class="' + cls + '">' + d + '</div>';
+            }
+        }
+        html += '</div>';
+    }
+    scroll.innerHTML = html;
+    updateCalDoneBtn();
+}
+
+function toggleCalDay(el) {
+    var date = el.dataset.date;
+    if (!date) return;
+    if (calSelectedDates[date]) {
+        delete calSelectedDates[date];
+        el.classList.remove('selected');
+    } else {
+        calSelectedDates[date] = true;
+        el.classList.add('selected');
+    }
+    updateCalDoneBtn();
+}
+
+function updateCalDoneBtn() {
+    var btn = document.getElementById('cal-done');
+    var count = Object.keys(calSelectedDates).length;
+    if (count > 0) {
+        btn.classList.add('active');
+        btn.textContent = '完了 (' + count + '日)';
+    } else {
+        btn.classList.remove('active');
+        btn.textContent = '完了';
+    }
+}
+
+function applyDateFilter() {
+    var selected = Object.keys(calSelectedDates);
+    closeCalendar();
+
+    if (selected.length === 0) {
+        clearDateFilter();
+        return;
+    }
+
+    activeFilter = {};
+    selected.forEach(function(d) { activeFilter[d] = true; });
+
+    // フィルタータグを表示
+    var tag = document.getElementById('sim-filter-tag');
+    var label = document.getElementById('sim-filter-label');
+    tag.style.display = 'flex';
+    if (selected.length === 1) {
+        var parts = selected[0].split('-');
+        label.textContent = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日の写真';
+    } else {
+        label.textContent = selected.length + '日間の写真';
+    }
+
+    // フィルタリングして再描画
+    filterAndRenderSimilar();
+
+    // 似ている写真ページに確実に遷移
+    if (currentTab !== 'similar') go('similar');
+}
+
+function clearDateFilter() {
+    activeFilter = null;
+    calSelectedDates = {};
+    var tag = document.getElementById('sim-filter-tag');
+    if (tag) tag.style.display = 'none';
+    filterAndRenderSimilar();
+}
+
+function filterAndRenderSimilar() {
+    var el = document.getElementById('sim-list');
+    if (!allSimPhotos.length) return;
+
+    // 全写真からグループを再構築
+    var photosToUse = allSimPhotos;
+    if (activeFilter) {
+        photosToUse = allSimPhotos.filter(function(p) {
+            return p.date && activeFilter[p.date];
+        });
+    }
+
+    if (photosToUse.length < 2) {
+        el.innerHTML = '<div class="empty on">選択した日付に似ている写真はありません</div>';
+        updateSimDeleteBar();
+        return;
+    }
+
+    // グループ化（groupIdで再グループ）
+    var groupMap = {};
+    photosToUse.forEach(function(p) {
+        if (!groupMap[p.groupId]) groupMap[p.groupId] = [];
+        groupMap[p.groupId].push(p);
+    });
+
+    var validGroups = [];
+    Object.keys(groupMap).forEach(function(gid) {
+        if (groupMap[gid].length >= 2) validGroups.push(groupMap[gid]);
+    });
+
+    // 統計更新
+    var totalPhotos = 0, totalMB = 0;
+    validGroups.forEach(function(g) {
+        g.forEach(function(p) { totalPhotos++; totalMB += p.mb; });
+    });
+    var subEl = document.getElementById('sim-sub');
+    if (subEl) subEl.textContent = totalPhotos + ' 枚の写真 (' + fmtMB(totalMB) + ')';
+
+    el.innerHTML = validGroups.map(function(g, gi) {
+        var items = g.map(function(p, pi) {
+            var isBest = (pi === 0);
+            return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" onclick="togSim(this)">' +
+                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
+                (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
+                '<div class="ck">✓</div></div>';
+        }).join('');
+        return '<div class="grp" data-gi="' + gi + '">' +
+            '<div class="grp-hd"><span class="grp-count">' + g.length + ' 似ています</span>' +
+            '<button class="grp-desel" onclick="grpDeselectAll(' + gi + ')">すべての選択を解除</button></div>' +
+            '<div class="grp-scroll">' + items + '</div></div>';
+    }).join('');
+
+    updateSimDeleteBar();
 }
 
 function renderList(gridId, items, preCheck, isVideo) {
@@ -1216,66 +1816,83 @@ function renderList(gridId, items, preCheck, isVideo) {
    DEMO DATA
    ============================================================ */
 function loadDemo() {
-    const I = 'https://images.unsplash.com/photo-';
-    const q = '?w=250&q=70';
+    var I = 'https://images.unsplash.com/photo-';
+    var q = '?w=250&q=70';
+    // 様々なUnsplash写真ID
+    var ids = [
+        '1529626455594-4ff0802cfb7e','1531306728370-53bfd6202e88','1506157786151-b8491531f063',
+        '1520697921389-9a2f647035ce','1511895426328-dc8714191300','1504274066651-8d31a536b11a',
+        '1588612143431-7e87ab06d71b','1549608276-5786777e6587','1551373884-8a0750074df7',
+        '1534447677768-be436bb09401','1621360841013-c76831f1a301','1600607688969-a5bfcd64fd28',
+        '1611162617474-5b21e879e113','1550745165-9bc0b252726f','1516807869374-4b53db6fcbf4',
+        '1535016120720-40c68798625c','1518837695005-2083093ee35b','1507003211169-0a1dd7228f2d',
+        '1494790108377-be9c29b29330','1501854140801-50d01698950b','1519125323398-675f0ddb6308',
+        '1526512340740-53b4eb7dc0f6','1544005313-94ddf0286df2','1502899576159-f224dc2349fa'
+    ];
+    var photos = [
+        // Group 1: 7枚 - 3月5日撮影
+        {url:I+ids[0]+q,mb:2.6,size:2726297,date:'2026-03-05'},{url:I+ids[0]+q+'&blur=2',mb:2.6,size:2726297,date:'2026-03-05'},
+        {url:I+ids[0]+q+'&sepia=1',mb:2.5,size:2621440,date:'2026-03-05'},{url:I+ids[0]+q+'&blur=5',mb:2.5,size:2621440,date:'2026-03-05'},
+        {url:I+ids[0]+q+'&sat=-100',mb:2.5,size:2621440,date:'2026-03-05'},{url:I+ids[0]+q+'&blur=8',mb:2.4,size:2516582,date:'2026-03-05'},
+        {url:I+ids[0]+q+'&con=50',mb:2.4,size:2516582,date:'2026-03-05'},
+        // Group 2: 4枚 - 3月1日撮影
+        {url:I+ids[1]+q,mb:4.2,size:4404019,date:'2026-03-01'},{url:I+ids[1]+q+'&sepia=1',mb:4.2,size:4404019,date:'2026-03-01'},
+        {url:I+ids[1]+q+'&blur=2',mb:4.1,size:4298137,date:'2026-03-01'},{url:I+ids[1]+q+'&sat=-100',mb:4.1,size:4298137,date:'2026-03-01'},
+        // Group 3: 6枚 - 2月22日撮影
+        {url:I+ids[2]+q,mb:3.8,size:3984588,date:'2026-02-22'},{url:I+ids[2]+q+'&blur=3',mb:3.8,size:3984588,date:'2026-02-22'},
+        {url:I+ids[2]+q+'&sepia=1',mb:3.7,size:3879731,date:'2026-02-22'},{url:I+ids[2]+q+'&sat=-100',mb:3.7,size:3879731,date:'2026-02-22'},
+        {url:I+ids[2]+q+'&blur=6',mb:3.6,size:3774873,date:'2026-02-22'},{url:I+ids[2]+q+'&con=50',mb:3.6,size:3774873,date:'2026-02-22'},
+        // Group 4: 2枚 - 2月14日撮影
+        {url:I+ids[14]+q,mb:5.1,size:5347737,date:'2026-02-14'},{url:I+ids[14]+q+'&blur=2',mb:5.0,size:5242880,date:'2026-02-14'},
+        // Group 5: 3枚 - 1月28日撮影
+        {url:I+ids[15]+q,mb:3.3,size:3461325,date:'2026-01-28'},{url:I+ids[15]+q+'&sepia=1',mb:3.3,size:3461325,date:'2026-01-28'},
+        {url:I+ids[15]+q+'&blur=3',mb:3.2,size:3355443,date:'2026-01-28'},
+        // Group 6: 5枚 - 1月15日撮影
+        {url:I+ids[16]+q,mb:2.9,size:3041869,date:'2026-01-15'},{url:I+ids[16]+q+'&blur=2',mb:2.9,size:3041869,date:'2026-01-15'},
+        {url:I+ids[16]+q+'&sepia=1',mb:2.8,size:2936013,date:'2026-01-15'},{url:I+ids[16]+q+'&sat=-100',mb:2.8,size:2936013,date:'2026-01-15'},
+        {url:I+ids[16]+q+'&con=50',mb:2.8,size:2936013,date:'2026-01-15'},
+        // Group 7: 2枚 - 12月25日撮影
+        {url:I+ids[17]+q,mb:6.1,size:6396313,date:'2025-12-25'},{url:I+ids[17]+q+'&blur=2',mb:6.0,size:6291456,date:'2025-12-25'}
+    ].map(function(p){p.name='photo.jpg';return p;});
 
-    const photos = [
-        { url: I+'1529626455594-4ff0802cfb7e'+q, mb: 2.6, size: 2726297 },
-        { url: I+'1529626455594-4ff0802cfb7e'+q+'&blur=2', mb: 2.6, size: 2726297 },
-        { url: I+'1529626455594-4ff0802cfb7e'+q+'&sepia=1', mb: 2.4, size: 2516582 },
-        { url: I+'1531306728370-53bfd6202e88'+q, mb: 4.2, size: 4404019 },
-        { url: I+'1531306728370-53bfd6202e88'+q+'&sepia=1', mb: 4.2, size: 4404019 },
-        { url: I+'1506157786151-b8491531f063'+q, mb: 3.8, size: 3984588 },
-        { url: I+'1506157786151-b8491531f063'+q+'&blur=3', mb: 3.6, size: 3774873 },
-    ].map(p => ({ ...p, name: 'photo.jpg' }));
+    var ss = [
+        I+ids[12]+q, I+ids[13]+q, I+ids[1]+q, I+ids[4]+q,
+        I+ids[5]+q, I+ids[6]+q, I+ids[18]+q, I+ids[19]+q,
+        I+ids[20]+q, I+ids[21]+q, I+ids[22]+q, I+ids[23]+q
+    ].map(function(url){return{url:url,name:'screenshot.png',mb:1.8,size:1887436};});
 
-    const ss = [
-        I+'1611162617474-5b21e879e113'+q, I+'1550745165-9bc0b252726f'+q,
-        I+'1531306728370-53bfd6202e88'+q, I+'1511895426328-dc8714191300'+q,
-        I+'1504274066651-8d31a536b11a'+q, I+'1588612143431-7e87ab06d71b'+q,
-    ].map(url => ({ url, name: 'screenshot.png', mb: 1.8, size: 1887436 }));
-
-    const vid = [
-        { url: I+'1520697921389-9a2f647035ce'+q, name: 'video.mp4', mb: 6860, size: 7193804800, gb: 6.86, dur: '07:54' },
-        { url: I+'1506157786151-b8491531f063'+q, name: 'clip.mov', mb: 4060, size: 4257218560, gb: 4.06, dur: '05:37' },
-        { url: I+'1504274066651-8d31a536b11a'+q, name: 'rec.mp4', mb: 3520, size: 3691741184, gb: 3.52, dur: '04:44' },
-        { url: I+'1511895426328-dc8714191300'+q, name: 'film.mp4', mb: 3380, size: 3543348224, gb: 3.38, dur: '05:46' },
+    var vid = [
+        {url:I+ids[3]+q,name:'trip.mp4',mb:6860,size:7193804800,gb:6.86,dur:'07:54'},
+        {url:I+ids[2]+q,name:'concert.mov',mb:4060,size:4257218560,gb:4.06,dur:'05:37'},
+        {url:I+ids[5]+q,name:'drone.mp4',mb:3520,size:3691741184,gb:3.52,dur:'04:44'},
+        {url:I+ids[4]+q,name:'family.mp4',mb:3380,size:3543348224,gb:3.38,dur:'05:46'},
+        {url:I+ids[15]+q,name:'event.mov',mb:2840,size:2978349056,gb:2.84,dur:'03:21'},
+        {url:I+ids[16]+q,name:'sunset.mp4',mb:2150,size:2254364672,gb:2.15,dur:'02:48'}
     ];
 
-    const big = [
-        { url: I+'1621360841013-c76831f1a301'+q, name: 'IMG.CR2', mb: 45.2, size: 47395635 },
-        { url: I+'1600607688969-a5bfcd64fd28'+q, name: 'DSC.NEF', mb: 38.7, size: 40579277 },
-        { url: I+'1588612143431-7e87ab06d71b'+q, name: 'IMG.ARW', mb: 52.1, size: 54631834 },
-        { url: I+'1549608276-5786777e6587'+q, name: 'IMG.DNG', mb: 41.5, size: 43520614 },
-        { url: I+'1551373884-8a0750074df7'+q, name: 'DSC.CR2', mb: 48.9, size: 51275366 },
-        { url: I+'1534447677768-be436bb09401'+q, name: 'IMG.NEF', mb: 39.2, size: 41103564 },
+    var big = [
+        {url:I+ids[10]+q,name:'IMG_0421.CR2',mb:45.2,size:47395635},
+        {url:I+ids[11]+q,name:'DSC_1082.NEF',mb:38.7,size:40579277},
+        {url:I+ids[6]+q,name:'IMG_0933.ARW',mb:52.1,size:54631834},
+        {url:I+ids[7]+q,name:'_MG_2847.DNG',mb:41.5,size:43520614},
+        {url:I+ids[8]+q,name:'DSC_3291.CR2',mb:48.9,size:51275366},
+        {url:I+ids[9]+q,name:'IMG_4501.NEF',mb:39.2,size:41103564},
+        {url:I+ids[14]+q,name:'RAW_0012.ARW',mb:44.8,size:46966374},
+        {url:I+ids[17]+q,name:'IMG_7723.DNG',mb:36.5,size:38273433}
     ];
 
     renderSimilar(photos);
 
-    document.getElementById('ss-grid').innerHTML = ss.map(s =>
-        '<div class="item on" data-sz="' + s.mb + '" onclick="tog(this)"><img src="' + s.url + '" loading="lazy"><div class="sz">' + s.mb + 'MB</div><div class="ck">✓</div></div>'
-    ).join('');
-
-    document.getElementById('vid-grid').innerHTML = vid.map(v =>
-        '<div class="item" data-sz="' + v.mb + '" onclick="tog(this)"><img src="' + v.url + '" loading="lazy"><div class="play">▶</div><div class="sz">' + v.gb + 'GB · ' + v.dur + '</div><div class="ck">✓</div></div>'
-    ).join('');
-
-    document.getElementById('big-grid').innerHTML = big.map(function(b) {
-        return '<div class="item" data-sz="' + b.mb + '" onclick="tog(this)"><img src="' + b.url + '" loading="lazy"><div class="tag">' + getExt(b.name).toUpperCase() + '</div><div class="sz">' + b.mb + 'MB</div><div class="ck">✓</div></div>';
+    document.getElementById('ss-grid').innerHTML = ss.map(function(s){
+        return '<div class="item on" data-sz="'+s.mb+'" onclick="tog(this)"><img src="'+s.url+'" loading="lazy"><div class="sz">'+s.mb+'MB</div><div class="ck">✓</div></div>';
     }).join('');
 
-    updateHome();
-}
+    document.getElementById('vid-grid').innerHTML = vid.map(function(v){
+        return '<div class="item" data-sz="'+v.mb+'" onclick="tog(this)"><img src="'+v.url+'" loading="lazy"><div class="play">▶</div><div class="sz">'+v.gb+'GB · '+v.dur+'</div><div class="ck">✓</div></div>';
+    }).join('');
 
-/* ============================================================
-   INIT
-   ============================================================ */
-document.addEventListener('DOMContentLoaded', function() {
-    initTheme();
-    loadDemo();
-    go('home');
-});
-</script>
-</body>
-</html>
+    document.getElementById('big-grid').innerHTML = big.map(function(b){
+        return '<div class="item" data-sz="'+b.mb+'" onclick="tog(this)"><img src="'+b.url+'" loading="lazy"><div class="tag">'+getExt(b.name).toUpperCase()+'</div><div class="sz">'+b.mb+'MB</div><div class="ck">✓</div></div>';
+    }).join('');
+
+    up
