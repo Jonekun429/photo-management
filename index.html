@@ -1,943 +1,1281 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cleaner App</title>
-<style>
-:root {
-  --bg:         #0a100e;
-  --card:       #111f1b;
-  --card-2:     #162520;
-  --border:     rgba(0,180,130,0.10);
-  --text:       #e6f5f1;
-  --text-sub:   #5e9c89;
-  --primary:    #005D4D;
-  --mid:        #007a65;
-  --accent:     #00e8b5;
-  --danger:     #e05252;
-  --dnk:        #c03c3c;
-  --keep:       #007a65;
-  --keepdk:     #005D4D;
-  --gold:       #ffd166;
-  --bdark:      rgba(0,0,0,0.62);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>写真クリーナー</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+/* ============ THEME ============ */
+:root{
+    --font:'Noto Sans JP',-apple-system,sans-serif;
+    --bg:#E8EFEC;--sf:#FFFFFF;--sf2:#F4F7F6;
+    --tx:#2C3E3A;--tx2:#6B8A82;--tx3:#9FB5AE;
+    --ac:#005D4D;--ac2:#00896E;--acL:#D4EDE6;
+    --red:#D94F4F;--redL:#FCEAEA;
+    --blue:#4A8FD6;--blueL:#E8F1FA;
+    --amber:#D4943A;--amberL:#FBF2E4;
+    --purple:#8B6FC0;--purpleL:#F0EBF7;
+    --bdr:rgba(0,93,77,.08);
+    --sh:0 1px 4px rgba(0,60,50,.06);
+    --r:16px;--r2:12px;
+    --safe:env(safe-area-inset-top,0px);--safB:env(safe-area-inset-bottom,0px);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;}
-body{background:#000;display:flex;justify-content:center;height:100vh;overflow:hidden;}
-#app{width:100%;max-width:480px;height:100%;background:var(--bg);color:var(--text);display:flex;flex-direction:column;margin:0 auto;position:relative;}
+[data-theme="dark"]{
+    --bg:#0B1A16;--sf:#142A24;--sf2:#1A3530;
+    --tx:#DAE8E3;--tx2:#6B9488;--tx3:#3D6358;
+    --acL:rgba(0,93,77,.2);
+    --redL:rgba(217,79,79,.12);--blueL:rgba(74,143,214,.1);
+    --amberL:rgba(212,148,58,.1);--purpleL:rgba(139,111,192,.1);
+    --bdr:rgba(255,255,255,.05);--sh:0 1px 4px rgba(0,0,0,.2);
+}
 
-/* ── ヘッダー ── */
-header{padding:36px 18px 14px;display:flex;flex-direction:column;gap:10px;background:var(--bg);flex-shrink:0;z-index:20;border-bottom:1px solid var(--border);}
-.hdr-top{display:flex;justify-content:space-between;align-items:center;min-height:34px;}
-.back-btn{font-size:17px;cursor:pointer;display:none;color:var(--accent);font-weight:700;}
-.hdr-actions{display:none;gap:8px;align-items:center;}
-.pill-btn{background:rgba(0,200,154,0.12);border:1px solid rgba(0,200,154,0.25);color:var(--accent);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
-.hdr-title-row{display:flex;align-items:flex-end;gap:10px;}
-h1{font-size:25px;font-weight:800;letter-spacing:-.3px;}
-.hdr-sub{font-size:12px;color:var(--text-sub);display:none;padding-bottom:2px;}
+/* ============ RESET ============ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
+#app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}
+button{font-family:var(--font);border:none;cursor:pointer;background:none;color:var(--tx)}
+a{color:var(--ac);text-decoration:none}
 
-/* ── ソートボタン ── */
-.sort-btn{background:rgba(0,200,154,0.10);border:1px solid rgba(0,200,154,0.22);color:var(--accent);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
-.sort-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;}
+/* ============ HEADER ============ */
+.hd{
+    padding:calc(10px + var(--safe)) 20px 10px;
+    background:var(--bg);flex-shrink:0;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;min-height:48px;
+}
+.hd-left{display:flex;align-items:center;gap:10px}
+.hd-back{display:none;font-size:28px;color:var(--ac);padding:4px 8px 4px 0;font-weight:300;line-height:1}
+.hd-back:active{opacity:.4}
+.hd h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.hd-pill{display:none;background:var(--sf);color:var(--ac);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;box-shadow:var(--sh)}
+.hd-pill:active{opacity:.6}
 
-/* ── ソートボトムシート ── */
-.sort-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;backdrop-filter:blur(2px);}
-.sort-overlay.open{display:block;}
-.sort-sheet{position:absolute;bottom:0;left:0;right:0;background:#162a24;border-radius:22px 22px 0 0;padding:0 0 20px;z-index:61;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.8,.25,1);}
-.sort-overlay.open .sort-sheet{transform:translateY(0);}
-.sort-handle{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:12px auto 4px;}
-.sort-title{font-size:13px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:1px;padding:8px 20px 12px;border-bottom:1px solid var(--border);}
-.sort-option{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .15s;font-size:15px;font-weight:500;}
-.sort-option:active{background:rgba(0,200,154,.06);}
-.sort-option .sort-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .2s;}
-.sort-option.active .sort-check{background:var(--accent);border-color:var(--accent);color:#0a100e;font-weight:900;}
+/* ============ PAGES ============ */
+.pg{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none;padding-bottom:calc(76px + var(--safB))}
+.pg::-webkit-scrollbar{display:none}
+.pg.on{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── ビュー ── */
-.view{flex:1;overflow-y:auto;padding:16px;display:none;}
-.view.active{display:block;}
+/* ============ HOME ============ */
+.gauge-sec{padding:24px 20px 16px;display:flex;flex-direction:column;align-items:center}
+.gauge{position:relative;width:160px;height:160px}
+.gauge svg{transform:rotate(-90deg)}
+.gauge-bg{fill:none;stroke:var(--acL);stroke-width:12}
+.gauge-fill{fill:none;stroke:url(#gG);stroke-width:12;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+.gauge-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge-val{font-size:30px;font-weight:800;color:var(--ac);line-height:1}
+.gauge-lbl{font-size:12px;color:var(--tx2);margin-top:4px}
+.gauge-row{display:flex;gap:32px;margin-top:14px}
+.gauge-row div{text-align:center}
+.gauge-row b{font-size:15px;font-weight:700;display:block}
+.gauge-row span{font-size:11px;color:var(--tx2)}
 
-/* 削除バー（スワイプ詳細では非表示） */
-.del-bar{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(150%);width:100%;max-width:480px;padding:0 16px;display:flex;justify-content:center;z-index:30;transition:transform .32s cubic-bezier(.25,.8,.25,1);pointer-events:none;}
-.del-bar.show{transform:translateX(-50%) translateY(0);pointer-events:auto;}
-.del-bar.hidden-force{display:none !important;}
-.btn-del{width:100%;padding:15px 20px;background:linear-gradient(135deg,var(--danger),var(--dnk));color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(224,82,82,.4);display:flex;justify-content:center;align-items:center;gap:8px;}
+.smart{margin:0 20px 16px;padding:16px 18px;background:var(--ac);border-radius:var(--r);display:flex;align-items:center;gap:14px;color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.2)}
+.smart:active{opacity:.88;transform:scale(.99)}
+.smart-ic{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.smart h3{font-size:15px;font-weight:700}
+.smart p{font-size:12px;opacity:.75;margin-top:2px}
 
-/* 共通セレクタブル */
-.sel-item{position:relative;cursor:pointer;border:2px solid transparent;transition:transform .1s,opacity .1s;overflow:hidden;background:var(--card);}
-.sel-item.selected{transform:scale(.91);opacity:.75;border-radius:12px;}
-.chk{position:absolute;bottom:8px;right:8px;width:22px;height:22px;border:2px solid rgba(255,255,255,.7);border-radius:6px;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;font-weight:800;background:rgba(0,0,0,.25);z-index:10;transition:all .2s;}
-.sel-item.selected .chk{background:var(--danger);border-color:var(--danger);color:#fff;}
+.cats{padding:0 20px 16px;display:flex;flex-direction:column;gap:10px}
+.cat{background:var(--sf);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;transition:all .1s;text-align:left}
+.cat:active{transform:scale(.98);opacity:.9}
+.cat-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.cat-body{flex:1;min-width:0}
+.cat-name{font-size:15px;font-weight:600}
+.cat-desc{font-size:12px;color:var(--tx2);margin-top:2px}
+.cat-right{text-align:right;flex-shrink:0}
+.cat-size{font-size:17px;font-weight:700;color:var(--ac)}
+.cat-cnt{font-size:11px;color:var(--tx2)}
+.cat-arr{color:var(--tx3);font-size:20px;margin-left:4px}
 
-/* バッジ */
-.bdg-top{position:absolute;top:7px;left:7px;background:var(--bdark);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;z-index:2;letter-spacing:.5px;}
-.bdg-bot{position:absolute;bottom:7px;left:7px;background:var(--bdark);color:#fff;font-size:11px;font-weight:700;padding:3px 6px;border-radius:4px;z-index:2;}
-.vid-bdg{position:absolute;bottom:7px;left:7px;background:rgba(0,93,77,.85);border-radius:6px;padding:4px 7px;display:flex;flex-direction:column;z-index:2;}
-.vid-bdg .vs{font-size:12px;font-weight:700;color:#fff;line-height:1.2;}
-.vid-bdg .vd{font-size:10px;color:var(--accent);line-height:1.2;}
+/* ============ DETAIL PAGES ============ */
+.d-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--bg)}
+.d-bar .d-info{font-size:13px;color:var(--tx2)}
+.d-bar .d-info strong{color:var(--red);font-weight:700}
+.d-bar .d-pill{background:var(--sf);color:var(--ac);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;box-shadow:var(--sh)}
 
-/* ── ホーム ── */
-.sto-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;}
-.sto-row .used{color:var(--accent);font-weight:700;}
-.sto-row .pct{color:var(--text-sub);}
-.prog-track{width:100%;height:6px;background:var(--card);border-radius:3px;margin-bottom:20px;overflow:hidden;}
-.prog-fill{width:82%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;}
-.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.home-card{border-radius:20px;height:150px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;cursor:pointer;background-size:cover;background-position:center;transition:transform .2s;}
-.home-card:active{transform:scale(.97);}
-.home-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.18) 55%,transparent 100%);z-index:1;}
-.home-card::after{content:'';position:absolute;inset:0;background:rgba(0,93,77,.18);z-index:1;}
-.hc-inner{position:relative;z-index:2;}
-.home-card h3{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:3px;}
-.home-card p{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;}
-.home-card.photos     {background-color:#fdf5ff;}
-.home-card.raw        {background-color:#fff5e0;}
-.home-card.videos     {background-color:#fff0e8;}
-.home-card.screenshots{background-color:#e8f8ff;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+.item{position:relative;cursor:pointer;overflow:hidden;background:var(--sf2);border-radius:4px}
+.item img{width:100%;aspect-ratio:1;object-fit:cover;display:block;transition:filter .15s}
+.item.on img{filter:brightness(.5)}
+.item .ck{position:absolute;top:8px;right:8px;width:26px;height:26px;border:2px solid rgba(255,255,255,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:transparent;background:rgba(0,0,0,.15);backdrop-filter:blur(4px);z-index:2;transition:all .15s}
+.item.on .ck{background:var(--ac);border-color:var(--ac);color:#fff}
+.item .tag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;z-index:2}
+.item .sz{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;z-index:2}
+.item .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(0,0,0,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;z-index:2}
 
-/* ── メディアグリッド（大きめ 2列） ── */
-.media-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:100px;}
-.media-item{border-radius:14px;aspect-ratio:1/1;position:relative;}
-.media-item img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;}
+.grp{margin-bottom:3px}
+.grp-hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--sf)}
+.grp-hd span{font-size:13px;font-weight:600;color:var(--tx2)}
+.grp-hd button{font-size:12px;color:var(--ac);font-weight:600;padding:4px 0}
+.grp-hd button:active{opacity:.5}
+.grp .item:first-child .ck{display:none}
+.grp .item:first-child::after{content:'BEST';position:absolute;top:8px;right:8px;background:var(--ac);color:#fff;font-size:9px;font-weight:800;padding:4px 8px;border-radius:5px;z-index:3;letter-spacing:1px}
 
-/* ── 似ている写真 ── */
-.sim-group{margin-bottom:26px;}
-.sim-group-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.sim-group-title{font-size:14px;font-weight:700;}
-.grp-sel-btn{font-size:12px;color:var(--text-sub);cursor:pointer;}
-.sim-scroll{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;}
-.sim-scroll::-webkit-scrollbar{height:3px;}
-.sim-scroll::-webkit-scrollbar-thumb{background:var(--card-2);border-radius:2px;}
-.sim-best{flex:0 0 148px;aspect-ratio:3/4;border-radius:14px;position:relative;overflow:hidden;scroll-snap-align:start;}
-.sim-best img{width:100%;height:100%;object-fit:cover;}
-.best-lbl{position:absolute;bottom:8px;left:8px;background:rgba(0,93,77,.92);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;z-index:2;display:flex;align-items:center;gap:3px;}
-.best-lbl .star{color:var(--accent);}
-.sim-sub{flex:0 0 110px;aspect-ratio:3/4;scroll-snap-align:start;}
+/* ============ CONTACTS ============ */
+.con-grp{background:var(--sf);border-radius:var(--r);margin:10px 16px;padding:16px;box-shadow:var(--sh)}
+.con-grp-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.con-grp-hd h4{font-size:14px;font-weight:600}
+.con-grp-hd .cg-type{font-size:11px;color:var(--tx2);background:var(--sf2);padding:3px 8px;border-radius:5px}
+.con-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.con-item:last-child{border-bottom:none}
+.con-avatar{width:40px;height:40px;background:var(--acL);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--ac);font-weight:700}
+.con-avatar.primary{background:var(--ac);color:#fff}
+.con-detail{flex:1;min-width:0}
+.con-name{font-size:14px;font-weight:600}
+.con-meta{font-size:12px;color:var(--tx2);margin-top:1px}
+.con-badge{font-size:10px;font-weight:700;color:var(--ac);background:var(--acL);padding:2px 8px;border-radius:4px}
+.con-merge-btn{width:100%;margin-top:12px;padding:12px;background:var(--ac);color:#fff;border-radius:var(--r2);font-size:14px;font-weight:700;text-align:center;box-shadow:0 2px 8px rgba(0,93,77,.15)}
+.con-merge-btn:active{opacity:.8;transform:scale(.98)}
+.con-merge-btn.done{background:var(--acL);color:var(--ac)}
+.con-sec-title{padding:16px 16px 8px;font-size:13px;font-weight:600;color:var(--tx2)}
 
-/* ── スワイプ月一覧 ── */
-.swipe-list-hdr{margin-bottom:14px;}
-.swipe-list-hdr h2{font-size:20px;font-weight:800;}
-.swipe-list-hdr p{font-size:12px;color:var(--text-sub);margin-top:3px;}
-.month-list{display:flex;flex-direction:column;gap:8px;padding-bottom:20px;}
-.month-row{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .15s;border:1px solid var(--border);position:relative;}
-.month-row:active{transform:scale(.975);}
-.month-row-inner{display:flex;align-items:center;gap:10px;padding:12px 14px;}
-.month-thumb-img{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--card-2);flex-shrink:0;}
-.month-text{flex:1;min-width:0;}
-.month-lbl{font-size:14px;font-weight:700;margin-bottom:2px;}
-.month-cnt{font-size:11px;color:var(--text-sub);margin-bottom:6px;}
-.month-bar-wrap{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
-.month-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--mid),var(--accent));}
-.month-badge-wrap{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.month-badge-wrap.done{background:radial-gradient(circle at 40% 35%,#fff8d6,#ffd700 60%,#c8930a);box-shadow:0 0 12px rgba(255,215,0,.5);animation:glow 2.5s ease-in-out infinite;font-size:18px;}
-.month-badge-wrap.pend{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);}
-.pend-pct{font-size:11px;font-weight:700;color:var(--text-sub);}
-@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.36);}50%{box-shadow:0 0 20px rgba(255,215,0,.72);}}
-.month-row.done-row{background:linear-gradient(135deg,#0e2420,#122b25);border-color:rgba(0,200,140,.15);}
-.month-row.done-row .month-lbl{color:var(--accent);}
-.done-bar{height:2px;background:linear-gradient(90deg,rgba(0,232,181,.45),transparent);}
+/* ============ SWIPE ============ */
+.sw-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 20px}
+.sw-prog{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:14px;color:var(--tx2);font-weight:500}
+.sw-pbar{width:180px;height:5px;background:var(--acL);border-radius:3px;overflow:hidden}
+.sw-pfill{height:100%;background:var(--ac);border-radius:3px;transition:width .3s}
+.sw-card{position:relative;width:280px;height:350px;border-radius:var(--r);overflow:hidden;box-shadow:0 8px 32px rgba(0,60,50,.12);background:var(--sf);touch-action:none;user-select:none;transition:transform .12s,opacity .3s}
+.sw-card img{width:100%;height:100%;object-fit:cover}
+.sw-card .sc-info{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff}
+.sw-card .sc-n{font-size:14px;font-weight:600}
+.sw-card .sc-s{font-size:12px;opacity:.8}
+.sw-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;font-weight:800;opacity:0;transition:opacity .15s;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.sw-hint.kp{color:#22C55E}
+.sw-hint.dl{color:var(--red)}
+.sw-acts{display:flex;gap:28px;margin-top:28px}
+.sw-ab{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:var(--sh);transition:all .1s}
+.sw-ab:active{transform:scale(.88)}
+.sw-ab.db{background:var(--redL);color:var(--red)}
+.sw-ab.kb{background:var(--acL);color:var(--ac)}
+.sw-done{text-align:center;padding:60px 20px}
+.sw-done .sd-ic{font-size:48px;margin-bottom:16px}
+.sw-done h3{font-size:20px;font-weight:700;color:var(--ac);margin-bottom:6px}
+.sw-done p{font-size:14px;color:var(--tx2)}
 
-/* ═══════════════════════════════════
-   スワイプ詳細 — 完全独立レイアウト
-   del-barとは無関係
-═══════════════════════════════════ */
-#swipe-detail{display:none;flex-direction:column;position:absolute;inset:0;background:var(--bg);z-index:50;}
-#swipe-detail.active{display:flex;}
+/* ============ SETTINGS ============ */
+.s-sec{padding:0 20px;margin-bottom:12px}
+.s-lbl{font-size:12px;font-weight:600;color:var(--tx2);padding:16px 0 8px;text-transform:uppercase;letter-spacing:.8px}
+.s-card{background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.s-item{display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid var(--bdr);transition:all .08s}
+.s-item:last-child{border-bottom:none}
+.s-item:active{background:var(--sf2)}
+.si-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.si-ic.grn{background:var(--acL);color:var(--ac)}
+.si-ic.blu{background:var(--blueL);color:var(--blue)}
+.si-ic.amb{background:var(--amberL);color:var(--amber)}
+.si-body{flex:1;min-width:0}
+.si-t{font-size:15px;font-weight:600}
+.si-d{font-size:12px;color:var(--tx2);margin-top:2px}
+.si-arr{color:var(--tx3);font-size:18px}
+.th-seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px}
+.th-seg button{flex:1;padding:10px 0;border-radius:8px;font-size:13px;font-weight:600;color:var(--tx2);transition:all .2s}
+.th-seg button.on{background:var(--sf);color:var(--tx);box-shadow:0 1px 4px rgba(0,60,50,.08)}
+.s-footer{padding:24px 20px;text-align:center}
+.s-footer .sf-ic{font-size:24px;margin-bottom:6px}
+.s-footer h4{font-size:14px;font-weight:600;color:var(--ac)}
+.s-footer p{font-size:12px;color:var(--tx2);line-height:1.6;margin-top:4px}
 
-.sd-header{padding:44px 16px 0;display:flex;flex-direction:column;gap:0;background:var(--bg);flex-shrink:0;border-bottom:1px solid var(--border);}
-.sd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.sd-back{color:var(--accent);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 0;}
-.sd-title{font-size:16px;font-weight:700;}
-.sd-share{background:rgba(0,200,154,.12);border:1px solid rgba(0,200,154,.25);color:var(--accent);border-radius:14px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;}
-.sd-prog-row{display:flex;align-items:center;gap:10px;padding:10px 0 12px;}
-.sd-prog-track{flex:1;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
-.sd-prog-fill{height:100%;background:linear-gradient(90deg,var(--mid),var(--accent));border-radius:3px;transition:width .4s;}
-.sd-prog-txt{font-size:11px;color:var(--accent);font-weight:700;white-space:nowrap;}
+/* ============ SUBPAGES ============ */
+.prose{padding:20px}
+.pc{background:var(--sf);border-radius:var(--r);padding:24px;box-shadow:var(--sh)}
+.pc .pc-x{float:right;font-size:22px;color:var(--tx3);cursor:pointer;padding:0 4px;line-height:1}
+.pc h2{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pc h3{font-size:14px;font-weight:700;margin:18px 0 6px}
+.pc p{font-size:13px;line-height:1.8;color:var(--tx2);margin-bottom:8px}
+.pc .pc-m{font-size:12px;color:var(--tx3);margin-bottom:14px}
+.pc ul{margin:6px 0 10px 18px}
+.pc li{font-size:13px;line-height:1.8;color:var(--tx2);margin-bottom:2px}
+.pc .dev-box{background:var(--sf2);border-radius:8px;padding:16px;margin-top:12px}
+.pc .dev-box p{margin-bottom:3px}
 
-/* 写真エリア */
-.sd-photo-area{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 16px;overflow:hidden;min-height:0;}
-.sd-photo-card{width:100%;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.6);}
-.sd-photo-card img{width:100%;display:block;max-height:calc(100vh - 300px);object-fit:cover;border-radius:20px;}
-.sd-photo-meta{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.55);border-radius:8px;padding:4px 10px;font-size:11px;color:#fff;}
+/* ============ OVERLAYS ============ */
+.del-bar{position:absolute;bottom:calc(66px + var(--safB));left:0;width:100%;padding:0 20px;z-index:30;pointer-events:none}
+.del-btn{width:100%;padding:16px;background:var(--red);color:#fff;border-radius:var(--r2);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transform:translateY(80px);pointer-events:all;transition:transform .25s cubic-bezier(.25,.8,.25,1);box-shadow:0 4px 16px rgba(217,79,79,.2)}
+.del-btn.show{transform:translateY(0)}
+.del-btn:active{transform:translateY(0) scale(.97)}
 
-/* サムネイルストリップ */
-.sd-strip{flex-shrink:0;padding:0 16px 8px;display:flex;gap:6px;overflow-x:auto;}
-.sd-strip::-webkit-scrollbar{display:none;}
-.sd-strip-thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;cursor:pointer;opacity:.45;transition:opacity .2s,box-shadow .2s;flex-shrink:0;}
-.sd-strip-thumb.active-thumb{opacity:1;box-shadow:0 0 0 2px var(--accent);}
+.scan-ov{position:absolute;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+.scan-ov.on{display:flex}
+.spinner{width:48px;height:48px;border:3px solid var(--acL);border-top-color:var(--ac);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:20px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.scan-ov h3{font-size:18px;font-weight:600;margin-bottom:6px}
+.scan-ov .sub{font-size:14px;color:var(--tx2);min-height:20px;margin-bottom:18px}
+.o-bar{width:200px;height:4px;background:var(--acL);border-radius:2px;overflow:hidden}
+.o-fill{height:100%;background:var(--ac);border-radius:2px;width:0;transition:width .2s}
+.o-stats{display:flex;gap:20px;margin-top:24px}
+.o-stat{text-align:center}
+.o-stat b{display:block;font-size:20px;font-weight:700;color:var(--ac)}
+.o-stat span{font-size:11px;color:var(--tx2)}
 
-/* 削除 / 保持ボタン（スワイプ詳細専用・del-barとは別） */
-.sd-actions{flex-shrink:0;padding:10px 18px 18px;display:flex;gap:12px;}
-.btn-del-sw{flex:1;padding:16px;background:linear-gradient(135deg,#c0392b,#7b241c);color:#fff;border:none;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(192,57,43,.4);transition:transform .1s;}
-.btn-keep-sw{flex:1;padding:16px;background:linear-gradient(135deg,var(--keep),var(--keepdk));color:#fff;border:none;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(0,93,77,.5);transition:transform .1s;}
-.btn-del-sw:active,.btn-keep-sw:active{transform:scale(.95);}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:150;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal.on{opacity:1;pointer-events:all}
+.mbox{width:100%;max-width:430px;background:var(--sf);border-radius:20px 20px 0 0;padding:24px 20px calc(24px + var(--safB));transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
+.modal.on .mbox{transform:translateY(0)}
+.mbox h3{font-size:17px;font-weight:700;text-align:center;margin-bottom:6px}
+.mbox p{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
+.mbtn{width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;margin-bottom:8px;transition:all .1s}
+.mbtn:active{transform:scale(.97)}
+.mbtn.dng{background:var(--red);color:#fff}
+.mbtn.can{background:var(--sf2);color:var(--tx)}
 
-/* ── ガイド リデザイン ── */
-#guide{padding:0;padding-bottom:80px;}
-.guide-hero{padding:28px 18px 20px;background:linear-gradient(160deg,#0d2920 0%,#0a100e 60%);border-bottom:1px solid var(--border);}
-.guide-hero h2{font-size:22px;font-weight:800;margin-bottom:4px;}
-.guide-hero p{font-size:12px;color:var(--text-sub);line-height:1.5;}
+.toast{position:absolute;top:calc(10px + var(--safe));left:16px;right:16px;background:var(--sf);border:1px solid var(--bdr);border-radius:var(--r2);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;z-index:100;box-shadow:0 6px 24px rgba(0,60,50,.1);transform:translateY(-130%);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
+.toast.show{transform:translateY(0)}
+.toast span{font-size:13px}
+.toast strong{color:var(--red)}
+.toast button{color:var(--ac);font-size:13px;font-weight:700}
 
-.guide-body{padding:18px;}
+.empty{text-align:center;padding:60px 20px;color:var(--tx2);font-size:15px;display:none}
+.empty.on{display:block}
 
-/* 大きなフィーチャーカード */
-.guide-feature-card{border-radius:20px;overflow:hidden;margin-bottom:20px;position:relative;height:130px;background-size:cover;background-position:center;cursor:pointer;display:flex;align-items:flex-end;padding:16px;}
-.guide-feature-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.1));z-index:1;}
-.guide-feature-card::after{content:'';position:absolute;inset:0;background:rgba(0,93,77,.25);z-index:1;}
-.guide-feature-inner{position:relative;z-index:2;}
-.guide-feature-tag{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.guide-feature-title{font-size:18px;font-weight:800;color:#fff;}
+/* ============ TABS ============ */
+.tabs{position:absolute;bottom:0;left:0;width:100%;height:calc(62px + var(--safB));background:var(--sf);border-top:1px solid var(--bdr);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;z-index:40;box-shadow:0 -2px 8px rgba(0,60,50,.04)}
+.tab{display:flex;flex-direction:column;align-items:center;color:var(--tx3);font-size:11px;font-weight:500;cursor:pointer;transition:color .15s;padding:0 12px;gap:2px}
+.tab.on{color:var(--ac)}
+.tab .ti{font-size:22px;height:26px;display:flex;align-items:center}
 
-/* セクションタイトル */
-.guide-sec-ttl{font-size:11px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;margin-top:22px;}
-.guide-sec-ttl:first-child{margin-top:0;}
-
-/* コンパクトカードリスト */
-.guide-list{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border);}
-.guide-list-item{display:flex;align-items:center;gap:12px;padding:14px 15px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
-.guide-list-item:last-child{border-bottom:none;}
-.guide-list-item:active{background:rgba(0,200,154,.05);}
-.gli-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-.gli-text{flex:1;}
-.gli-text h4{font-size:13px;font-weight:600;margin-bottom:2px;}
-.gli-text p{font-size:11px;color:var(--text-sub);line-height:1.4;}
-.gli-arr{color:rgba(255,255,255,.2);font-size:16px;flex-shrink:0;}
-
-/* スワイプ操作カード（横2列） */
-.guide-swipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
-.guide-swipe-card{border-radius:16px;padding:16px 14px;display:flex;flex-direction:column;gap:8px;}
-.guide-swipe-card.del{background:linear-gradient(135deg,rgba(192,57,43,.25),rgba(192,57,43,.1));border:1px solid rgba(224,82,82,.2);}
-.guide-swipe-card.keep{background:linear-gradient(135deg,rgba(0,122,101,.25),rgba(0,122,101,.1));border:1px solid rgba(0,200,154,.2);}
-.gsc-icon{font-size:28px;}
-.gsc-title{font-size:14px;font-weight:700;}
-.gsc-desc{font-size:11px;color:var(--text-sub);line-height:1.4;}
-
-/* ヒントバナー */
-.guide-tip{background:linear-gradient(135deg,rgba(0,93,77,.3),rgba(0,93,77,.1));border:1px solid rgba(0,200,154,.15);border-radius:16px;padding:16px;display:flex;gap:12px;align-items:flex-start;margin-top:10px;}
-.guide-tip-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
-.guide-tip-text h4{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--accent);}
-.guide-tip-text p{font-size:11px;color:var(--text-sub);line-height:1.45;}
-
-/* ── 完了画面 ── */
-.comp-trophy{font-size:80px;animation:trophy-pop .6s cubic-bezier(.17,.67,.3,1.4) forwards;margin-bottom:16px;display:block;}
-@keyframes trophy-pop{0%{transform:scale(0) rotate(-10deg);opacity:0;}60%{transform:scale(1.2) rotate(4deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
-.comp-title{font-size:26px;font-weight:800;margin-bottom:8px;}
-.comp-sub{font-size:14px;color:var(--text-sub);margin-bottom:20px;line-height:1.6;}
-.comp-stats{background:var(--card);border-radius:16px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--text-sub);width:100%;border:1px solid var(--border);}
-.comp-stats strong{color:var(--accent);font-size:20px;font-weight:800;}
-.comp-btn{background:linear-gradient(135deg,var(--mid),var(--primary));color:#fff;border:none;border-radius:18px;padding:16px 40px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,122,101,.4);}
-
-/* ── ガイド詳細 ── */
-.gd-hero{border-radius:18px;height:160px;background-size:cover;background-position:center;position:relative;overflow:hidden;margin-bottom:22px;display:flex;align-items:flex-end;padding:16px;}
-.gd-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85),transparent 60%);z-index:1;}
-.gd-hero-inner{position:relative;z-index:2;}
-.gd-hero-tag{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.gd-hero-title{font-size:20px;font-weight:800;color:#fff;}
-.gd-step-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
-.gd-step{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;}
-.gd-step-num{width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--accent);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.gd-step-body h4{font-size:13px;font-weight:700;margin-bottom:3px;}
-.gd-step-body p{font-size:12px;color:var(--text-sub);line-height:1.5;}
-.gd-cta{background:linear-gradient(135deg,var(--mid),var(--primary));color:#fff;border:none;border-radius:16px;padding:16px;width:100%;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-
-/* ── ボトムナビ ── */
-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:76px;background:rgba(10,20,17,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding-bottom:10px;border-top:1px solid var(--border);z-index:40;}
-.nav-item{display:flex;flex-direction:column;align-items:center;color:var(--text-sub);font-size:10px;font-weight:600;cursor:pointer;width:80px;transition:color .2s;}
-.nav-item.active{color:var(--accent);}
-.nav-icon{font-size:22px;margin-bottom:3px;}
-.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(0,232,181,.5));}
-/* navの高さ分ビューに余白を確保 */
-.view{padding-bottom:96px !important;}
-</style>
+.file-in{display:none}
+    </style>
 </head>
 <body>
 <div id="app">
+    <!-- HEADER -->
+    <div class="hd">
+        <div class="hd-left">
+            <div class="hd-back" id="hd-back" onclick="goBack()">‹</div>
+            <h1 id="hd-title">写真クリーナー</h1>
+        </div>
+        <div>
+            <button class="hd-pill" id="sel-btn" onclick="toggleAll()">すべて選択</button>
+        </div>
+    </div>
 
-  <header id="main-header">
-    <div class="hdr-top">
-      <div id="back-btn" class="back-btn" onclick="goBack()">‹ 戻る</div>
-      <div id="hdr-actions" class="hdr-actions">
-        <button class="sort-btn" id="sort-btn" onclick="openSort()" title="並び替え">
-          <svg viewBox="0 0 18 14"><line x1="1" y1="2" x2="17" y2="2"/><line x1="1" y1="7" x2="13" y2="7"/><line x1="1" y1="12" x2="9" y2="12"/></svg>
+    <!-- HOME -->
+    <div class="pg on" id="p-home">
+        <div class="gauge-sec">
+            <div class="gauge">
+                <svg viewBox="0 0 160 160" width="160" height="160">
+                    <defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#005D4D"/><stop offset="100%" stop-color="#00896E"/></linearGradient></defs>
+                    <circle class="gauge-bg" cx="80" cy="80" r="70"/>
+                    <circle class="gauge-fill" id="gF" cx="80" cy="80" r="70"/>
+                </svg>
+                <div class="gauge-c">
+                    <div class="gauge-val" id="gV">0</div>
+                    <div class="gauge-lbl">整理可能</div>
+                </div>
+            </div>
+            <div class="gauge-row">
+                <div><b id="gi-t">—</b><span>検出</span></div>
+                <div><b id="gi-s">0</b><span>選択中</span></div>
+            </div>
+        </div>
+
+        <button class="smart" onclick="smartClean()">
+            <div class="smart-ic">✨</div>
+            <div><h3>スマートクリーン</h3><p>不要ファイルを自動選択して一括削除</p></div>
         </button>
-        <button class="pill-btn" id="sel-all-btn" onclick="toggleSelectAll()">✓ 全て選択する</button>
-      </div>
-    </div>
-    <div class="hdr-title-row">
-      <h1 id="hdr-title">ストレージ</h1>
-      <div id="hdr-sub" class="hdr-sub"></div>
-    </div>
-  </header>
 
-  <!-- ホーム -->
-  <main id="home" class="view active">
-    <div class="sto-row"><span class="used">1,640 GB を使用中 : 全 2,000 GB</span><span class="pct">82% 使用済み</span></div>
-    <div class="prog-track"><div class="prog-fill"></div></div>
-    <div class="home-grid">
-      <div class="home-card photos"      onclick="switchTab('similar-photos')"><div class="hc-inner"><h3>似ている写真</h3><p>24.4 GB</p></div></div>
-      <div class="home-card raw"         onclick="switchTab('raw-photos')"    ><div class="hc-inner"><h3>RAWデータ</h3><p>128 GB</p></div></div>
-      <div class="home-card videos"      onclick="switchTab('videos')"        ><div class="hc-inner"><h3>動画を整理</h3><p>299 GB</p></div></div>
-      <div class="home-card screenshots" onclick="switchTab('screenshots')"   ><div class="hc-inner"><h3>スクショ</h3><p>1.8 GB</p></div></div>
-    </div>
-  </main>
-
-  <!-- RAW / 動画 / スクショ / 似ている -->
-  <main id="raw-photos"     class="view"><div id="raw-grid"   class="media-grid"></div></main>
-  <main id="videos"         class="view"><div id="vid-grid"   class="media-grid"></div></main>
-  <main id="screenshots"    class="view"><div id="ss-grid"    class="media-grid"></div></main>
-  <main id="similar-photos" class="view"><div id="sim-cont"   style="padding-bottom:60px;"></div></main>
-
-  <!-- スワイプ月一覧 -->
-  <main id="swipe" class="view" style="padding:16px;padding-bottom:20px;">
-    <div class="swipe-list-hdr"><h2>月別スワイプ</h2><p>月ごとに写真を確認して整理しましょう</p></div>
-    <div class="month-list" id="month-list"></div>
-  </main>
-
-  <!-- ガイド -->
-  <main id="guide" class="view">
-    <div class="guide-hero">
-      <h2>使い方ガイド</h2>
-      <p>ストレージを賢く整理するための機能をご案内します。<br>タップして詳しく確認できます。</p>
-    </div>
-    <div class="guide-body">
-
-      <!-- フィーチャー大カード -->
-      <div class="guide-feature-card" id="guide-feat-card">
-        <div class="guide-feature-inner">
-          <div class="guide-feature-tag">⭐ おすすめ</div>
-          <div class="guide-feature-title">月別スワイプで整理</div>
+        <div class="cats">
+            <button class="cat" onclick="go('similar')"><div class="cat-ic" style="background:var(--acL)">🖼</div><div class="cat-body"><div class="cat-name">似ている写真</div><div class="cat-desc">重複・類似を自動検出して整理</div></div><div class="cat-right"><div class="cat-size" id="c-sim">—</div><div class="cat-cnt" id="c-sim-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('ss')"><div class="cat-ic" style="background:var(--amberL)">📱</div><div class="cat-body"><div class="cat-name">スクリーンショット</div><div class="cat-desc">不要なスクショを一括整理</div></div><div class="cat-right"><div class="cat-size" id="c-ss">—</div><div class="cat-cnt" id="c-ss-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('vid')"><div class="cat-ic" style="background:var(--blueL)">🎬</div><div class="cat-body"><div class="cat-name">大きな動画</div><div class="cat-desc">容量の大きい動画を発見</div></div><div class="cat-right"><div class="cat-size" id="c-vid">—</div><div class="cat-cnt" id="c-vid-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('big')"><div class="cat-ic" style="background:var(--purpleL)">📐</div><div class="cat-body"><div class="cat-name">大容量ファイル</div><div class="cat-desc">RAW・大きな写真を検出</div></div><div class="cat-right"><div class="cat-size" id="c-big">—</div><div class="cat-cnt" id="c-big-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('contacts')"><div class="cat-ic" style="background:var(--blueL)">👤</div><div class="cat-body"><div class="cat-name">連絡先を整理</div><div class="cat-desc">重複連絡先の結合・不完全データ削除</div></div><div class="cat-right"><div class="cat-size" id="c-con">—</div><div class="cat-cnt" id="c-con-n"></div></div><div class="cat-arr">›</div></button>
         </div>
-      </div>
-
-      <!-- 基本機能リスト -->
-      <div class="guide-sec-ttl">基本機能</div>
-      <div class="guide-list">
-        <div class="guide-list-item" onclick="openGuideDetail('similar')">
-          <div class="gli-icon" style="background:rgba(0,93,77,.3);">📷</div>
-          <div class="gli-text"><h4>似ている写真を整理</h4><p>類似写真をグループ化して最高の1枚だけ残せます</p></div>
-          <div class="gli-arr">›</div>
-        </div>
-        <div class="guide-list-item" onclick="openGuideDetail('videos')">
-          <div class="gli-icon" style="background:rgba(0,93,77,.3);">🎬</div>
-          <div class="gli-text"><h4>動画を整理する</h4><p>サイズや長さで絞り込み、不要な動画を削除</p></div>
-          <div class="gli-arr">›</div>
-        </div>
-        <div class="guide-list-item" onclick="openGuideDetail('raw')">
-          <div class="gli-icon" style="background:rgba(0,93,77,.3);">📄</div>
-          <div class="gli-text"><h4>RAWデータを削除</h4><p>JPEGを残してRAWファイルだけを削除できます</p></div>
-          <div class="gli-arr">›</div>
-        </div>
-        <div class="guide-list-item" onclick="openGuideDetail('screenshots')">
-          <div class="gli-icon" style="background:rgba(0,93,77,.3);">🖼️</div>
-          <div class="gli-text"><h4>スクショを一括削除</h4><p>不要なスクリーンショットをまとめて削除</p></div>
-          <div class="gli-arr">›</div>
-        </div>
-      </div>
-
-      <!-- スワイプ操作 -->
-      <div class="guide-sec-ttl">スワイプ操作</div>
-      <div class="guide-swipe-grid">
-        <div class="guide-swipe-card del">
-          <div class="gsc-icon">👎</div>
-          <div class="gsc-title" style="color:#e05252;">削除</div>
-          <div class="gsc-desc">不要な写真は「削除」で削除キューに追加</div>
-        </div>
-        <div class="guide-swipe-card keep">
-          <div class="gsc-icon">👍</div>
-          <div class="gsc-title" style="color:var(--accent);">保持</div>
-          <div class="gsc-desc">残したい写真は「保持」でライブラリに残す</div>
-        </div>
-      </div>
-
-      <!-- ヒント -->
-      <div class="guide-tip">
-        <div class="guide-tip-icon">💡</div>
-        <div class="guide-tip-text">
-          <h4>定期的な整理がおすすめ</h4>
-          <p>月に1度スワイプで整理すると、ストレージを常に快適に保てます。全件完了すると🏆マークが付きます。</p>
-        </div>
-      </div>
 
     </div>
-  </main>
 
-  <!-- ソートボトムシート -->
-  <div class="sort-overlay" id="sort-overlay" onclick="closeSortOnBg(event)">
-    <div class="sort-sheet">
-      <div class="sort-handle"></div>
-      <div class="sort-title">並び替え</div>
-      <div class="sort-option active" data-sort="newest" onclick="applySort('newest')">
-        <span>新しい順</span><div class="sort-check">✓</div>
-      </div>
-      <div class="sort-option" data-sort="oldest" onclick="applySort('oldest')">
-        <span>古い順</span><div class="sort-check">✓</div>
-      </div>
-      <div class="sort-option" data-sort="size-desc" onclick="applySort('size-desc')">
-        <span>サイズが大きい順</span><div class="sort-check">✓</div>
-      </div>
-      <div class="sort-option" data-sort="size-asc" onclick="applySort('size-asc')">
-        <span>サイズが小さい順</span><div class="sort-check">✓</div>
-      </div>
+    <!-- SIMILAR -->
+    <div class="pg" id="p-similar">
+        <div class="d-bar"><div class="d-info" id="sim-info"></div><button class="d-pill" onclick="toggleAll()">すべて選択</button></div>
+        <div id="sim-list"></div>
+        <div class="empty" id="sim-e">スキャンしてください</div>
     </div>
-  </div>
 
-  <!-- 削除バー（スワイプ詳細では非表示） -->
-  <div id="del-bar" class="del-bar">
-    <button class="btn-del" onclick="deleteSelected()"><span>🗑</span><span id="del-txt">削除</span></button>
-  </div>
+    <!-- SCREENSHOTS -->
+    <div class="pg" id="p-ss">
+        <div class="d-bar"><div class="d-info" id="ss-info"></div><button class="d-pill" onclick="toggleAll()">すべて選択</button></div>
+        <div id="ss-grid" class="grid grid-3"></div>
+        <div class="empty" id="ss-e">スキャンしてください</div>
+    </div>
 
-  <!-- スワイプ詳細（position:absolute で完全独立） -->
-  <div id="swipe-detail">
-    <div class="sd-header">
-      <div class="sd-top">
-        <div class="sd-back" onclick="closeSwipeDetail()">‹ 月</div>
-        <div class="sd-title" id="sd-month-title">2月 2026</div>
-        <button class="sd-share">共有</button>
-      </div>
-      <div class="sd-prog-row">
-        <div class="sd-prog-track"><div class="sd-prog-fill" id="sd-prog-fill" style="width:0%"></div></div>
-        <div class="sd-prog-txt" id="sd-prog-txt">0/0 件を確認済み</div>
-      </div>
+    <!-- VIDEOS -->
+    <div class="pg" id="p-vid">
+        <div class="d-bar"><div class="d-info" id="vid-info"></div><button class="d-pill" onclick="toggleAll()">すべて選択</button></div>
+        <div id="vid-grid" class="grid"></div>
+        <div class="empty" id="vid-e">スキャンしてください</div>
     </div>
-    <div class="sd-photo-area">
-      <div class="sd-photo-card">
-        <img id="sd-main-img" src="" alt="">
-        <div class="sd-photo-meta" id="sd-photo-meta">1 / 10</div>
-      </div>
-    </div>
-    <div class="sd-strip" id="sd-strip"></div>
-    <!-- 削除/保持ボタン（del-barとは完全別要素） -->
-    <div class="sd-actions">
-      <button class="btn-del-sw" onclick="swipeAction('delete')">👎 削除</button>
-      <button class="btn-keep-sw" onclick="swipeAction('keep')">👍 保持</button>
-    </div>
-  </div>
 
-    <!-- 完了画面 -->
-    <div id="sd-completion" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;">
-      <div class="comp-trophy">🏆</div>
-      <h2 class="comp-title">完了！おめでとう🎉</h2>
-      <p class="comp-sub" id="comp-sub-text"></p>
-      <div class="comp-stats" id="comp-stats"></div>
-      <button class="comp-btn" onclick="closeSwipeDetail()">月一覧に戻る</button>
+    <!-- BIG FILES -->
+    <div class="pg" id="p-big">
+        <div class="d-bar"><div class="d-info" id="big-info"></div><button class="d-pill" onclick="toggleAll()">すべて選択</button></div>
+        <div id="big-grid" class="grid"></div>
+        <div class="empty" id="big-e">スキャンしてください</div>
     </div>
-  </div>
 
-  <!-- ガイド詳細オーバーレイ -->
-  <div id="guide-detail-overlay" style="display:none;position:absolute;inset:0;background:var(--bg);z-index:55;flex-direction:column;">
-    <div style="padding:44px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
-      <div style="font-size:17px;color:var(--accent);font-weight:700;cursor:pointer;padding-right:8px;" onclick="closeGuideDetail()">‹ ガイド</div>
-      <div id="gd-title" style="font-size:16px;font-weight:700;flex:1;"></div>
+    <!-- SWIPE -->
+    <div class="pg" id="p-swipe">
+
+    <!-- CONTACTS -->
+    <div class="pg" id="p-contacts">
+        <div class="d-bar">
+            <div class="d-info" id="con-info">連絡先をスキャンしてください</div>
+            <button class="d-pill" onclick="scanContacts()">スキャン</button>
+        </div>
+        <div id="con-scan-msg" style="text-align:center;padding:40px 20px;color:var(--tx2)">
+            <div style="font-size:40px;margin-bottom:12px">👤</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px">連絡先をスキャン</div>
+            <div style="font-size:13px;line-height:1.6">タップして連絡先へのアクセスを許可すると、<br>重複・不完全な連絡先を検出します。</div>
+            <button onclick="scanContacts()" style="margin-top:16px;padding:12px 24px;background:var(--ac);color:#fff;border-radius:var(--r2);font-size:14px;font-weight:700;box-shadow:0 4px 12px rgba(0,93,77,.2)">スキャン開始</button>
+        </div>
+        <div id="con-results" style="display:none">
+            <div id="con-dupes"></div>
+            <div id="con-incomplete"></div>
+        </div>
     </div>
-    <div id="gd-body" style="flex:1;overflow-y:auto;padding:20px 18px 40px;"></div>
-  </div>
 
-  <nav id="main-nav">
-    <div class="nav-item active" data-target="home"><div class="nav-icon">🏠</div><span>ホーム</span></div>
-    <div class="nav-item"        data-target="swipe"><div class="nav-icon">👆</div><span>スワイプ</span></div>
-    <div class="nav-item"        data-target="guide"><div class="nav-icon">📖</div><span>ガイド</span></div>
-  </nav>
+    <!-- SWIPE (moved after contacts) -->
+        <div class="sw-wrap" id="sw-wrap">
+            <div class="sw-prog">
+                <span id="sw-cnt">0 / 0</span>
+                <div class="sw-pbar"><div class="sw-pfill" id="sw-bar"></div></div>
+            </div>
+            <div class="sw-card" id="sw-card">
+                <img id="sw-img" src="" alt="">
+                <div class="sw-hint kp" id="sw-kp">KEEP</div>
+                <div class="sw-hint dl" id="sw-dl">DEL</div>
+                <div class="sc-info">
+                    <div class="sc-n" id="sw-name"></div>
+                    <div class="sc-s" id="sw-size"></div>
+                </div>
+            </div>
+            <div class="sw-acts">
+                <button class="sw-ab db" onclick="swipeAction('del')">🗑</button>
+                <button class="sw-ab kb" onclick="swipeAction('keep')">💚</button>
+            </div>
+        </div>
+        <div class="sw-done" id="sw-done" style="display:none">
+            <div class="sd-ic">✨</div>
+            <h3>完了！</h3>
+            <p id="sw-result"></p>
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="pg" id="p-settings">
+        <div class="s-sec">
+            <div class="s-lbl">テーマ</div>
+            <div class="s-card"><div style="padding:14px 18px">
+                <div class="th-seg" id="th-seg">
+                    <button onclick="setTheme('light',this)">ライト</button>
+                    <button class="on" onclick="setTheme('auto',this)">自動</button>
+                    <button onclick="setTheme('dark',this)">ダーク</button>
+                </div>
+            </div></div>
+        </div>
+        <div class="s-sec">
+            <div class="s-lbl">ヘルプ</div>
+            <div class="s-card">
+                <div class="s-item" onclick="goSub('howto')"><div class="si-ic blu">📖</div><div class="si-body"><div class="si-t">使い方を見る</div><div class="si-d">写真クリーナーの基本的な使い方</div></div><div class="si-arr">›</div></div>
+            </div>
+        </div>
+        <div class="s-sec">
+            <div class="s-lbl">サポート</div>
+            <div class="s-card">
+                <div class="s-item" onclick="goSub('contact')"><div class="si-ic amb">✉️</div><div class="si-body"><div class="si-t">お問い合わせ</div><div class="si-d">不具合・ご意見はこちら</div></div><div class="si-arr">›</div></div>
+                <div class="s-item" onclick="goSub('privacy')"><div class="si-ic grn">🔒</div><div class="si-body"><div class="si-t">プライバシーポリシー</div><div class="si-d">データの取り扱いについて</div></div><div class="si-arr">›</div></div>
+            </div>
+        </div>
+        <div class="s-footer">
+            <div class="sf-ic">🔐</div>
+            <h4>プライバシー保護</h4>
+            <p>全データは端末内にのみ保存。<br>外部送信なし。</p>
+        </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div class="pg" id="p-privacy"><div class="prose"><div class="pc">
+        <button class="pc-x" onclick="goBack()">✕</button>
+        <h2>🔒 プライバシーポリシー</h2>
+        <div class="pc-m">制定日：2026年4月1日</div>
+        <p>本アプリケーション「写真クリーナー」における情報の取り扱いについて、開発者（以下「当方」）は以下の通りプライバシーポリシーを定めます。</p>
+        <h3>1. 取得する情報および利用目的</h3>
+        <p>本アプリは端末内の写真・動画ファイルのメタ情報（ファイル名、サイズ、種別）を取得します。これらはアプリ内での分類表示、重複検出、ストレージ整理機能の提供のためにのみ利用されます。</p>
+        <h3>2. データの保存とセキュリティ</h3>
+        <p>本アプリは「オフラインファースト」設計です。すべてのデータは端末内にのみ保存されます。外部サーバーへの送信・蓄積は一切ありません。</p>
+        <h3>3. 第三者提供について</h3>
+        <p>当方はユーザーの同意なく個人情報を第三者に提供しません。データは端末内に留まるため、当方がその内容を閲覧・取得することもありません。</p>
+        <h3>4. 写真・動画へのアクセス</h3>
+        <p>ユーザーの明示的な操作があった場合にのみ端末のストレージへアクセスします。権限はいつでも端末設定から取消可能です。</p>
+        <h3>5. 免責事項</h3>
+        <p>端末やOSバージョンによっては画面表示が正しく表示されない場合があります。本アプリの利用により生じた損害等について、開発者は一切の責任を負いません。</p>
+        <h3>6. お問い合わせ先</h3>
+        <div class="dev-box"><p>開発者：Jone（Jone Lab）</p><p>〒150-0043 東京都渋谷区道玄坂1丁目10番8号</p><p>渋谷道玄坂東急ビル2F-C</p><p>Mail: jone.lab.app&#64;gmail.com</p></div>
+        <h3>7. ポリシーの変更</h3>
+        <p>法令の変更や機能追加等に伴い本ポリシーを変更することがあります。変更後は本ページ掲示時点から効力を生じます。</p>
+    </div></div></div>
+
+    <!-- HOWTO -->
+    <div class="pg" id="p-howto"><div class="prose"><div class="pc">
+        <button class="pc-x" onclick="goBack()">✕</button>
+        <h2>📖 使い方ガイド</h2>
+        <h3>1. 写真を読み込む</h3><p>ホーム画面の「フォルダ読込」から端末の写真フォルダへのアクセスを許可します。</p>
+        <h3>2. カテゴリから整理</h3><p>似ている写真・スクショ・動画・大容量ファイルの4カテゴリから選びます。</p>
+        <h3>3. スワイプで仕分け</h3><p>左スワイプ=削除、右スワイプ=キープで直感的に整理。</p>
+        <h3>4. スマートクリーン</h3><p>AIが不要と判断したファイルを自動選択。確認後に一括削除。</p>
+        <h3>よくある質問</h3>
+        <p><strong>Q. 料金はかかりますか？</strong><br>A. 完全無料です。広告・課金はありません。</p>
+        <p><strong>Q. 削除した写真は復元できますか？</strong><br>A. 削除直後は「元に戻す」で復元可能です。</p>
+    </div></div></div>
+
+    <!-- CONTACT -->
+    <div class="pg" id="p-contact"><div class="prose"><div class="pc">
+        <button class="pc-x" onclick="goBack()">✕</button>
+        <h2>✉️ お問い合わせ</h2>
+        <p>ご質問・ご要望・不具合報告は下記までお送りください。</p>
+        <p style="text-align:center;padding:20px 0"><a href="mailto:jone.lab.app@gmail.com" style="font-size:16px;font-weight:700">✉️ jone.lab.app&#64;gmail.com</a></p>
+        <h3>不具合報告の際のお願い</h3>
+        <ul><li>端末名・OSバージョン</li><li>問題の詳細</li><li>再現手順</li></ul>
+    </div></div></div>
+
+    <!-- OVERLAYS -->
+    <div class="del-bar"><button class="del-btn" id="del-btn" onclick="confirmDel()">🗑 <span id="del-txt">削除</span></button></div>
+    <div class="scan-ov" id="scan-ov"><div class="spinner"></div><h3>スキャン中...</h3><div class="sub" id="ov-sub"></div><div class="o-bar"><div class="o-fill" id="ov-fill"></div></div><div class="o-stats"><div class="o-stat"><b id="os-p">0</b><span>写真</span></div><div class="o-stat"><b id="os-s">0</b><span>スクショ</span></div><div class="o-stat"><b id="os-v">0</b><span>動画</span></div><div class="o-stat"><b id="os-b">0</b><span>大容量</span></div></div></div>
+    <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox"><h3 id="mod-t"></h3><p id="mod-d"></p><button class="mbtn dng" onclick="execDel()">削除する</button><button class="mbtn can" onclick="closeModal()">キャンセル</button></div></div>
+    <div class="toast" id="toast"><span id="toast-t"></span><button onclick="undo()">元に戻す</button></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab on" data-t="home" onclick="goTab(this)"><div class="ti">🏠</div><span>ホーム</span></button>
+        <button class="tab" data-t="similar" onclick="goTab(this)"><div class="ti">🖼</div><span>写真</span></button>
+        <button class="tab" data-t="swipe" onclick="goTab(this)"><div class="ti">👆</div><span>スワイプ</span></button>
+        <button class="tab" data-t="settings" onclick="goTab(this)"><div class="ti">⚙️</div><span>設定</span></button>
+    </div>
+
+    <input type="file" id="inp-dir" class="file-in" multiple>
+    <input type="file" id="inp-files" class="file-in" accept="image/*,video/*,.cr2,.nef,.arw,.dng" multiple>
 </div>
 
 <script>
-// クレヨン風SVGアニマルイラスト（data URL）
-function makeSVG(svgContent, bg){
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-    <rect width="200" height="200" fill="${bg}" rx="12"/>
-    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/></filter>
-    <g filter="url(#rough)">${svgContent}</g>
-  </svg>`;
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const RAW_EXT = new Set(['cr2','nef','arw','dng','orf','rw2','pef','raf','srw','cr3','raw']);
+const VID_EXT = new Set(['mp4','mov','avi','mkv','webm','m4v','3gp']);
+const SS_PAT = ['screenshot','スクリーンショット','screen_shot','capture','スクショ','画面収録'];
+const getExt = n => n.split('.').pop().toLowerCase();
+const isNative = typeof Android !== 'undefined';
+
+function classify(f) {
+    const e = getExt(f.name), t = f.type || '', n = f.name.toLowerCase(), mb = f.size / 1048576;
+    if (RAW_EXT.has(e)) return 'big';
+    if (t.startsWith('video/') || VID_EXT.has(e)) return 'vid';
+    if (t.startsWith('image/') || ['jpg','jpeg','png','webp','heic','gif','bmp'].includes(e)) {
+        if (SS_PAT.some(p => n.includes(p))) return 'ss';
+        if (e === 'png' && mb < 3) return 'ss';
+        if (mb > 8) return 'big';
+        return 'photo';
+    }
+    return 'photo';
 }
 
-// 子猫 🐱
-const cat1 = makeSVG(`
-  <ellipse cx="100" cy="125" rx="52" ry="48" fill="#f4c97a" stroke="#b07a2a" stroke-width="3.5" stroke-linecap="round"/>
-  <ellipse cx="100" cy="90" rx="42" ry="40" fill="#f4c97a" stroke="#b07a2a" stroke-width="3.5"/>
-  <polygon points="65,60 55,30 80,55" fill="#f4c97a" stroke="#b07a2a" stroke-width="3" stroke-linejoin="round"/>
-  <polygon points="135,60 145,30 120,55" fill="#f4c97a" stroke="#b07a2a" stroke-width="3" stroke-linejoin="round"/>
-  <ellipse cx="88" cy="88" rx="9" ry="11" fill="#fff" stroke="#b07a2a" stroke-width="2"/>
-  <ellipse cx="112" cy="88" rx="9" ry="11" fill="#fff" stroke="#b07a2a" stroke-width="2"/>
-  <ellipse cx="88" cy="90" rx="5" ry="7" fill="#3a2a1a"/>
-  <ellipse cx="112" cy="90" rx="5" ry="7" fill="#3a2a1a"/>
-  <circle cx="90" cy="88" r="2" fill="#fff"/>
-  <circle cx="114" cy="88" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="103" rx="7" ry="5" fill="#f0a0b0" stroke="#c06070" stroke-width="2"/>
-  <path d="M93 108 Q100 115 107 108" stroke="#b07a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <line x1="70" y1="100" x2="50" y2="96" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
-  <line x1="70" y1="104" x2="48" y2="104" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
-  <line x1="130" y1="100" x2="150" y2="96" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
-  <line x1="130" y1="104" x2="152" y2="104" stroke="#b07a2a" stroke-width="2" stroke-linecap="round"/>
-  <path d="M55 155 Q100 180 145 155" stroke="#b07a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
-`, '#fff9e6');
-
-// 子猫2（グレー）
-const cat2 = makeSVG(`
-  <ellipse cx="100" cy="125" rx="52" ry="48" fill="#c8cdd4" stroke="#666" stroke-width="3.5"/>
-  <ellipse cx="100" cy="88" rx="42" ry="40" fill="#c8cdd4" stroke="#666" stroke-width="3.5"/>
-  <polygon points="65,58 54,28 80,55" fill="#c8cdd4" stroke="#666" stroke-width="3" stroke-linejoin="round"/>
-  <polygon points="135,58 146,28 120,55" fill="#c8cdd4" stroke="#666" stroke-width="3" stroke-linejoin="round"/>
-  <ellipse cx="88" cy="87" rx="9" ry="11" fill="#fff" stroke="#666" stroke-width="2"/>
-  <ellipse cx="112" cy="87" rx="9" ry="11" fill="#fff" stroke="#666" stroke-width="2"/>
-  <ellipse cx="88" cy="89" rx="5" ry="7" fill="#2a2a3a"/>
-  <ellipse cx="112" cy="89" rx="5" ry="7" fill="#2a2a3a"/>
-  <circle cx="90" cy="87" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="102" rx="7" ry="5" fill="#f0a0b0" stroke="#c06070" stroke-width="2"/>
-  <path d="M93 107 Q100 114 107 107" stroke="#666" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <line x1="70" y1="99" x2="50" y2="95" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-  <line x1="70" y1="103" x2="48" y2="103" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-  <line x1="130" y1="99" x2="150" y2="95" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-  <line x1="130" y1="103" x2="152" y2="103" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-  <path d="M50 155 Q100 178 150 155" stroke="#666" stroke-width="3" fill="none" stroke-linecap="round"/>
-`, '#eef0f8');
-
-// 子犬 🐶（ゴールデン）
-const dog1 = makeSVG(`
-  <ellipse cx="100" cy="128" rx="55" ry="46" fill="#e8b45a" stroke="#9a6820" stroke-width="3.5"/>
-  <ellipse cx="100" cy="88" rx="44" ry="40" fill="#e8b45a" stroke="#9a6820" stroke-width="3.5"/>
-  <ellipse cx="67" cy="78" rx="18" ry="26" fill="#d4963c" stroke="#9a6820" stroke-width="3" transform="rotate(-10,67,78)"/>
-  <ellipse cx="133" cy="78" rx="18" ry="26" fill="#d4963c" stroke="#9a6820" stroke-width="3" transform="rotate(10,133,78)"/>
-  <ellipse cx="88" cy="87" rx="9" ry="10" fill="#fff" stroke="#9a6820" stroke-width="2"/>
-  <ellipse cx="112" cy="87" rx="9" ry="10" fill="#fff" stroke="#9a6820" stroke-width="2"/>
-  <ellipse cx="88" cy="89" rx="5" ry="6" fill="#2a1a0a"/>
-  <ellipse cx="112" cy="89" rx="5" ry="6" fill="#2a1a0a"/>
-  <circle cx="90" cy="87" r="2" fill="#fff"/>
-  <circle cx="114" cy="87" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="106" rx="14" ry="10" fill="#d4763c" stroke="#9a4820" stroke-width="2.5"/>
-  <path d="M88 112 Q100 122 112 112" stroke="#9a4820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <ellipse cx="100" cy="105" rx="6" ry="4" fill="#c05040"/>
-`, '#fff5e0');
-
-// 子犬2（白黒）
-const dog2 = makeSVG(`
-  <ellipse cx="100" cy="128" rx="55" ry="46" fill="#f0f0f0" stroke="#444" stroke-width="3.5"/>
-  <ellipse cx="100" cy="88" rx="44" ry="40" fill="#f0f0f0" stroke="#444" stroke-width="3.5"/>
-  <ellipse cx="67" cy="78" rx="18" ry="26" fill="#ddd" stroke="#444" stroke-width="3" transform="rotate(-10,67,78)"/>
-  <ellipse cx="133" cy="78" rx="18" ry="26" fill="#ddd" stroke="#444" stroke-width="3" transform="rotate(10,133,78)"/>
-  <ellipse cx="82" cy="80" rx="20" ry="16" fill="#333" opacity="0.85"/>
-  <ellipse cx="88" cy="87" rx="9" ry="10" fill="#fff" stroke="#444" stroke-width="2"/>
-  <ellipse cx="112" cy="87" rx="9" ry="10" fill="#fff" stroke="#444" stroke-width="2"/>
-  <ellipse cx="88" cy="89" rx="5" ry="6" fill="#111"/>
-  <ellipse cx="112" cy="89" rx="5" ry="6" fill="#111"/>
-  <circle cx="90" cy="87" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="106" rx="14" ry="10" fill="#e07060" stroke="#a04030" stroke-width="2.5"/>
-  <path d="M88 112 Q100 122 112 112" stroke="#444" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-`, '#f0f4ff');
-
-// 子ウサギ 🐰
-const bunny1 = makeSVG(`
-  <ellipse cx="100" cy="130" rx="50" ry="44" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3.5"/>
-  <ellipse cx="100" cy="88" rx="38" ry="36" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3.5"/>
-  <ellipse cx="76" cy="52" rx="12" ry="32" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3" transform="rotate(-8,76,52)"/>
-  <ellipse cx="124" cy="52" rx="12" ry="32" fill="#f5f0ea" stroke="#9a8a7a" stroke-width="3" transform="rotate(8,124,52)"/>
-  <ellipse cx="77" cy="52" rx="6" ry="24" fill="#f4b8c0" opacity="0.7"/>
-  <ellipse cx="123" cy="52" rx="6" ry="24" fill="#f4b8c0" opacity="0.7"/>
-  <ellipse cx="88" cy="86" rx="9" ry="10" fill="#fff" stroke="#9a8a7a" stroke-width="2"/>
-  <ellipse cx="112" cy="86" rx="9" ry="10" fill="#fff" stroke="#9a8a7a" stroke-width="2"/>
-  <ellipse cx="88" cy="88" rx="5" ry="6" fill="#4a3a5a"/>
-  <ellipse cx="112" cy="88" rx="5" ry="6" fill="#4a3a5a"/>
-  <circle cx="90" cy="86" r="2" fill="#fff"/>
-  <circle cx="114" cy="86" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="101" rx="8" ry="6" fill="#f4b8c0" stroke="#d090a0" stroke-width="2"/>
-  <path d="M94 107 Q100 113 106 107" stroke="#9a8a7a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <line x1="72" y1="100" x2="52" y2="96" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
-  <line x1="72" y1="104" x2="50" y2="104" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
-  <line x1="128" y1="100" x2="148" y2="96" stroke="#9a8a7a" stroke-width="1.8" stroke-linecap="round"/>
-  <path d="M52 152 Q100 176 148 152" stroke="#9a8a7a" stroke-width="3" fill="none" stroke-linecap="round"/>
-`, '#fdf5ff');
-
-// 子ウサギ2（茶色）
-const bunny2 = makeSVG(`
-  <ellipse cx="100" cy="130" rx="50" ry="44" fill="#c8956a" stroke="#7a4820" stroke-width="3.5"/>
-  <ellipse cx="100" cy="88" rx="38" ry="36" fill="#c8956a" stroke="#7a4820" stroke-width="3.5"/>
-  <ellipse cx="76" cy="52" rx="12" ry="32" fill="#c8956a" stroke="#7a4820" stroke-width="3" transform="rotate(-8,76,52)"/>
-  <ellipse cx="124" cy="52" rx="12" ry="32" fill="#c8956a" stroke="#7a4820" stroke-width="3" transform="rotate(8,124,52)"/>
-  <ellipse cx="77" cy="52" rx="6" ry="24" fill="#f4c0c8" opacity="0.7"/>
-  <ellipse cx="123" cy="52" rx="6" ry="24" fill="#f4c0c8" opacity="0.7"/>
-  <ellipse cx="88" cy="86" rx="9" ry="10" fill="#fff" stroke="#7a4820" stroke-width="2"/>
-  <ellipse cx="112" cy="86" rx="9" ry="10" fill="#fff" stroke="#7a4820" stroke-width="2"/>
-  <ellipse cx="88" cy="88" rx="5" ry="6" fill="#3a1a0a"/>
-  <ellipse cx="112" cy="88" rx="5" ry="6" fill="#3a1a0a"/>
-  <circle cx="90" cy="86" r="2" fill="#fff"/>
-  <ellipse cx="100" cy="101" rx="8" ry="6" fill="#f4b8c0" stroke="#d090a0" stroke-width="2"/>
-  <path d="M94 107 Q100 113 106 107" stroke="#7a4820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-`, '#fff0e8');
-
-// 小鳥 🐤（ひよこ）
-const bird1 = makeSVG(`
-  <ellipse cx="100" cy="125" rx="50" ry="44" fill="#fde96a" stroke="#c8a020" stroke-width="3.5"/>
-  <ellipse cx="100" cy="82" rx="36" ry="34" fill="#fde96a" stroke="#c8a020" stroke-width="3.5"/>
-  <ellipse cx="88" cy="78" rx="9" ry="10" fill="#fff" stroke="#c8a020" stroke-width="2"/>
-  <ellipse cx="112" cy="78" rx="9" ry="10" fill="#fff" stroke="#c8a020" stroke-width="2"/>
-  <ellipse cx="88" cy="80" rx="5" ry="6" fill="#1a1a2a"/>
-  <ellipse cx="112" cy="80" rx="5" ry="6" fill="#1a1a2a"/>
-  <circle cx="90" cy="78" r="2" fill="#fff"/>
-  <circle cx="114" cy="78" r="2" fill="#fff"/>
-  <polygon points="100,96 90,103 110,103" fill="#ff9020" stroke="#c06010" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M55 105 Q35 85 50 70 Q58 90 70 105" fill="#fde96a" stroke="#c8a020" stroke-width="2.5"/>
-  <path d="M145 105 Q165 85 150 70 Q142 90 130 105" fill="#fde96a" stroke="#c8a020" stroke-width="2.5"/>
-  <ellipse cx="78" cy="148" rx="12" ry="8" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-  <ellipse cx="122" cy="148" rx="12" ry="8" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-`, '#fffbe0');
-
-// 小鳥2（青い鳥）
-const bird2 = makeSVG(`
-  <ellipse cx="100" cy="122" rx="48" ry="42" fill="#6ac0f0" stroke="#1a70c0" stroke-width="3.5"/>
-  <ellipse cx="100" cy="80" rx="36" ry="34" fill="#6ac0f0" stroke="#1a70c0" stroke-width="3.5"/>
-  <ellipse cx="115" cy="70" rx="18" ry="8" fill="#fff" stroke="#1a70c0" stroke-width="2.5" transform="rotate(-20,115,70)"/>
-  <ellipse cx="88" cy="77" rx="9" ry="10" fill="#fff" stroke="#1a70c0" stroke-width="2"/>
-  <ellipse cx="112" cy="77" rx="9" ry="10" fill="#fff" stroke="#1a70c0" stroke-width="2"/>
-  <ellipse cx="88" cy="79" rx="5" ry="6" fill="#0a0a2a"/>
-  <ellipse cx="112" cy="79" rx="5" ry="6" fill="#0a0a2a"/>
-  <circle cx="90" cy="77" r="2" fill="#fff"/>
-  <polygon points="100,94 89,101 111,101" fill="#ff9020" stroke="#c06010" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M54 108 Q32 88 46 68 Q56 88 68 108" fill="#5aaae0" stroke="#1a70c0" stroke-width="2.5"/>
-  <path d="M146 108 Q168 88 154 68 Q144 88 132 108" fill="#5aaae0" stroke="#1a70c0" stroke-width="2.5"/>
-  <ellipse cx="80" cy="146" rx="12" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-  <ellipse cx="120" cy="146" rx="12" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-`, '#e8f8ff');
-
-// 小鳥3（緑インコ）
-const bird3 = makeSVG(`
-  <ellipse cx="100" cy="122" rx="48" ry="42" fill="#7ad460" stroke="#3a8a20" stroke-width="3.5"/>
-  <ellipse cx="100" cy="80" rx="36" ry="34" fill="#7ad460" stroke="#3a8a20" stroke-width="3.5"/>
-  <ellipse cx="100" cy="60" rx="10" ry="14" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
-  <ellipse cx="100" cy="56" rx="5" ry="7" fill="#ffe060"/>
-  <ellipse cx="87" cy="77" rx="9" ry="10" fill="#fff" stroke="#3a8a20" stroke-width="2"/>
-  <ellipse cx="113" cy="77" rx="9" ry="10" fill="#fff" stroke="#3a8a20" stroke-width="2"/>
-  <ellipse cx="87" cy="79" rx="5" ry="6" fill="#0a1a0a"/>
-  <ellipse cx="113" cy="79" rx="5" ry="6" fill="#0a1a0a"/>
-  <circle cx="89" cy="77" r="2" fill="#fff"/>
-  <polygon points="100,93 88,101 112,101" fill="#ff9020" stroke="#c06010" stroke-width="2.5" stroke-linejoin="round"/>
-  <ellipse cx="80" cy="90" rx="14" ry="10" fill="#ffe060" opacity="0.8"/>
-  <ellipse cx="120" cy="90" rx="14" ry="10" fill="#ffe060" opacity="0.8"/>
-  <path d="M52 110 Q30 90 44 68 Q54 90 68 110" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
-  <path d="M148 110 Q170 90 156 68 Q146 90 132 110" fill="#5ab840" stroke="#3a8a20" stroke-width="2.5"/>
-  <ellipse cx="80" cy="148" rx="11" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-  <ellipse cx="120" cy="148" rx="11" ry="7" fill="#ff9020" stroke="#c06010" stroke-width="2.5"/>
-`, '#f0fff0');
-
-const imgPool=[cat1,cat2,dog1,dog2,bunny1,bunny2,bird1,bird2,bird3,cat1,cat2,dog1];
-function genData(n,type){
-  return Array.from({length:n},(_,i)=>{
-    const src=imgPool[i%imgPool.length];
-    if(type==='raw')   return{src,size:(Math.random()*50+20).toFixed(1)};
-    if(type==='video') return{src,size:(Math.random()*5+.5).toFixed(2),dur:`0${Math.floor(Math.random()*9)}:${String(Math.floor(Math.random()*50)+10).padStart(2,'0')}`};
-    return{src,size:(Math.random()*4+1).toFixed(1)};
-  });
-}
-function genSimilar(n){
-  return Array.from({length:n},(_,i)=>{
-    const base=imgPool[i%imgPool.length];
-    const sub=Array.from({length:Math.floor(Math.random()*3)+2},(__,j)=>({src:imgPool[(i+j+1)%imgPool.length],size:(Math.random()*3+1).toFixed(1)}));
-    return{id:`g${i}`,best:{src:base,size:(Math.random()*4+2).toFixed(1)},sub};
-  });
-}
-function genMonths(){
-  const now=new Date();
-  return Array.from({length:20},(_,i)=>{
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    const total=Math.floor(Math.random()*120)+30;
-    const reviewed=i<3?Math.floor(Math.random()*total):(Math.random()>.4?total:Math.floor(Math.random()*total));
-    const photos=Array.from({length:Math.min(total,30)},(__,j)=>({src:imgPool[(i+j)%imgPool.length]}));
-    return{label:`${d.getFullYear()}年${d.getMonth()+1}月`,navLabel:`${d.getMonth()+1}月 ${d.getFullYear()}`,total,reviewed,done:reviewed===total,photos,thumb:imgPool[i%imgPool.length]};
-  });
+function fmtSz(b) {
+    if (b < 1024) return b + 'B';
+    if (b < 1048576) return (b / 1024).toFixed(0) + 'KB';
+    if (b < 1073741824) return (b / 1048576).toFixed(1) + 'MB';
+    return (b / 1073741824).toFixed(2) + 'GB';
 }
 
-const rawData=genData(20,'raw'),vidData=genData(16,'video'),ssData=genData(30,'photo');
-const simGroups=genSimilar(15),monthData=genMonths();
-let currentTab='home',isAllSel=false,sdMonth=null,sdIdx=0,sdMonthIdx=0;
-let currentSort='newest'; // 現在の並び順
-
-// 各タブのデータを並び替えて返す
-function getSorted(data,type){
-  const arr=[...data].map((d,i)=>({...d,origIdx:i}));
-  if(currentSort==='oldest')    return arr.reverse();
-  if(currentSort==='size-desc') return arr.sort((a,b)=>parseFloat(b.size)-parseFloat(a.size));
-  if(currentSort==='size-asc')  return arr.sort((a,b)=>parseFloat(a.size)-parseFloat(b.size));
-  return arr; // newest = 元順
+function fmtMB(mb) {
+    if (mb < 1) return '—';
+    if (mb < 1000) return mb.toFixed(0) + 'MB';
+    return (mb / 1000).toFixed(1) + 'GB';
 }
 
-/* ── ソートUI ── */
-function openSort(){
-  document.getElementById('sort-overlay').classList.add('open');
-}
-function closeSort(){
-  document.getElementById('sort-overlay').classList.remove('open');
-}
-function closeSortOnBg(e){
-  if(e.target===document.getElementById('sort-overlay')) closeSort();
-}
-function applySort(key){
-  currentSort=key;
-  // チェックマーク更新
-  document.querySelectorAll('.sort-option').forEach(el=>{
-    el.classList.toggle('active', el.dataset.sort===key);
-  });
-  // 現在のタブを再描画
-  rerenderCurrentGrid();
-  setTimeout(closeSort, 180);
-}
-function rerenderCurrentGrid(){
-  if(currentTab==='raw-photos'){
-    const sorted=getSorted(rawData,'raw');
-    document.getElementById('raw-grid').innerHTML=sorted.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="bdg-top">RAW</div><div class="bdg-bot">${d.size} MB</div><div class="chk">✓</div></div>`).join('');
-  } else if(currentTab==='videos'){
-    const sorted=getSorted(vidData,'video');
-    document.getElementById('vid-grid').innerHTML=sorted.map(d=>`<div class="media-item sel-item" data-size="${d.size*1000}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="vid-bdg"><span class="vs">${d.size} GB</span><span class="vd">${d.dur}</span></div><div class="chk">✓</div></div>`).join('');
-  } else if(currentTab==='screenshots'){
-    const sorted=getSorted(ssData,'photo');
-    document.getElementById('ss-grid').innerHTML=sorted.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="chk">✓</div></div>`).join('');
-  }
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentTab = 'home';
+let previousTab = 'home';
+let undoBuffer = [];
+let undoFromTab = '';
+let toastTimer = null;
+let swipePhotos = [];
+let swipeIndex = 0;
+let swipeDeleted = 0;
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function initTheme() {
+    const saved = localStorage.getItem('sc-theme') || 'auto';
+    applyTheme(saved);
+    document.querySelectorAll('#th-seg button').forEach(b => {
+        b.classList.remove('on');
+        if ((saved === 'light' && b.textContent === 'ライト') ||
+            (saved === 'dark' && b.textContent === 'ダーク') ||
+            (saved === 'auto' && b.textContent === '自動')) b.classList.add('on');
+    });
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  // ホームカードにSVGイラストを設定
-  document.querySelector('.home-card.photos').style.backgroundImage=`url("${bunny1}")`;
-  document.querySelector('.home-card.raw').style.backgroundImage=`url("${cat1}")`;
-  document.querySelector('.home-card.videos').style.backgroundImage=`url("${bird1}")`;
-  document.querySelector('.home-card.screenshots').style.backgroundImage=`url("${dog1}")`;
-  document.getElementById('guide-feat-card').style.backgroundImage=`url("${bird3}")`;
-  renderGrids(); renderSimilar(); renderMonths();
-  document.querySelectorAll('.nav-item[data-target]').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.target)));
-  switchTab('home');
+function setTheme(mode, btn) {
+    document.querySelectorAll('#th-seg button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    localStorage.setItem('sc-theme', mode);
+    applyTheme(mode);
+}
+
+function applyTheme(mode) {
+    if (mode === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    else if (mode === 'light') document.documentElement.removeAttribute('data-theme');
+    else {
+        if (matchMedia('(prefers-color-scheme:dark)').matches) document.documentElement.setAttribute('data-theme', 'dark');
+        else document.documentElement.removeAttribute('data-theme');
+    }
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function goTab(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    el.classList.add('on');
+    go(el.dataset.t);
+}
+
+function go(id) {
+    previousTab = currentTab;
+    currentTab = id;
+
+    // Hide all pages
+    document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+
+    // Reset header
+    const back = document.getElementById('hd-back');
+    const title = document.getElementById('hd-title');
+    const selBtn = document.getElementById('sel-btn');
+    back.style.display = 'none';
+    selBtn.style.display = 'none';
+    document.getElementById('del-btn').classList.remove('show');
+
+    const pages = {
+        home:    { title: '写真クリーナー', page: 'p-home' },
+        similar: { title: '似ている写真', page: 'p-similar', detail: true },
+        ss:      { title: 'スクリーンショット', page: 'p-ss', detail: true },
+        vid:     { title: '大きな動画', page: 'p-vid', detail: true },
+        big:     { title: '大容量ファイル', page: 'p-big', detail: true },
+        contacts:{ title: '連絡先を整理', page: 'p-contacts', back: true },
+        swipe:   { title: 'スワイプ整理', page: 'p-swipe', back: true },
+        settings:{ title: '設定', page: 'p-settings' },
+    };
+
+    const cfg = pages[id];
+    if (!cfg) return;
+
+    title.textContent = cfg.title;
+    document.getElementById(cfg.page).classList.add('on');
+
+    if (cfg.detail) {
+        back.style.display = 'block';
+        updateDetailInfo();
+        updateDeleteBtn();
+    }
+
+    if (cfg.back) {
+        back.style.display = 'block';
+    }
+
+    if (id === 'home') updateHome();
+    if (id === 'swipe') initSwipe();
+}
+
+function goSub(id) {
+    previousTab = currentTab;
+    currentTab = id;
+    document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+    document.getElementById('p-' + id).classList.add('on');
+
+    const titles = { howto: '使い方', privacy: 'プライバシーポリシー', contact: 'お問い合わせ' };
+    document.getElementById('hd-title').textContent = titles[id] || '';
+    document.getElementById('hd-back').style.display = 'block';
+    document.getElementById('sel-btn').style.display = 'none';
+    document.getElementById('del-btn').classList.remove('show');
+}
+
+function goBack() {
+    const subPages = ['howto', 'privacy', 'contact'];
+    if (subPages.includes(currentTab)) {
+        go('settings');
+    } else {
+        go('home');
+    }
+}
+
+/* ============================================================
+   HOME GAUGE
+   ============================================================ */
+function updateHome() {
+    const getItems = id => document.querySelectorAll('#' + id + ' .item');
+    const sumMB = els => { let m = 0; els.forEach(e => m += parseFloat(e.dataset.sz || 0)); return m; };
+
+    const sim = getItems('sim-list');
+    const ss = getItems('ss-grid');
+    const vid = getItems('vid-grid');
+    const big = getItems('big-grid');
+    const all = [...sim, ...ss, ...vid, ...big];
+    const allSel = all.filter(i => i.classList.contains('on'));
+
+    // Gauge
+    const totalMB = sumMB(all);
+    const selMB = sumMB(allSel);
+    const pct = all.length ? Math.min(100, Math.round(selMB / Math.max(totalMB, 1) * 100)) : 0;
+    document.getElementById('gF').style.strokeDashoffset = 440 - (440 * pct / 100);
+    document.getElementById('gV').textContent = all.length ? fmtMB(selMB) : '0';
+    document.getElementById('gi-t').textContent = all.length ? fmtMB(totalMB) : '—';
+    document.getElementById('gi-s').textContent = allSel.length;
+
+    // Category counts
+    document.getElementById('c-sim').textContent = fmtMB(sumMB(sim));
+    document.getElementById('c-sim-n').textContent = sim.length ? sim.length + '枚' : '';
+    document.getElementById('c-ss').textContent = fmtMB(sumMB(ss));
+    document.getElementById('c-ss-n').textContent = ss.length ? ss.length + '枚' : '';
+    document.getElementById('c-vid').textContent = fmtMB(sumMB(vid));
+    document.getElementById('c-vid-n').textContent = vid.length ? vid.length + '本' : '';
+    document.getElementById('c-big').textContent = fmtMB(sumMB(big));
+    document.getElementById('c-big-n').textContent = big.length ? big.length + '個' : '';
+
+    // Empty states
+    document.getElementById('sim-e').classList.toggle('on', !sim.length);
+    document.getElementById('ss-e').classList.toggle('on', !ss.length);
+    document.getElementById('vid-e').classList.toggle('on', !vid.length);
+    document.getElementById('big-e').classList.toggle('on', !big.length);
+}
+
+function updateDetailInfo() {
+    const pg = document.querySelector('.pg.on');
+    if (!pg) return;
+    const items = pg.querySelectorAll('.item');
+    const sel = pg.querySelectorAll('.item.on');
+    let mb = 0; sel.forEach(i => mb += parseFloat(i.dataset.sz || 0));
+
+    const infoMap = { similar: 'sim-info', ss: 'ss-info', vid: 'vid-info', big: 'big-info' };
+    const el = document.getElementById(infoMap[currentTab]);
+    if (el) el.innerHTML = '<strong>' + sel.length + '</strong> / ' + items.length + ' 選択 · ' + fmtMB(mb);
+}
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+function tog(el) {
+    el.classList.toggle('on');
+    updateDetailInfo();
+    updateDeleteBtn();
+}
+
+function toggleAll() {
+    const pg = document.querySelector('.pg.on');
+    if (!pg) return;
+    const items = pg.querySelectorAll('.item');
+    const allOn = items.length > 0 && [...items].every(i => i.classList.contains('on'));
+    items.forEach(i => i.classList.toggle('on', !allOn));
+    updateDetailInfo();
+    updateDeleteBtn();
+}
+
+function grpToggle(gi) {
+    const grp = document.querySelector('.grp[data-gi="' + gi + '"]');
+    if (!grp) return;
+    grp.querySelectorAll('.item').forEach((it, i) => it.classList.toggle('on', i > 0));
+    updateDetailInfo();
+    updateDeleteBtn();
+}
+
+/* ============================================================
+   DELETE
+   ============================================================ */
+function updateDeleteBtn() {
+    const pg = document.querySelector('.pg.on');
+    if (!pg) return;
+    const sel = pg.querySelectorAll('.item.on');
+    const btn = document.getElementById('del-btn');
+    const txt = document.getElementById('del-txt');
+
+    if (sel.length) {
+        let mb = 0; sel.forEach(i => mb += parseFloat(i.dataset.sz || 0));
+        txt.textContent = sel.length + ' 件を削除 · ' + fmtMB(mb);
+        btn.classList.add('show');
+    } else {
+        btn.classList.remove('show');
+    }
+}
+
+function confirmDel() {
+    const pg = document.querySelector('.pg.on');
+    if (!pg) return;
+    const cnt = pg.querySelectorAll('.item.on').length;
+    if (!cnt) return;
+    let mb = 0; pg.querySelectorAll('.item.on').forEach(i => mb += parseFloat(i.dataset.sz || 0));
+    document.getElementById('mod-t').textContent = cnt + ' 件を削除';
+    document.getElementById('mod-d').textContent = fmtMB(mb) + ' のストレージが解放されます';
+    document.getElementById('modal').classList.add('on');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+
+function execDel() {
+    closeModal();
+    const pg = document.querySelector('.pg.on');
+    const sel = pg.querySelectorAll('.item.on');
+
+    // Save for undo
+    undoBuffer = [];
+    undoFromTab = currentTab;
+    sel.forEach(i => undoBuffer.push({ html: i.outerHTML, parent: i.parentElement, next: i.nextElementSibling }));
+    const cnt = sel.length;
+
+    // Native delete
+    if (isNative) {
+        const uris = [...sel].map(i => i.dataset.uri).filter(Boolean);
+        if (uris.length) Android.deleteFiles(JSON.stringify(uris));
+    }
+
+    // Animate out
+    sel.forEach((it, i) => {
+        it.style.transition = 'all .2s';
+        it.style.transitionDelay = i * .015 + 's';
+        it.style.transform = 'scale(.3)';
+        it.style.opacity = '0';
+    });
+
+    setTimeout(() => {
+        sel.forEach(i => i.remove());
+        // Clean empty groups
+        document.querySelectorAll('.grp').forEach(g => {
+            if (!g.querySelectorAll('.item').length) {
+                g.style.transition = 'all .2s'; g.style.opacity = '0';
+                g.style.maxHeight = '0'; g.style.overflow = 'hidden'; g.style.margin = '0';
+                setTimeout(() => g.remove(), 200);
+            }
+        });
+        updateDeleteBtn();
+        updateDetailInfo();
+        updateHome();
+    }, 200 + sel.length * 15);
+
+    showToast(cnt);
+}
+
+function showToast(n) {
+    document.getElementById('toast-t').innerHTML = '<strong>' + n + '件</strong> 削除しました';
+    document.getElementById('toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { document.getElementById('toast').classList.remove('show'); undoBuffer = []; }, 5000);
+}
+
+function undo() {
+    if (!undoBuffer.length) return;
+    undoBuffer.reverse().forEach(d => {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = d.html;
+        const el = tmp.firstElementChild;
+        el.style.cssText = '';
+        if (d.next) d.parent.insertBefore(el, d.next);
+        else d.parent.appendChild(el);
+    });
+    undoBuffer = [];
+    document.getElementById('toast').classList.remove('show');
+    clearTimeout(toastTimer);
+    updateDeleteBtn();
+    updateDetailInfo();
+    updateHome();
+}
+
+function smartClean() {
+    // Auto-select non-best similar + all screenshots
+    document.querySelectorAll('#sim-list .item').forEach(it => {
+        const grp = it.closest('.grp');
+        if (!grp) return;
+        const items = grp.querySelectorAll('.item');
+        it.classList.toggle('on', [...items].indexOf(it) > 0);
+    });
+    document.querySelectorAll('#ss-grid .item').forEach(it => it.classList.add('on'));
+    go('similar');
+    updateDetailInfo();
+    updateDeleteBtn();
+}
+
+/* ============================================================
+   SWIPE
+   ============================================================ */
+function initSwipe() {
+    swipePhotos = [...document.querySelectorAll('#sim-list .item, #ss-grid .item, #vid-grid .item, #big-grid .item')];
+    swipeIndex = 0;
+    swipeDeleted = 0;
+    document.getElementById('sw-wrap').style.display = 'flex';
+    document.getElementById('sw-done').style.display = 'none';
+
+    if (swipePhotos.length === 0) {
+        document.getElementById('sw-wrap').style.display = 'none';
+        document.getElementById('sw-done').style.display = 'block';
+        document.getElementById('sw-result').textContent = 'スキャンしてから使ってください';
+        return;
+    }
+    showSwipeCard();
+}
+
+function showSwipeCard() {
+    if (swipeIndex >= swipePhotos.length) {
+        document.getElementById('sw-wrap').style.display = 'none';
+        document.getElementById('sw-done').style.display = 'block';
+        document.getElementById('sw-result').textContent = swipeDeleted + '件を削除対象にしました';
+        return;
+    }
+
+    const it = swipePhotos[swipeIndex];
+    const img = it.querySelector('img');
+    document.getElementById('sw-img').src = img ? img.src : '';
+    document.getElementById('sw-name').textContent = '写真 ' + (swipeIndex + 1);
+    document.getElementById('sw-size').textContent = (it.dataset.sz || '?') + ' MB';
+    document.getElementById('sw-cnt').textContent = (swipeIndex + 1) + ' / ' + swipePhotos.length;
+    document.getElementById('sw-bar').style.width = (swipeIndex / swipePhotos.length * 100) + '%';
+
+    // Reset card position
+    const card = document.getElementById('sw-card');
+    card.style.transform = '';
+    card.style.opacity = '1';
+    document.getElementById('sw-kp').style.opacity = '0';
+    document.getElementById('sw-dl').style.opacity = '0';
+}
+
+function swipeAction(action) {
+    const card = document.getElementById('sw-card');
+    if (action === 'del') {
+        card.style.transform = 'translateX(-200px) rotate(-15deg)';
+        card.style.opacity = '0';
+        swipePhotos[swipeIndex].classList.add('on');
+        swipeDeleted++;
+    } else {
+        card.style.transform = 'translateX(200px) rotate(15deg)';
+        card.style.opacity = '0';
+        swipePhotos[swipeIndex].classList.remove('on');
+    }
+    setTimeout(() => { swipeIndex++; showSwipeCard(); }, 250);
+}
+
+// Touch swipe support
+(function() {
+    let startX = 0, deltaX = 0, active = false;
+
+    document.addEventListener('touchstart', e => {
+        if (!e.target.closest('#sw-card')) return;
+        startX = e.touches[0].clientX;
+        deltaX = 0;
+        active = true;
+    });
+
+    document.addEventListener('touchmove', e => {
+        if (!active) return;
+        deltaX = e.touches[0].clientX - startX;
+        const card = document.getElementById('sw-card');
+        card.style.transform = 'translateX(' + deltaX + 'px) rotate(' + (deltaX * 0.05) + 'deg)';
+        document.getElementById('sw-kp').style.opacity = deltaX > 40 ? '1' : '0';
+        document.getElementById('sw-dl').style.opacity = deltaX < -40 ? '1' : '0';
+    });
+
+    document.addEventListener('touchend', () => {
+        if (!active) return;
+        active = false;
+        if (Math.abs(deltaX) > 80) {
+            swipeAction(deltaX > 0 ? 'keep' : 'del');
+        } else {
+            document.getElementById('sw-card').style.transform = '';
+            document.getElementById('sw-kp').style.opacity = '0';
+            document.getElementById('sw-dl').style.opacity = '0';
+        }
+    });
+})();
+
+/* ============================================================
+   FILE ACCESS
+   ============================================================ */
+async function doFolder() {
+    if (isNative) { Android.requestStoragePermission(); return; }
+    if ('showDirectoryPicker' in window) {
+        try {
+            const dh = await window.showDirectoryPicker({ mode: 'read' });
+            showScan();
+            const files = [];
+            await walkDir(dh, files);
+            await processFiles(files);
+        } catch (e) { if (e.name !== 'AbortError') fallbackDir(); }
+    } else fallbackDir();
+}
+
+function fallbackDir() {
+    const inp = document.getElementById('inp-dir');
+    inp.setAttribute('webkitdirectory', '');
+    inp.setAttribute('directory', '');
+    inp.onchange = async function() { if (this.files.length) { showScan(); await processFiles([...this.files]); } };
+    inp.click();
+}
+
+async function walkDir(dh, files, depth) {
+    if ((depth || 0) > 4) return;
+    for await (const entry of dh.values()) {
+        if (entry.kind === 'file') {
+            try {
+                const f = await entry.getFile();
+                if (f.type.startsWith('image/') || f.type.startsWith('video/') ||
+                    RAW_EXT.has(getExt(f.name)) || VID_EXT.has(getExt(f.name))) files.push(f);
+            } catch (e) {}
+        } else if (entry.kind === 'directory') await walkDir(entry, files, (depth || 0) + 1);
+    }
+}
+
+function doFiles() {
+    if (isNative) { Android.pickFiles(); return; }
+    const inp = document.getElementById('inp-files');
+    inp.removeAttribute('webkitdirectory');
+    inp.removeAttribute('directory');
+    inp.onchange = async function() { if (this.files.length) { showScan(); await processFiles([...this.files]); } };
+    inp.click();
+}
+
+function showScan() {
+    document.getElementById('scan-ov').classList.add('on');
+    ['os-p','os-s','os-v','os-b'].forEach(id => document.getElementById(id).textContent = '0');
+    document.getElementById('ov-fill').style.width = '0%';
+}
+
+async function processFiles(files) {
+    const photos = [], ss = [], vid = [], big = [];
+    let cp = 0, cs = 0, cv = 0, cb = 0;
+
+    for (let i = 0; i < files.length; i++) {
+        const f = files[i], cat = classify(f);
+        const entry = { file: f, name: f.name, size: f.size, mb: +(f.size / 1048576).toFixed(1), url: null };
+        if (f.type.startsWith('image/') || f.type.startsWith('video/')) entry.url = URL.createObjectURL(f);
+
+        switch (cat) {
+            case 'ss':  ss.push(entry); cs++; break;
+            case 'vid': vid.push(entry); cv++; break;
+            case 'big': big.push(entry); cb++; break;
+            default:    photos.push(entry); cp++;
+        }
+
+        const pct = ((i + 1) / files.length * 100) | 0;
+        document.getElementById('ov-fill').style.width = pct + '%';
+        document.getElementById('ov-sub').textContent = (i + 1) + ' / ' + files.length;
+        document.getElementById('os-p').textContent = cp;
+        document.getElementById('os-s').textContent = cs;
+        document.getElementById('os-v').textContent = cv;
+        document.getElementById('os-b').textContent = cb;
+        if (i % 15 === 0) await new Promise(r => setTimeout(r, 0));
+    }
+
+    vid.sort((a, b) => b.size - a.size);
+    big.sort((a, b) => b.size - a.size);
+
+    document.getElementById('ov-sub').textContent = '完了！';
+    await new Promise(r => setTimeout(r, 500));
+    document.getElementById('scan-ov').classList.remove('on');
+    renderResults(photos, ss, vid, big);
+    updateHome();
+    go('home');
+}
+
+/* ============================================================
+   CONTACTS
+   ============================================================ */
+function scanContacts() {
+    if (isNative) {
+        Android.scanContacts();
+    } else {
+        // Web demo
+        showContactDemo();
+    }
+}
+
+function showContactScan() {
+    document.getElementById('con-scan-msg').innerHTML = '<div class="spinner" style="margin:0 auto 16px"></div><div style="font-size:14px;color:var(--tx2)">連絡先をスキャン中...</div>';
+}
+
+function onContactScanComplete(jsonStr) {
+    try {
+        var data = JSON.parse(jsonStr);
+        document.getElementById('con-scan-msg').style.display = 'none';
+        document.getElementById('con-results').style.display = 'block';
+        document.getElementById('con-info').innerHTML = '重複 <strong>' + data.duplicateCount + '件</strong> · 不完全 ' + data.incompleteCount + '件 / 全' + data.totalContacts + '件';
+
+        // Duplicate groups
+        var dupHtml = '';
+        if (data.duplicateGroups && data.duplicateGroups.length) {
+            dupHtml = '<div class="con-sec-title">重複している連絡先 (' + data.duplicateGroups.length + 'グループ)</div>';
+            data.duplicateGroups.forEach(function(g, gi) {
+                var typeLabel = g.matchType === 'name' ? '同名' : g.matchType === 'phone' ? '同番号' : '同メール';
+                var itemsHtml = g.contacts.map(function(c, ci) {
+                    var isPrimary = ci === g.primaryIndex;
+                    var phonesStr = c.phones.length ? c.phones.join(', ') : '番号なし';
+                    var emailsStr = c.emails.length ? c.emails.join(', ') : '';
+                    var metaParts = [phonesStr];
+                    if (emailsStr) metaParts.push(emailsStr);
+                    return '<div class="con-item">' +
+                        '<div class="con-avatar' + (isPrimary ? ' primary' : '') + '">' + (c.name ? c.name.charAt(0) : '?') + '</div>' +
+                        '<div class="con-detail"><div class="con-name">' + (c.name || '名前なし') + '</div>' +
+                        '<div class="con-meta">' + metaParts.join(' · ') + '</div></div>' +
+                        (isPrimary ? '<div class="con-badge">メイン</div>' : '') +
+                        '</div>';
+                }).join('');
+                dupHtml += '<div class="con-grp" id="con-grp-' + gi + '">' +
+                    '<div class="con-grp-hd"><h4>' + (g.contacts[0].name || '名前なし') + '</h4><span class="cg-type">' + typeLabel + '</span></div>' +
+                    itemsHtml +
+                    '<button class="con-merge-btn" id="con-merge-' + gi + '" onclick="mergeContactGroup(' + gi + ')">結合する (' + g.contacts.length + '件 → 1件)</button>' +
+                    '</div>';
+            });
+        }
+        document.getElementById('con-dupes').innerHTML = dupHtml;
+
+        // Incomplete contacts
+        var incHtml = '';
+        if (data.incompleteContacts && data.incompleteContacts.length) {
+            incHtml = '<div class="con-sec-title">不完全な連絡先 (' + data.incompleteContacts.length + '件)</div>';
+            incHtml += '<div class="con-grp"><div style="font-size:13px;color:var(--tx2);margin-bottom:12px">名前や電話番号がない連絡先です</div>';
+            data.incompleteContacts.slice(0, 20).forEach(function(c) {
+                incHtml += '<div class="con-item">' +
+                    '<div class="con-avatar">' + (c.name ? c.name.charAt(0) : '?') + '</div>' +
+                    '<div class="con-detail"><div class="con-name">' + (c.name || '名前なし') + '</div>' +
+                    '<div class="con-meta">' + (c.phones.length ? c.phones[0] : 'データなし') + '</div></div></div>';
+            });
+            if (data.incompleteContacts.length > 20) {
+                incHtml += '<div style="padding:8px 0;font-size:12px;color:var(--tx2);text-align:center">他 ' + (data.incompleteContacts.length - 20) + '件</div>';
+            }
+            var ids = data.incompleteContacts.map(function(c) { return c.id; });
+            incHtml += '<button class="con-merge-btn" style="background:var(--red)" onclick="deleteIncomplete(\'' + JSON.stringify(ids).replace(/'/g, "\\'") + '\')">不完全な連絡先をすべて削除</button></div>';
+        }
+        document.getElementById('con-incomplete').innerHTML = incHtml;
+    } catch (e) { console.error('Contact parse error:', e); }
+}
+
+function onContactScanError(msg) { alert('連絡先スキャンエラー: ' + msg); }
+
+function mergeContactGroup(gi) {
+    var btn = document.getElementById('con-merge-' + gi);
+    if (!btn || btn.classList.contains('done')) return;
+    if (isNative) {
+        btn.textContent = '結合中...';
+        Android.mergeContactGroup(gi);
+    } else {
+        btn.textContent = '✓ 結合完了';
+        btn.classList.add('done');
+    }
+}
+
+function onContactMergeComplete(gi, success) {
+    var btn = document.getElementById('con-merge-' + gi);
+    if (btn) {
+        btn.textContent = success ? '✓ 結合完了' : '❌ 失敗';
+        btn.classList.add('done');
+    }
+}
+
+function deleteIncomplete(idsJson) {
+    if (confirm('不完全な連絡先をすべて削除しますか？\nこの操作は元に戻せません。')) {
+        if (isNative) {
+            Android.deleteIncompleteContacts(idsJson);
+        } else {
+            document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600">✓ 削除完了（デモ）</div>';
+        }
+    }
+}
+
+function onContactDeleteComplete(deleted, total) {
+    document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600">✓ ' + deleted + '件 削除完了</div>';
+}
+
+function showContactDemo() {
+    // Web用デモデータ
+    var demo = {
+        totalContacts: 342,
+        duplicateCount: 8,
+        incompleteCount: 5,
+        duplicateGroups: [
+            { matchType: 'name', primaryIndex: 0, contacts: [
+                { id: 1, name: '田中太郎', phones: ['090-1234-5678','03-1111-2222'], emails: ['tanaka@email.com'], dataCount: 3 },
+                { id: 2, name: '田中太郎', phones: ['090-1234-5678'], emails: [], dataCount: 1 }
+            ]},
+            { matchType: 'phone', primaryIndex: 0, contacts: [
+                { id: 3, name: '佐藤花子', phones: ['080-9876-5432'], emails: ['sato@email.com'], dataCount: 2 },
+                { id: 4, name: 'Hanako S', phones: ['080-9876-5432'], emails: [], dataCount: 1 }
+            ]},
+            { matchType: 'name', primaryIndex: 0, contacts: [
+                { id: 5, name: '鈴木一郎', phones: ['070-1111-2222'], emails: ['suzuki@work.com','suzuki@personal.com'], dataCount: 3 },
+                { id: 6, name: '鈴木一郎', phones: ['070-1111-2222'], emails: ['suzuki@work.com'], dataCount: 2 },
+                { id: 7, name: '鈴木一郎', phones: [], emails: ['suzuki@personal.com'], dataCount: 1 }
+            ]}
+        ],
+        incompleteContacts: [
+            { id: 101, name: '', phones: ['090-0000-0000'], emails: [] },
+            { id: 102, name: '（不明）', phones: [], emails: [] },
+            { id: 103, name: 'test', phones: [], emails: [] },
+            { id: 104, name: '', phones: [], emails: ['unknown@test.com'] },
+            { id: 105, name: 'メモ用', phones: [], emails: [] }
+        ]
+    };
+    onContactScanComplete(JSON.stringify(demo));
+}
+
+/* ============================================================
+   NATIVE BRIDGE RECEIVERS
+   ============================================================ */
+function showNativeScan() { showScan(); document.getElementById('ov-sub').textContent = 'AIモデルを読み込み中...'; }
+function updateScanProgress(pct, msg) { document.getElementById('ov-fill').style.width = pct + '%'; document.getElementById('ov-sub').textContent = msg; }
+
+function onAIAnalysisComplete(jsonStr) {
+    document.getElementById('scan-ov').classList.remove('on');
+    try {
+        const data = JSON.parse(jsonStr);
+        if (data.similarGroups && data.similarGroups.length) {
+            document.getElementById('sim-list').innerHTML = data.similarGroups.map((g, gi) => {
+                const items = g.items.map((p, pi) =>
+                    '<div class="item' + (!p.isBest ? ' on' : '') + '" data-sz="' + p.mb + '" data-uri="' + p.uri + '" onclick="tog(this)">' +
+                    (p.uri ? '<img src="' + p.uri + '" loading="lazy">' : '<div class="ph">📷</div>') +
+                    '<div class="sz">' + p.mb + 'MB</div><div class="ck">✓</div></div>'
+                ).join('');
+                return '<div class="grp" data-gi="' + gi + '"><div class="grp-hd"><span>' + g.items.length + '枚が類似 · 節約' + g.savingsMB + 'MB</span>' +
+                    '<button onclick="grpToggle(' + gi + ')">ベスト以外を選択</button></div><div class="grid">' + items + '</div></div>';
+            }).join('');
+        }
+        if (data.screenshots) renderNativeList('ss-grid', data.screenshots, true);
+        if (data.videos) renderNativeList('vid-grid', data.videos, false, true);
+        if (data.largeFiles) renderNativeList('big-grid', data.largeFiles);
+        updateHome();
+        go('home');
+    } catch (e) { console.error('AI parse error:', e); }
+}
+
+function onAIAnalysisError(msg) { document.getElementById('scan-ov').classList.remove('on'); alert('分析エラー: ' + msg); }
+function onNativeDeleteComplete(d, t) { console.log('Deleted: ' + d + '/' + t); }
+
+function renderNativeList(gridId, items, preCheck, isVideo) {
+    document.getElementById(gridId).innerHTML = items.map(item =>
+        '<div class="item' + (preCheck ? ' on' : '') + '" data-sz="' + item.mb + '" data-uri="' + item.uri + '" onclick="tog(this)">' +
+        (item.uri ? '<img src="' + item.uri + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '🎬' : '📐') + '</div>') +
+        (isVideo ? '<div class="play">▶</div>' : '') +
+        '<div class="sz">' + item.mb + 'MB</div><div class="ck">✓</div></div>'
+    ).join('');
+}
+
+/* ============================================================
+   RENDER (Web file upload)
+   ============================================================ */
+function renderResults(photos, ss, vid, big) {
+    renderSimilar(photos);
+    renderList('ss-grid', ss, true);
+    renderList('vid-grid', vid, false, true);
+    renderList('big-grid', big);
+}
+
+function renderSimilar(photos) {
+    const el = document.getElementById('sim-list');
+    if (photos.length < 2) { el.innerHTML = ''; return; }
+    const sorted = [...photos].sort((a, b) => a.size - b.size);
+    const groups = [];
+    let g = [sorted[0]];
+    for (let i = 1; i < sorted.length; i++) {
+        const ratio = Math.abs(sorted[i].size - sorted[i - 1].size) / Math.max(sorted[i - 1].size, 1);
+        if (ratio < 0.25 && g.length < 5) g.push(sorted[i]);
+        else { groups.push(g); g = [sorted[i]]; }
+    }
+    groups.push(g);
+
+    el.innerHTML = groups.filter(g => g.length >= 2).map((g, gi) => {
+        const total = g.reduce((a, p) => a + p.mb, 0).toFixed(1);
+        const items = g.map((p, pi) =>
+            '<div class="item' + (pi > 0 ? ' on' : '') + '" data-sz="' + p.mb + '" onclick="tog(this)">' +
+            (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div class="ph">📷</div>') +
+            '<div class="sz">' + p.mb + 'MB</div><div class="ck">✓</div></div>'
+        ).join('');
+        return '<div class="grp" data-gi="' + gi + '"><div class="grp-hd"><span>' + g.length + '枚が類似 · ' + total + 'MB</span>' +
+            '<button onclick="grpToggle(' + gi + ')">ベスト以外を選択</button></div><div class="grid">' + items + '</div></div>';
+    }).join('');
+}
+
+function renderList(gridId, items, preCheck, isVideo) {
+    document.getElementById(gridId).innerHTML = items.map(item =>
+        '<div class="item' + (preCheck ? ' on' : '') + '" data-sz="' + item.mb + '" onclick="tog(this)">' +
+        (item.url ? '<img src="' + item.url + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '🎬' : '📐') + '</div>') +
+        (isVideo ? '<div class="play">▶</div>' : '') +
+        (RAW_EXT.has(getExt(item.name)) ? '<div class="tag">' + getExt(item.name).toUpperCase() + '</div>' : '') +
+        '<div class="sz">' + fmtSz(item.size) + '</div><div class="ck">✓</div></div>'
+    ).join('');
+}
+
+/* ============================================================
+   DEMO DATA
+   ============================================================ */
+function loadDemo() {
+    const I = 'https://images.unsplash.com/photo-';
+    const q = '?w=250&q=70';
+
+    const photos = [
+        { url: I+'1529626455594-4ff0802cfb7e'+q, mb: 2.6, size: 2726297 },
+        { url: I+'1529626455594-4ff0802cfb7e'+q+'&blur=2', mb: 2.6, size: 2726297 },
+        { url: I+'1529626455594-4ff0802cfb7e'+q+'&sepia=1', mb: 2.4, size: 2516582 },
+        { url: I+'1531306728370-53bfd6202e88'+q, mb: 4.2, size: 4404019 },
+        { url: I+'1531306728370-53bfd6202e88'+q+'&sepia=1', mb: 4.2, size: 4404019 },
+        { url: I+'1506157786151-b8491531f063'+q, mb: 3.8, size: 3984588 },
+        { url: I+'1506157786151-b8491531f063'+q+'&blur=3', mb: 3.6, size: 3774873 },
+    ].map(p => ({ ...p, name: 'photo.jpg' }));
+
+    const ss = [
+        I+'1611162617474-5b21e879e113'+q, I+'1550745165-9bc0b252726f'+q,
+        I+'1531306728370-53bfd6202e88'+q, I+'1511895426328-dc8714191300'+q,
+        I+'1504274066651-8d31a536b11a'+q, I+'1588612143431-7e87ab06d71b'+q,
+    ].map(url => ({ url, name: 'screenshot.png', mb: 1.8, size: 1887436 }));
+
+    const vid = [
+        { url: I+'1520697921389-9a2f647035ce'+q, name: 'video.mp4', mb: 6860, size: 7193804800, gb: 6.86, dur: '07:54' },
+        { url: I+'1506157786151-b8491531f063'+q, name: 'clip.mov', mb: 4060, size: 4257218560, gb: 4.06, dur: '05:37' },
+        { url: I+'1504274066651-8d31a536b11a'+q, name: 'rec.mp4', mb: 3520, size: 3691741184, gb: 3.52, dur: '04:44' },
+        { url: I+'1511895426328-dc8714191300'+q, name: 'film.mp4', mb: 3380, size: 3543348224, gb: 3.38, dur: '05:46' },
+    ];
+
+    const big = [
+        { url: I+'1621360841013-c76831f1a301'+q, name: 'IMG.CR2', mb: 45.2, size: 47395635 },
+        { url: I+'1600607688969-a5bfcd64fd28'+q, name: 'DSC.NEF', mb: 38.7, size: 40579277 },
+        { url: I+'1588612143431-7e87ab06d71b'+q, name: 'IMG.ARW', mb: 52.1, size: 54631834 },
+        { url: I+'1549608276-5786777e6587'+q, name: 'IMG.DNG', mb: 41.5, size: 43520614 },
+        { url: I+'1551373884-8a0750074df7'+q, name: 'DSC.CR2', mb: 48.9, size: 51275366 },
+        { url: I+'1534447677768-be436bb09401'+q, name: 'IMG.NEF', mb: 39.2, size: 41103564 },
+    ];
+
+    renderSimilar(photos);
+
+    document.getElementById('ss-grid').innerHTML = ss.map(s =>
+        '<div class="item on" data-sz="' + s.mb + '" onclick="tog(this)"><img src="' + s.url + '" loading="lazy"><div class="sz">' + s.mb + 'MB</div><div class="ck">✓</div></div>'
+    ).join('');
+
+    document.getElementById('vid-grid').innerHTML = vid.map(v =>
+        '<div class="item" data-sz="' + v.mb + '" onclick="tog(this)"><img src="' + v.url + '" loading="lazy"><div class="play">▶</div><div class="sz">' + v.gb + 'GB · ' + v.dur + '</div><div class="ck">✓</div></div>'
+    ).join('');
+
+    document.getElementById('big-grid').innerHTML = big.map(function(b) {
+        return '<div class="item" data-sz="' + b.mb + '" onclick="tog(this)"><img src="' + b.url + '" loading="lazy"><div class="tag">' + getExt(b.name).toUpperCase() + '</div><div class="sz">' + b.mb + 'MB</div><div class="ck">✓</div></div>';
+    }).join('');
+
+    updateHome();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    loadDemo();
+    go('home');
 });
-
-function renderGrids(){
-  document.getElementById('raw-grid').innerHTML=rawData.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="bdg-top">RAW</div><div class="bdg-bot">${d.size} MB</div><div class="chk">✓</div></div>`).join('');
-  document.getElementById('vid-grid').innerHTML=vidData.map(d=>`<div class="media-item sel-item" data-size="${d.size*1000}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="vid-bdg"><span class="vs">${d.size} GB</span><span class="vd">${d.dur}</span></div><div class="chk">✓</div></div>`).join('');
-  document.getElementById('ss-grid').innerHTML=ssData.map(d=>`<div class="media-item sel-item" data-size="${d.size}" onclick="toggleSel(this)"><img src="${d.src}" loading="lazy"><div class="chk">✓</div></div>`).join('');
-}
-function renderSimilar(){
-  document.getElementById('sim-cont').innerHTML=simGroups.map(g=>`<div class="sim-group" id="${g.id}"><div class="sim-group-header"><span class="sim-group-title">${g.sub.length} 似ています</span><span class="grp-sel-btn" onclick="toggleGrpSel('${g.id}')">すべての選択を解除</span></div><div class="sim-scroll"><div class="sim-best"><div class="best-lbl"><span class="star">★</span> 最高</div><img src="${g.best.src}" loading="lazy"></div>${g.sub.map(s=>`<div class="media-item sim-sub sel-item selected" data-size="${s.size}" onclick="toggleSel(this)"><img src="${s.src}" loading="lazy"><div class="bdg-bot" style="font-size:10px;">${s.size} MB</div><div class="chk">✓</div></div>`).join('')}</div></div>`).join('');
-}
-function renderMonths(){
-  document.getElementById('month-list').innerHTML=monthData.map((m,i)=>{
-    const pct=m.total>0?(m.reviewed/m.total*100).toFixed(0):0;
-    const cntTxt=m.done?`<span style="color:rgba(0,232,181,.85);font-weight:700;">✓ 全${m.total}件 完了</span>`:`<span>${m.reviewed}/${m.total} 件を確認済み</span>`;
-    const badge=m.done?`<div class="month-badge-wrap done">🏆</div>`:`<div class="month-badge-wrap pend"><span class="pend-pct">${pct}%</span></div>`;
-    const dLine=m.done?`<div class="done-bar"></div>`:'';
-    return`<div class="month-row${m.done?' done-row':''}" onclick="openSwipeDetail(${i})"><div class="month-row-inner"><img class="month-thumb-img" src="${m.thumb}" loading="lazy"><div class="month-text"><div class="month-lbl">${m.label}</div><div class="month-cnt">${cntTxt}</div><div class="month-bar-wrap"><div class="month-bar-fill" style="width:${pct}%"></div></div></div>${badge}</div>${dLine}</div>`;
-  }).join('');
-}
-
-/* ── スワイプ詳細 ── */
-function openSwipeDetail(idx){
-  sdMonth=monthData[idx];
-  // 完了済みなら先頭から、途中なら続きから
-  sdIdx=sdMonth.done ? 0 : sdMonth.reviewed;
-  sdMonthIdx=idx;
-  document.getElementById('del-bar').classList.add('hidden-force');
-  document.getElementById('main-header').style.display='none';
-  document.getElementById('main-nav').style.display='none';
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('swipe-detail').classList.add('active');
-  document.getElementById('sd-completion').style.display='none';
-  document.getElementById('sd-photo-area').style.display='';
-  document.getElementById('sd-strip').style.display='';
-  document.getElementById('sd-actions').style.display='';
-  document.getElementById('sd-month-title').textContent=sdMonth.navLabel;
-  renderSd();
-}
-function closeSwipeDetail(){
-  document.getElementById('swipe-detail').classList.remove('active');
-  document.getElementById('del-bar').classList.remove('hidden-force');
-  document.getElementById('main-header').style.display='';
-  document.getElementById('main-nav').style.display='';
-  renderMonths(); // 月一覧を最新状態に更新
-  switchTab('swipe');
-}
-function renderSd(){
-  const m=sdMonth,tot=m.photos.length;
-  const rev=sdIdx; // これまでに確認した枚数
-  const pct=tot>0?(rev/tot*100).toFixed(0):0;
-  document.getElementById('sd-prog-fill').style.width=pct+'%';
-  document.getElementById('sd-prog-txt').textContent=`${rev}/${tot} 件を確認済み`;
-  // 現在の写真（sdIdx番目）
-  const photo=m.photos[Math.min(sdIdx,tot-1)];
-  document.getElementById('sd-main-img').src=photo.src;
-  document.getElementById('sd-photo-meta').textContent=`${Math.min(sdIdx+1,tot)} / ${tot}`;
-  document.getElementById('sd-strip').innerHTML=m.photos.slice(0,Math.min(20,tot)).map((p,i)=>
-    `<img class="sd-strip-thumb${i===sdIdx?' active-thumb':''}" src="${imgPool[i%imgPool.length]}" loading="lazy" onclick="jumpSd(${i})">`
-  ).join('');
-}
-function jumpSd(i){sdIdx=i;renderSd();}
-function swipeAction(action){
-  if(!sdMonth)return;
-  const tot=sdMonth.photos.length;
-  sdIdx++; // 次の写真へ
-  sdMonth.reviewed=sdIdx;
-  if(sdIdx>=tot){
-    // 全件完了！
-    sdMonth.done=true;
-    sdMonth.reviewed=tot;
-    // プログレスを100%に更新してから完了画面へ
-    document.getElementById('sd-prog-fill').style.width='100%';
-    document.getElementById('sd-prog-txt').textContent=`${tot}/${tot} 件を確認済み`;
-    setTimeout(showCompletion, 300);
-  } else {
-    renderSd();
-  }
-}
-const guideContent={
-  similar:{
-    title:'似ている写真を整理',icon:'📷',
-    imgVar:'bunny2',
-    tag:'類似写真の整理',
-    steps:[
-      {title:'ホームから開く',desc:'ホーム画面の「似ている写真」カードをタップします。'},
-      {title:'グループを確認',desc:'同じシーンで撮影した写真がグループ化されて表示されます。★最高の1枚が自動で選ばれています。'},
-      {title:'削除したい写真を選ぶ',desc:'不要な写真をタップすると選択状態（赤チェック）になります。グループ内の「全て選択」も使えます。'},
-      {title:'削除を実行',desc:'下部の「削除」ボタンをタップすると選択した写真がまとめて削除されます。'},
-    ],
-    cta:'似ている写真を整理する',ctaTab:'similar-photos'
-  },
-  videos:{
-    title:'動画を整理する',icon:'🎬',
-    imgVar:'bird1',
-    tag:'動画の整理',
-    steps:[
-      {title:'ホームから開く',desc:'ホーム画面の「動画を整理」カードをタップします。'},
-      {title:'サイズと時間を確認',desc:'各動画にファイルサイズ（GB）と再生時間が表示されます。大きいファイルから優先的に確認しましょう。'},
-      {title:'削除する動画を選択',desc:'不要な動画をタップして選択します。「全て選択する」で一括選択も可能です。'},
-      {title:'削除を実行',desc:'「削除」ボタンをタップして選択した動画を削除します。'},
-    ],
-    cta:'動画を整理する',ctaTab:'videos'
-  },
-  raw:{
-    title:'RAWデータを削除',icon:'📄',
-    imgVar:'cat2',
-    tag:'RAWファイルの整理',
-    steps:[
-      {title:'ホームから開く',desc:'ホーム画面の「RAWデータ」カードをタップします。'},
-      {title:'RAWファイルを確認',desc:'RAW形式で撮影したファイルが一覧表示されます。対応するJPEGはライブラリに残ります。'},
-      {title:'削除するファイルを選択',desc:'不要なRAWファイルをタップして選択します。サイズが大きいものから削除するのがおすすめです。'},
-      {title:'削除を実行',desc:'「削除」ボタンをタップ。JPEGはそのまま残り、RAWファイルのみ削除されます。'},
-    ],
-    cta:'RAWデータを整理する',ctaTab:'raw-photos'
-  },
-  screenshots:{
-    title:'スクショを一括削除',icon:'🖼️',
-    imgVar:'dog2',
-    tag:'スクリーンショットの整理',
-    steps:[
-      {title:'ホームから開く',desc:'ホーム画面の「スクショ」カードをタップします。'},
-      {title:'スクショ一覧を確認',desc:'保存されているスクリーンショットが一覧表示されます。'},
-      {title:'削除するスクショを選択',desc:'不要なスクリーンショットをタップして選択。「全て選択する」で一括選択も可能です。'},
-      {title:'削除を実行',desc:'「削除」ボタンで選択したスクリーンショットをまとめて削除します。'},
-    ],
-    cta:'スクショを整理する',ctaTab:'screenshots'
-  }
-};
-const svgMap={cat1,cat2,dog1,dog2,bunny1,bunny2,bird1,bird2,bird3};
-function openGuideDetail(key){
-  const c=guideContent[key];
-  const imgSrc=svgMap[c.imgVar]||cat1;
-  document.getElementById('gd-title').textContent=c.title;
-  document.getElementById('gd-body').innerHTML=`
-    <div class="gd-hero" style="background-image:url('${imgSrc}')">
-      <div class="gd-hero-inner">
-        <div class="gd-hero-tag">${c.icon} ${c.tag}</div>
-        <div class="gd-hero-title">${c.title}</div>
-      </div>
-    </div>
-    <div style="font-size:11px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;">手順</div>
-    <div class="gd-step-list">
-      ${c.steps.map((s,i)=>`<div class="gd-step"><div class="gd-step-num">${i+1}</div><div class="gd-step-body"><h4>${s.title}</h4><p>${s.desc}</p></div></div>`).join('')}
-    </div>
-    <button class="gd-cta" onclick="closeGuideDetail();switchTab('${c.ctaTab}')">${c.cta} →</button>
-  `;
-  const ov=document.getElementById('guide-detail-overlay');
-  ov.style.display='flex';
-}
-function closeGuideDetail(){
-  document.getElementById('guide-detail-overlay').style.display='none';
-}
-
-/* ── 完了画面表示 ── */
-function showCompletion(){
-  const m=sdMonth;
-  document.getElementById('sd-photo-area').style.display='none';
-  document.getElementById('sd-strip').style.display='none';
-  document.getElementById('sd-actions').style.display='none';
-  document.getElementById('comp-sub-text').textContent=`${m.navLabel}の写真${m.total}枚を全て確認しました！`;
-  document.getElementById('comp-stats').innerHTML=`<strong>${m.total}</strong> 枚 すべて確認済み`;
-  const comp=document.getElementById('sd-completion');
-  comp.style.display='flex';
-  // アニメーションリセット
-  const trophy=comp.querySelector('.comp-trophy');
-  trophy.style.animation='none';
-  void trophy.offsetWidth;
-  trophy.style.animation='';
-}
-function goBack(){switchTab('home');}
-function switchTab(id){
-  currentTab=id;
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item[data-target]').forEach(n=>n.classList.toggle('active',n.dataset.target===id));
-  const title=document.getElementById('hdr-title'),sub=document.getElementById('hdr-sub'),back=document.getElementById('back-btn'),act=document.getElementById('hdr-actions');
-  sub.style.display='block';back.style.display='block';act.style.display='flex';
-  document.getElementById('del-bar').classList.remove('show');
-  checkSelState();
-  const top=['home','swipe','guide'];
-  if(top.includes(id)){sub.style.display='none';back.style.display='none';act.style.display='none';}
-  const titles={home:'ストレージ',swipe:'スワイプ',guide:'ガイド','raw-photos':'RAW','similar-photos':'似ています',videos:'動画を整理',screenshots:'スクショ'};
-  const subs={'raw-photos':`${rawData.length}個の項目`,'similar-photos':'1,088枚の写真 (24.4 GB)',videos:`${vidData.length} アイテム (299 GB)`,screenshots:`${ssData.length}枚の写真 (193 MB)`};
-  title.innerText=titles[id]||id;
-  if(subs[id])sub.innerText=subs[id];
-  if(!top.includes(id))updateDelBtn();
-  // ソートボタン：RAW・動画・スクショのみ表示
-  const sortableTabs=['raw-photos','videos','screenshots'];
-  const sortBtn=document.getElementById('sort-btn');
-  if(sortBtn) sortBtn.style.display=sortableTabs.includes(id)?'flex':'none';
-  // タブ切替時にソートをリセット
-  if(sortableTabs.includes(id)){
-    currentSort='newest';
-    document.querySelectorAll('.sort-option').forEach(el=>el.classList.toggle('active',el.dataset.sort==='newest'));
-  }
-}
-function toggleSel(el){el.classList.toggle('selected');checkSelState();updateDelBtn();}
-function toggleGrpSel(gid){
-  const g=document.getElementById(gid),btn=g.querySelector('.grp-sel-btn'),sel=btn.innerText==='全て選択する';
-  g.querySelectorAll('.sel-item').forEach(el=>el.classList.toggle('selected',sel));
-  btn.innerText=sel?'すべての選択を解除':'全て選択する';
-  checkSelState();updateDelBtn();
-}
-function toggleSelectAll(){
-  const view=document.querySelector('.view.active');isAllSel=!isAllSel;
-  view.querySelectorAll('.sel-item').forEach(el=>el.classList.toggle('selected',isAllSel));
-  updateSelBtn();updateDelBtn();
-}
-function checkSelState(){
-  const view=document.querySelector('.view.active');if(!view)return;
-  const tot=view.querySelectorAll('.sel-item').length,sel=view.querySelectorAll('.sel-item.selected').length;
-  isAllSel=tot>0&&tot===sel;updateSelBtn();
-}
-function updateSelBtn(){
-  const btn=document.getElementById('sel-all-btn');
-  if(isAllSel){btn.innerHTML='⊗ すべての選択を解除';document.querySelectorAll('.grp-sel-btn').forEach(e=>e.innerText='すべての選択を解除');}
-  else{btn.innerHTML='✓ 全て選択する';document.querySelectorAll('.grp-sel-btn').forEach(e=>e.innerText='全て選択する');}
-}
-function updateDelBtn(){
-  const view=document.querySelector('.view.active');if(!view||['home','swipe','guide'].includes(currentTab))return;
-  const sel=view.querySelectorAll('.sel-item.selected'),bar=document.getElementById('del-bar'),txt=document.getElementById('del-txt');
-  if(sel.length>0){
-    let mb=0;sel.forEach(el=>mb+=parseFloat(el.dataset.size||0));
-    const sz=mb>1000?`${(mb/1000).toFixed(2)} GB`:`${mb.toFixed(1)} MB`;
-    const lbls={'raw-photos':'RAWデータ','similar-photos':'類似アイテム',videos:'動画',screenshots:'スクリーンショット'};
-    txt.innerText=`${sel.length}件の${lbls[currentTab]||'アイテム'}を削除 (${sz})`;bar.classList.add('show');
-  }else{bar.classList.remove('show');}
-}
-function deleteSelected(){
-  const view=document.querySelector('.view.active'),sel=view.querySelectorAll('.sel-item.selected');
-  sel.forEach(el=>{el.style.transform='scale(.5)';el.style.opacity='0';el.style.transition='all .25s';});
-  setTimeout(()=>{
-    sel.forEach(el=>el.remove());
-    if(currentTab==='similar-photos')document.querySelectorAll('.sim-group').forEach(g=>{if(!g.querySelector('.sim-sub'))g.style.display='none';});
-    updateDelBtn();
-    if(!view.querySelector('.sel-item'))switchTab('home');
-  },280);
-}
 </script>
 </body>
 </html>
