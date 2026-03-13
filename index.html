@@ -6,29 +6,81 @@
     <title>写真クリーナー</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+
+.ico{display:inline-block;width:1em;height:1em;vertical-align:-.15em;fill:currentColor;flex-shrink:0}
 /* ============ THEME ============ */
 :root{
     --font:'Noto Sans JP',-apple-system,sans-serif;
-    --bg:#E8EFEC;--sf:#FFFFFF;--sf2:#F4F7F6;
-    --tx:#2C3E3A;--tx2:#6B8A82;--tx3:#9FB5AE;
-    --ac:#005D4D;--ac2:#00896E;--acL:#D4EDE6;
+    --bg:#F6F7F5;--sf:#FFFFFF;--sf2:#EDF4F2;
+    --tx:#2B3830;--tx2:#7E928C;--tx3:#A8B8B2;
+    --ac:#5C8E84;--ac2:#3E6B62;--acL:#EDF4F2;
     --red:#D94F4F;--redL:#FCEAEA;
-    --blue:#4A8FD6;--blueL:#E8F1FA;
-    --amber:#D4943A;--amberL:#FBF2E4;
+    --blue:#4A7A9B;--blueL:#E8F1FA;
+    --amber:#D4923A;--amberL:#FDF6EE;
     --purple:#8B6FC0;--purpleL:#F0EBF7;
-    --bdr:rgba(0,93,77,.08);
-    --sh:0 1px 4px rgba(0,60,50,.06);
+    --bdr:rgba(92,142,132,.1);
+    --sh:0 1px 4px rgba(43,56,48,.06);
     --r:16px;--r2:12px;
     --safe:env(safe-area-inset-top,0px);--safB:env(safe-area-inset-bottom,0px);
 }
 [data-theme="dark"]{
-    --bg:#0B1A16;--sf:#142A24;--sf2:#1A3530;
-    --tx:#DAE8E3;--tx2:#6B9488;--tx3:#3D6358;
-    --acL:rgba(0,93,77,.2);
-    --redL:rgba(217,79,79,.12);--blueL:rgba(74,143,214,.1);
-    --amberL:rgba(212,148,58,.1);--purpleL:rgba(139,111,192,.1);
-    --bdr:rgba(255,255,255,.05);--sh:0 1px 4px rgba(0,0,0,.2);
+    --bg:#0D1117;--sf:#161B22;--sf2:#1C2333;
+    --tx:#E6EDF3;--tx2:#8B949E;--tx3:#484F58;
+    --ac:#6EA89E;--acL:rgba(110,168,158,.15);
+    --redL:rgba(217,79,79,.12);--blueL:rgba(74,122,155,.12);
+    --amberL:rgba(212,146,58,.12);--purpleL:rgba(139,111,192,.12);
+    --bdr:rgba(255,255,255,.08);--sh:0 1px 4px rgba(0,0,0,.3);
 }
+
+/* ============ ONBOARDING ============ */
+.onboard{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.onboard.done{display:none}
+.ob-slides{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ob-slides::-webkit-scrollbar{display:none}
+.ob-slide{min-width:100%;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px;text-align:center;margin-top:-40px}
+.ob-logo{width:72px;height:72px;background:var(--ac);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 20px rgba(92,142,132,.3)}
+.ob-logo svg{width:46px;height:46px}
+.ob-title{font-size:22px;font-weight:800;color:var(--tx);letter-spacing:-.3px;margin-bottom:8px}
+.ob-sub{font-size:15px;color:var(--tx2);line-height:1.6;margin-bottom:24px;max-width:280px}
+.ob-features{width:100%;max-width:300px;text-align:left}
+.ob-feat{display:flex;align-items:center;gap:14px;padding:11px 0}
+.ob-feat-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.ob-feat-t{font-size:15px;font-weight:600;color:var(--tx)}
+.ob-feat-d{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.4}
+.ob-legal{width:100%;max-width:300px;text-align:left;margin-bottom:12px}
+.ob-legal-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
+.ob-legal-item:last-child{border:none}
+.ob-legal-item .oli-t{font-size:14px;font-weight:600;color:var(--ac);flex:1}
+.ob-legal-item .oli-arr{color:var(--tx3);font-size:14px}
+.ob-made{font-size:12px;color:var(--tx2);margin-top:14px;line-height:1.5}
+.ob-bottom{padding:16px 32px calc(20px + var(--safB));flex-shrink:0}
+.ob-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--tx3);transition:all .2s}
+.ob-dot.on{width:20px;border-radius:4px;background:var(--ac)}
+.ob-btn{width:100%;padding:16px;background:var(--ac);color:#fff;border:none;border-radius:var(--r2);font-size:16px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 4px 16px rgba(92,142,132,.25)}
+.ob-btn:active{opacity:.85;transform:scale(.98)}
+.ob-btn.outline{background:none;color:var(--ac);box-shadow:none;border:1.5px solid var(--ac)}
+.ob-skip{background:none;border:none;color:var(--tx3);font-size:13px;font-family:var(--font);cursor:pointer;margin-top:10px;width:100%;text-align:center}
+
+/* ============ ACHIEVEMENTS ============ */
+.ach-bar{display:flex;gap:10px;padding:0 20px 18px}
+.ach-card{flex:1;background:var(--sf);border-radius:var(--r2);padding:14px 10px;box-shadow:var(--sh);text-align:center}
+.ach-val{font-size:20px;font-weight:800;color:var(--ac);letter-spacing:-.3px}
+.ach-lbl{font-size:10px;color:var(--tx2);margin-top:2px;font-weight:500}
+/* Celebration overlay */
+.celeb{position:fixed;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s}
+.celeb.on{opacity:1;pointer-events:all}
+.celeb-box{background:var(--sf);border-radius:24px;padding:32px 28px;text-align:center;max-width:300px;width:90%;transform:scale(.8);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.celeb.on .celeb-box{transform:scale(1)}
+.celeb-ic{font-size:48px;margin-bottom:12px;line-height:1}
+.celeb-title{font-size:22px;font-weight:800;color:var(--ac);margin-bottom:4px}
+.celeb-sub{font-size:14px;color:var(--tx2);line-height:1.5;margin-bottom:16px}
+.celeb-stat{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.celeb-stat-item{text-align:center}
+.celeb-stat-val{font-size:18px;font-weight:700;color:var(--tx)}
+.celeb-stat-lbl{font-size:10px;color:var(--tx2)}
+.celeb-btn{width:100%;padding:14px;background:var(--ac);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer}
+.celeb-btn:active{opacity:.8}
 
 /* ============ RESET ============ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -44,8 +96,38 @@ a{color:var(--ac);text-decoration:none}
     background:var(--bg);flex-shrink:0;z-index:20;
     display:flex;align-items:center;justify-content:space-between;min-height:48px;
 }
-.hd-left{display:flex;align-items:center;gap:10px}
+.hd-left{display:flex;align-items:center;gap:8px}
+.hd-logo{width:26px;height:26px;color:var(--ac);flex-shrink:0}
+.hd-burger{display:none;width:32px;height:32px;padding:6px;cursor:pointer;flex-shrink:0;color:var(--tx)}
+.hd-burger svg{width:100%;height:100%}
+.hd-burger:active{opacity:.5}
 .hd-back{display:none;font-size:28px;color:var(--ac);padding:4px 8px 4px 0;font-weight:300;line-height:1}
+
+/* ============ DRAWER ============ */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:190;pointer-events:none;transition:background .3s}
+.drawer-overlay.on{background:rgba(0,0,0,.45);pointer-events:all}
+.drawer{position:fixed;top:0;left:0;width:85%;max-width:360px;height:100%;background:var(--sf);z-index:195;transform:translateX(-105%);transition:transform .3s cubic-bezier(.25,.8,.25,1);box-shadow:4px 0 32px rgba(0,0,0,.15);display:flex;flex-direction:column;overflow:hidden}
+.drawer.on{transform:translateX(0)}
+.drawer-head{padding:calc(20px + var(--safe)) 20px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bdr)}
+.drawer-head-logo{width:40px;height:40px;background:var(--ac);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drawer-head-logo svg{width:26px;height:26px}
+.drawer-head-info h3{font-size:16px;font-weight:700}
+.drawer-head-info p{font-size:11px;color:var(--tx2);margin-top:1px}
+.drawer-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0;scrollbar-width:none}
+.drawer-body::-webkit-scrollbar{display:none}
+.drawer-item{display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;transition:background .08s}
+.drawer-item:active{background:var(--sf2)}
+.drawer-item .di-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.drawer-item .di-ic.grn{background:var(--acL);color:var(--ac)}
+.drawer-item .di-ic.blu{background:var(--blueL);color:var(--blue)}
+.drawer-item .di-ic.amb{background:var(--amberL);color:var(--amber)}
+.drawer-item .di-t{font-size:14px;font-weight:600}
+.drawer-item .di-d{font-size:11px;color:var(--tx2);margin-top:1px}
+.drawer-item .di-arr{margin-left:auto;color:var(--tx3);font-size:16px}
+.drawer-sep{height:1px;background:var(--bdr);margin:8px 20px}
+.drawer-sec-label{font-size:11px;font-weight:600;color:var(--tx2);padding:12px 20px 4px;text-transform:uppercase;letter-spacing:.8px}
+.drawer-foot{padding:16px 20px calc(16px + var(--safB));border-top:1px solid var(--bdr);text-align:center}
+.drawer-foot p{font-size:10px;color:var(--tx3);line-height:1.4}
 .hd-back:active{opacity:.4}
 .hd h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
 .hd-pill{display:none;background:var(--sf);color:var(--ac);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;box-shadow:var(--sh)}
@@ -58,34 +140,28 @@ a{color:var(--ac);text-decoration:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ============ HOME ============ */
-.gauge-sec{padding:24px 20px 16px;display:flex;flex-direction:column;align-items:center}
-.gauge{position:relative;width:160px;height:160px}
+.gauge-sec{padding:28px 20px 18px;display:flex;flex-direction:column;align-items:center}
+.gauge{position:relative;width:170px;height:170px}
 .gauge svg{transform:rotate(-90deg)}
 .gauge-bg{fill:none;stroke:var(--acL);stroke-width:12}
 .gauge-fill{fill:none;stroke:url(#gG);stroke-width:12;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
 .gauge-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.gauge-val{font-size:30px;font-weight:800;color:var(--ac);line-height:1}
+.gauge-val{font-size:32px;font-weight:800;color:var(--ac);line-height:1}
 .gauge-lbl{font-size:12px;color:var(--tx2);margin-top:4px}
-.gauge-row{display:flex;gap:32px;margin-top:14px}
+.gauge-row{display:flex;gap:36px;margin-top:16px}
 .gauge-row div{text-align:center}
-.gauge-row b{font-size:15px;font-weight:700;display:block}
+.gauge-row b{font-size:16px;font-weight:700;display:block}
 .gauge-row span{font-size:11px;color:var(--tx2)}
 
-.smart{margin:0 20px 16px;padding:16px 18px;background:var(--ac);border-radius:var(--r);display:flex;align-items:center;gap:14px;color:#fff;box-shadow:0 4px 16px rgba(0,93,77,.2)}
-.smart:active{opacity:.88;transform:scale(.99)}
-.smart-ic{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.smart h3{font-size:15px;font-weight:700}
-.smart p{font-size:12px;opacity:.75;margin-top:2px}
-
-.cats{padding:0 20px 16px;display:flex;flex-direction:column;gap:10px}
+.cats{padding:0 20px 20px;display:flex;flex-direction:column;gap:10px}
 .cat{background:var(--sf);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;transition:all .1s;text-align:left}
 .cat:active{transform:scale(.98);opacity:.9}
-.cat-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.cat-ic{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .cat-body{flex:1;min-width:0}
-.cat-name{font-size:15px;font-weight:600}
+.cat-name{font-size:16px;font-weight:600}
 .cat-desc{font-size:12px;color:var(--tx2);margin-top:2px}
 .cat-right{text-align:right;flex-shrink:0}
-.cat-size{font-size:17px;font-weight:700;color:var(--ac)}
+.cat-size{font-size:18px;font-weight:700;color:var(--ac)}
 .cat-cnt{font-size:11px;color:var(--tx2)}
 .cat-arr{color:var(--tx3);font-size:20px;margin-left:4px}
 
@@ -97,7 +173,7 @@ a{color:var(--ac);text-decoration:none}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px}
 .grid-3{grid-template-columns:1fr 1fr 1fr}
-.item{position:relative;cursor:pointer;overflow:hidden;background:var(--sf2);border-radius:4px}
+.item{position:relative;cursor:pointer;overflow:hidden;background:var(--sf2);border-radius:4px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .item img{width:100%;aspect-ratio:1;object-fit:cover;display:block;transition:filter .15s}
 .item.on img{filter:brightness(.5)}
 .item .ck{position:absolute;top:8px;right:8px;width:26px;height:26px;border:2px solid rgba(255,255,255,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:transparent;background:rgba(0,0,0,.15);backdrop-filter:blur(4px);z-index:2;transition:all .15s}
@@ -117,29 +193,28 @@ a{color:var(--ac);text-decoration:none}
 .sim-filter-tag{display:flex;align-items:center;gap:8px;margin-top:8px;background:var(--acL);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;color:var(--ac)}
 .sim-filter-tag button{background:none;border:none;font-size:14px;color:var(--ac);cursor:pointer;padding:2px}
 
-/* Calendar Modal */
-.cal-modal{position:absolute;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
+/* Calendar Modal → Date list */
+.cal-modal{position:fixed;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
 .cal-modal.on{display:flex}
 .cal-box{display:flex;flex-direction:column;height:100%}
 .cal-hdr{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + var(--safe)) 16px 12px;flex-shrink:0}
 .cal-cancel{background:none;border:none;font-family:var(--font);font-size:15px;color:var(--ac);font-weight:600;cursor:pointer}
 .cal-title{font-size:16px;font-weight:700}
-.cal-done{background:none;border:none;font-family:var(--font);font-size:15px;color:var(--tx3);font-weight:600;cursor:pointer}
-.cal-done.active{color:var(--ac)}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:8px 12px;background:var(--sf2);margin:0 16px;border-radius:8px;flex-shrink:0}
-.cal-weekdays span{font-size:12px;font-weight:600;color:var(--tx2);padding:6px 0}
+.cal-done{background:none;border:none;font-family:var(--font);font-size:15px;color:var(--tx3);font-weight:600;cursor:pointer;padding:4px 8px;border-radius:16px;transition:all .15s}
+.cal-done.active{color:#fff;background:var(--ac);padding:6px 14px}
 .cal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 100px;scrollbar-width:none}
 .cal-scroll::-webkit-scrollbar{display:none}
-.cal-month-title{font-size:17px;font-weight:700;padding:20px 0 8px;color:var(--tx)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px}
-.cal-day{padding:12px 0;font-size:15px;font-weight:500;color:var(--tx);cursor:pointer;border-radius:50%;position:relative;transition:all .12s;-webkit-tap-highlight-color:transparent;user-select:none}
-.cal-day:active{transform:scale(.9)}
-.cal-day.empty{cursor:default}
-.cal-day.has-photos{color:var(--tx);font-weight:700}
-.cal-day.has-photos::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:var(--ac);border-radius:50%}
-.cal-day.no-photos{color:var(--tx3);cursor:default;pointer-events:none}
-.cal-day.selected{background:var(--ac);color:#fff;font-weight:700}
-.cal-day.selected::after{background:#fff}
+.cal-month-sec{margin-bottom:8px}
+.cal-month-title{font-size:13px;font-weight:600;color:var(--tx2);padding:16px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.cal-date-item{display:flex;align-items:center;padding:14px 16px;background:var(--sf);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;transition:all .12s;touch-action:manipulation}
+.cal-date-item:active{transform:scale(.98);opacity:.8}
+.cal-date-item.selected{background:var(--ac);color:#fff}
+.cal-date-item .cdi-date{font-size:16px;font-weight:700;min-width:80px}
+.cal-date-item .cdi-info{flex:1;text-align:right}
+.cal-date-item .cdi-count{font-size:14px;font-weight:600}
+.cal-date-item .cdi-size{font-size:11px;opacity:.7;margin-top:1px}
+.cal-date-item.selected .cdi-date,.cal-date-item.selected .cdi-count,.cal-date-item.selected .cdi-size{color:#fff}
+.cal-empty{text-align:center;padding:40px 20px;color:var(--tx2);font-size:14px}
 
 .grp{margin-bottom:20px;padding:0 16px}
 .grp-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 0 8px}
@@ -150,10 +225,10 @@ a{color:var(--ac);text-decoration:none}
 /* 横スクロールカルーセル */
 .grp-scroll{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
 .grp-scroll::-webkit-scrollbar{display:none}
-.grp-scroll .item{flex-shrink:0;width:calc(50% - 4px);min-width:150px;scroll-snap-align:start;border-radius:var(--r2)}
+.grp-scroll .item{flex-shrink:0;width:calc(50% - 4px);min-width:150px;scroll-snap-align:start;border-radius:var(--r2);touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .grp-scroll .item img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:var(--r2);transition:filter .15s}
 
-/* 👍 Best バッジ (オリジナル) */
+/* <svg class="ico" viewBox="0 0 20 20"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="currentColor" opacity=".15"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Best バッジ (オリジナル) */
 .grp-scroll .item .best-badge{position:absolute;bottom:12px;left:10px;background:var(--sf);color:var(--tx);font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;z-index:3;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .grp-scroll .item .best-badge .best-icon{font-size:14px}
 
@@ -174,7 +249,7 @@ a{color:var(--ac);text-decoration:none}
 .con-name{font-size:14px;font-weight:600}
 .con-meta{font-size:12px;color:var(--tx2);margin-top:1px}
 .con-badge{font-size:10px;font-weight:700;color:var(--ac);background:var(--acL);padding:2px 8px;border-radius:4px}
-.con-merge-btn{width:100%;margin-top:12px;padding:12px;background:var(--ac);color:#fff;border-radius:var(--r2);font-size:14px;font-weight:700;text-align:center;box-shadow:0 2px 8px rgba(0,93,77,.15)}
+.con-merge-btn{width:100%;margin-top:12px;padding:12px;background:var(--ac);color:#fff;border-radius:var(--r2);font-size:14px;font-weight:700;text-align:center;box-shadow:0 2px 8px rgba(92,142,132,.15)}
 .con-merge-btn:active{opacity:.8;transform:scale(.98)}
 .con-merge-btn.done{background:var(--acL);color:var(--ac)}
 .con-sec-title{padding:16px 16px 8px;font-size:13px;font-weight:600;color:var(--tx2)}
@@ -192,10 +267,14 @@ a{color:var(--ac);text-decoration:none}
 .sw-month:active{transform:scale(.98);opacity:.9}
 .sw-month-thumb{width:64px;height:64px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--sf2);position:relative}
 .sw-month-thumb img{width:100%;height:100%;object-fit:cover}
-.sw-month-thumb .sw-check-done{position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff}
+.sw-month-thumb .sw-check-done{position:absolute;inset:0;background:rgba(92,142,132,.85);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;border-radius:10px}
 .sw-month-body{flex:1;min-width:0}
 .sw-month-name{font-size:16px;font-weight:700}
 .sw-month-prog{font-size:12px;color:var(--ac);margin-top:3px}
+.sw-month.done .sw-month-name{color:var(--ac)}
+.sw-month.done .sw-month-prog{color:var(--ac);font-weight:600}
+.sw-month.done .sw-month-bar-fill{background:var(--ac)}
+.sw-month-done-badge{display:inline-flex;align-items:center;gap:3px;background:var(--acL);color:var(--ac);font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
 .sw-month-bar{height:4px;background:var(--acL);border-radius:2px;margin-top:6px;overflow:hidden}
 .sw-month-bar-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .3s}
 
@@ -208,7 +287,7 @@ a{color:var(--ac);text-decoration:none}
 .sw-card-prog-bar{height:4px;background:var(--acL);margin:0 20px;border-radius:2px;overflow:hidden}
 .sw-card-prog-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .3s}
 .sw-card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;position:relative;overflow:hidden}
-.sw-card{width:min(300px,80vw);height:min(400px,60vh);border-radius:var(--r);overflow:hidden;box-shadow:0 8px 32px rgba(0,60,50,.12);background:var(--sf);touch-action:none;user-select:none;transition:transform .12s,opacity .3s;position:relative}
+.sw-card{width:min(300px,80vw);height:min(400px,60vh);border-radius:var(--r);overflow:hidden;box-shadow:0 8px 32px rgba(43,56,48,.12);background:var(--sf);touch-action:none;user-select:none;transition:transform .12s,opacity .3s;position:relative}
 .sw-card img{width:100%;height:100%;object-fit:cover}
 .sw-card .sc-info{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff}
 .sw-card .sc-n{font-size:14px;font-weight:600}
@@ -236,7 +315,7 @@ a{color:var(--ac);text-decoration:none}
 .sw-trash-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 
 /* Trash modal */
-.sw-trash-modal{position:absolute;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
+.sw-trash-modal{position:fixed;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column}
 .sw-trash-modal.on{display:flex}
 .sw-trash-hdr{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + var(--safe)) 16px 8px}
 .sw-trash-hdr h3{font-size:17px;font-weight:700}
@@ -266,7 +345,7 @@ a{color:var(--ac);text-decoration:none}
 .si-arr{color:var(--tx3);font-size:18px}
 .th-seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px}
 .th-seg button{flex:1;padding:10px 0;border-radius:8px;font-size:13px;font-weight:600;color:var(--tx2);transition:all .2s}
-.th-seg button.on{background:var(--sf);color:var(--tx);box-shadow:0 1px 4px rgba(0,60,50,.08)}
+.th-seg button.on{background:var(--sf);color:var(--tx);box-shadow:0 1px 6px rgba(0,0,0,.2)}
 .s-footer{padding:24px 20px;text-align:center}
 .s-footer .sf-ic{font-size:24px;margin-bottom:6px}
 .s-footer h4{font-size:14px;font-weight:600;color:var(--ac)}
@@ -293,7 +372,7 @@ a{color:var(--ac);text-decoration:none}
 /* Similar page uses indigo */
 .del-btn.indigo{background:#5B5FE6;box-shadow:0 4px 16px rgba(91,95,230,.3)}
 
-.scan-ov{position:absolute;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+.scan-ov{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
 .scan-ov.on{display:flex}
 .spinner{width:48px;height:48px;border:3px solid var(--acL);border-top-color:var(--ac);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:20px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -306,7 +385,7 @@ a{color:var(--ac);text-decoration:none}
 .o-stat b{display:block;font-size:20px;font-weight:700;color:var(--ac)}
 .o-stat span{font-size:11px;color:var(--tx2)}
 
-.modal{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:150;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.on{opacity:1;pointer-events:all}
 .mbox{width:100%;max-width:430px;background:var(--sf);border-radius:20px 20px 0 0;padding:24px 20px calc(24px + var(--safB));transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
 .modal.on .mbox{transform:translateY(0)}
@@ -317,8 +396,8 @@ a{color:var(--ac);text-decoration:none}
 .mbtn.dng{background:var(--red);color:#fff}
 .mbtn.can{background:var(--sf2);color:var(--tx)}
 
-.toast{position:absolute;top:calc(10px + var(--safe));left:16px;right:16px;background:var(--sf);border:1px solid var(--bdr);border-radius:var(--r2);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;z-index:100;box-shadow:0 6px 24px rgba(0,60,50,.1);transform:translateY(-130%);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
-.toast.show{transform:translateY(0)}
+.toast{position:fixed;top:calc(10px + var(--safe));left:50%;transform:translateX(-50%) translateY(-130%);width:calc(100% - 32px);max-width:400px;background:var(--sf);border:1px solid var(--bdr);border-radius:var(--r2);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;z-index:200;box-shadow:0 6px 24px rgba(43,56,48,.1);transition:transform .3s cubic-bezier(.25,.8,.25,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
 .toast span{font-size:13px}
 .toast strong{color:var(--red)}
 .toast button{color:var(--ac);font-size:13px;font-weight:700}
@@ -327,7 +406,7 @@ a{color:var(--ac);text-decoration:none}
 .empty.on{display:block}
 
 /* ============ TABS ============ */
-.tabs{position:absolute;bottom:0;left:0;width:100%;height:calc(62px + var(--safB));background:var(--sf);border-top:1px solid var(--bdr);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;z-index:40;box-shadow:0 -2px 8px rgba(0,60,50,.04)}
+.tabs{position:absolute;bottom:0;left:0;width:100%;height:calc(62px + var(--safB));background:var(--sf);border-top:1px solid var(--bdr);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;z-index:40;box-shadow:0 -2px 8px rgba(43,56,48,.04)}
 .tab{display:flex;flex-direction:column;align-items:center;color:var(--tx3);font-size:11px;font-weight:500;cursor:pointer;transition:color .15s;padding:0 12px;gap:2px}
 .tab.on{color:var(--ac)}
 .tab .ti{font-size:22px;height:26px;display:flex;align-items:center}
@@ -336,11 +415,59 @@ a{color:var(--ac);text-decoration:none}
     </style>
 </head>
 <body>
+<!-- ONBOARDING -->
+<div class="onboard" id="onboard">
+    <div class="ob-slides" id="ob-slides">
+        <!-- Slide 1: Welcome -->
+        <div class="ob-slide">
+            <div class="ob-logo"><svg viewBox="0 0 100 100" fill="#fff"><path d="M26 38 Q4 14 10 10 Q16 10 28 28Z"/><path d="M74 38 Q96 14 90 10 Q84 10 72 28Z"/><path d="M30 68 Q16 84 20 86 Q26 82 34 72Z"/><path d="M70 68 Q84 84 80 86 Q74 82 66 72Z"/><path d="M46 82 Q50 94 54 82Z"/><ellipse cx="50" cy="18" rx="9" ry="8"/><ellipse cx="50" cy="52" rx="25" ry="30"/><path d="M50 36 L62 50 L50 64 L38 50Z" fill="#5C8E84"/><path d="M50 26 L56 32 L50 36 L44 32Z" fill="#5C8E84" opacity=".7"/><path d="M30 50 L38 44 L38 56Z" fill="#5C8E84" opacity=".7"/><path d="M70 50 L62 44 L62 56Z" fill="#5C8E84" opacity=".7"/><path d="M50 64 L56 70 L50 76 L44 70Z" fill="#5C8E84" opacity=".7"/></svg></div>
+            <div class="ob-title">写真クリーナー</div>
+            <div class="ob-sub">あなたの写真を安全に整理。<br>日本の個人開発者が作りました。</div>
+            <div class="ob-made">Jone Lab · 東京<br>あなたの大切な思い出を守ります。</div>
+        </div>
+
+        <!-- Slide 2: Features -->
+        <div class="ob-slide">
+            <div class="ob-title">できること</div>
+            <div class="ob-sub">写真・動画・連絡先をスマートに整理</div>
+            <div class="ob-features">
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--acL);color:var(--ac)"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="3" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><path d="M2 14l4-4 3 3 4-5 5 6v1c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z" fill="currentColor" opacity=".7"/></svg></div><div><div class="ob-feat-t">似ている写真を自動検出</div><div class="ob-feat-d">重複・類似を正確に見つけます</div></div></div>
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--amberL);color:var(--amber)"><svg class="ico" viewBox="0 0 20 20"><rect x="5" y="1" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div><div class="ob-feat-t">スクショ・動画を一括整理</div><div class="ob-feat-d">不要なファイルをまとめて発見</div></div></div>
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--blueL);color:var(--blue)"><svg class="ico" viewBox="0 0 20 20"><path d="M10 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 8.5L10 5l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".4"/><path d="M7 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".3"/></svg></div><div><div class="ob-feat-t">スワイプで楽しく整理</div><div class="ob-feat-d">月別に1枚ずつサクサク確認</div></div></div>
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--purpleL);color:var(--purple)"><svg class="ico" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" fill="currentColor"/><path d="M3 17.5c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5" fill="currentColor" opacity=".6"/></svg></div><div><div class="ob-feat-t">連絡先の重複を結合</div><div class="ob-feat-d">同一人物を安全に検出・整理</div></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Safety + Legal -->
+        <div class="ob-slide">
+            <div style="width:56px;height:56px;background:var(--acL);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--ac)"><svg class="ico" viewBox="0 0 20 20" style="width:26px;height:26px"><rect x="4" y="9" width="12" height="9" rx="2" fill="currentColor" opacity=".3"/><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6a3 3 0 016 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></svg></div>
+            <div class="ob-title">安全設計</div>
+            <div class="ob-sub">すべてのデータは端末内で処理。<br>外部サーバーに送信されません。</div>
+            <div class="ob-features" style="margin-bottom:16px">
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--acL);color:var(--ac)"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div><div><div class="ob-feat-t">自動削除しません</div><div class="ob-feat-d">すべてユーザーが確認してから削除</div></div></div>
+                <div class="ob-feat"><div class="ob-feat-ic" style="background:var(--acL);color:var(--ac)"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div><div><div class="ob-feat-t">ゴミ箱に移動（30日復元可能）</div><div class="ob-feat-d">大切な写真を即座に消しません</div></div></div>
+            </div>
+            <div class="ob-legal">
+                <div class="ob-legal-item" onclick="goSub('privacy');closeOnboard()"><span class="oli-t">プライバシーポリシー</span><span class="oli-arr">›</span></div>
+                <div class="ob-legal-item" onclick="goSub('criteria');closeOnboard()"><span class="oli-t">整理の基準</span><span class="oli-arr">›</span></div>
+            </div>
+            <div style="font-size:10px;color:var(--tx3);line-height:1.5">「始める」をタップすると、<br>利用規約・プライバシーポリシーに同意したものとみなされます。</div>
+        </div>
+    </div>
+    <div class="ob-bottom">
+        <div class="ob-dots" id="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <button class="ob-btn" id="ob-btn" onclick="obNext()">次へ</button>
+        <button class="ob-skip" id="ob-skip" onclick="closeOnboard()">スキップ</button>
+    </div>
+</div>
+
 <div id="app">
     <!-- HEADER -->
     <div class="hd">
         <div class="hd-left">
+            <button class="hd-burger" id="hd-burger" onclick="openDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
             <div class="hd-back" id="hd-back" onclick="goBack()">‹</div>
+            <svg class="hd-logo" id="hd-logo" viewBox="0 0 100 100"><path d="M26 38 Q4 14 10 10 Q16 10 28 28Z" fill="currentColor"/><path d="M74 38 Q96 14 90 10 Q84 10 72 28Z" fill="currentColor"/><path d="M30 68 Q16 84 20 86 Q26 82 34 72Z" fill="currentColor"/><path d="M70 68 Q84 84 80 86 Q74 82 66 72Z" fill="currentColor"/><path d="M46 82 Q50 94 54 82Z" fill="currentColor"/><ellipse cx="50" cy="18" rx="9" ry="8" fill="currentColor"/><ellipse cx="50" cy="52" rx="25" ry="30" fill="currentColor"/><path d="M50 36 L62 50 L50 64 L38 50Z" fill="var(--bg)"/><path d="M50 26 L56 32 L50 36 L44 32Z" fill="var(--bg)" opacity=".7"/><path d="M30 50 L38 44 L38 56Z" fill="var(--bg)" opacity=".7"/><path d="M70 50 L62 44 L62 56Z" fill="var(--bg)" opacity=".7"/><path d="M50 64 L56 70 L50 76 L44 70Z" fill="var(--bg)" opacity=".7"/></svg>
             <h1 id="hd-title">写真クリーナー</h1>
         </div>
         <div>
@@ -352,8 +479,8 @@ a{color:var(--ac);text-decoration:none}
     <div class="pg on" id="p-home">
         <div class="gauge-sec">
             <div class="gauge">
-                <svg viewBox="0 0 160 160" width="160" height="160">
-                    <defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#005D4D"/><stop offset="100%" stop-color="#00896E"/></linearGradient></defs>
+                <svg viewBox="0 0 160 160" width="170" height="170">
+                    <defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6EA89E"/><stop offset="100%" stop-color="#5C8E84"/></linearGradient></defs>
                     <circle class="gauge-bg" cx="80" cy="80" r="70"/>
                     <circle class="gauge-fill" id="gF" cx="80" cy="80" r="70"/>
                 </svg>
@@ -368,17 +495,17 @@ a{color:var(--ac);text-decoration:none}
             </div>
         </div>
 
-        <button class="smart" onclick="smartClean()">
-            <div class="smart-ic">✨</div>
-            <div><h3>スマートクリーン</h3><p>不要ファイルを自動選択して一括削除</p></div>
-        </button>
+        <div class="ach-bar">
+            <div class="ach-card"><div class="ach-val" id="ach-freed">0MB</div><div class="ach-lbl">解放済み</div></div>
+            <div class="ach-card"><div class="ach-val" id="ach-cleaned">0</div><div class="ach-lbl">整理済み</div></div>
+            <div class="ach-card"><div class="ach-val" id="ach-time">0分</div><div class="ach-lbl">節約した時間</div></div>
+        </div>
 
         <div class="cats">
-            <button class="cat" onclick="go('similar')"><div class="cat-ic" style="background:var(--acL)">🖼</div><div class="cat-body"><div class="cat-name">似ている写真</div><div class="cat-desc">重複・類似を自動検出して整理</div></div><div class="cat-right"><div class="cat-size" id="c-sim">—</div><div class="cat-cnt" id="c-sim-n"></div></div><div class="cat-arr">›</div></button>
-            <button class="cat" onclick="go('ss')"><div class="cat-ic" style="background:var(--amberL)">📱</div><div class="cat-body"><div class="cat-name">スクリーンショット</div><div class="cat-desc">不要なスクショを一括整理</div></div><div class="cat-right"><div class="cat-size" id="c-ss">—</div><div class="cat-cnt" id="c-ss-n"></div></div><div class="cat-arr">›</div></button>
-            <button class="cat" onclick="go('vid')"><div class="cat-ic" style="background:var(--blueL)">🎬</div><div class="cat-body"><div class="cat-name">大きな動画</div><div class="cat-desc">容量の大きい動画を発見</div></div><div class="cat-right"><div class="cat-size" id="c-vid">—</div><div class="cat-cnt" id="c-vid-n"></div></div><div class="cat-arr">›</div></button>
-            <button class="cat" onclick="go('big')"><div class="cat-ic" style="background:var(--purpleL)">📐</div><div class="cat-body"><div class="cat-name">大容量ファイル</div><div class="cat-desc">RAW・大きな写真を検出</div></div><div class="cat-right"><div class="cat-size" id="c-big">—</div><div class="cat-cnt" id="c-big-n"></div></div><div class="cat-arr">›</div></button>
-            <button class="cat" onclick="go('contacts')"><div class="cat-ic" style="background:var(--blueL)">👤</div><div class="cat-body"><div class="cat-name">連絡先を整理</div><div class="cat-desc">重複連絡先の結合・不完全データ削除</div></div><div class="cat-right"><div class="cat-size" id="c-con">—</div><div class="cat-cnt" id="c-con-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('similar')"><div class="cat-ic" style="background:var(--acL)"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="3" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><path d="M2 14l4-4 3 3 4-5 5 6v1c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z" fill="currentColor" opacity=".7"/></svg></div><div class="cat-body"><div class="cat-name">似ている写真</div><div class="cat-desc">重複・類似を自動検出して整理</div></div><div class="cat-right"><div class="cat-size" id="c-sim">—</div><div class="cat-cnt" id="c-sim-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('ss')"><div class="cat-ic" style="background:var(--amberL)"><svg class="ico" viewBox="0 0 20 20"><rect x="5" y="1" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="cat-body"><div class="cat-name">スクリーンショット</div><div class="cat-desc">不要なスクショを一括整理</div></div><div class="cat-right"><div class="cat-size" id="c-ss">—</div><div class="cat-cnt" id="c-ss-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('vid')"><div class="cat-ic" style="background:var(--blueL)"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".2"/><path d="M2 6c0-1.1.9-2 2-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7.5v5l4.5-2.5z" fill="currentColor"/></svg></div><div class="cat-body"><div class="cat-name">大きな動画</div><div class="cat-desc">容量の大きい動画を発見</div></div><div class="cat-right"><div class="cat-size" id="c-vid">—</div><div class="cat-cnt" id="c-vid-n"></div></div><div class="cat-arr">›</div></button>
+            <button class="cat" onclick="go('big')"><div class="cat-ic" style="background:var(--purpleL)"><svg class="ico" viewBox="0 0 20 20"><path d="M3 17V3h14L3 17z" fill="currentColor" opacity=".15"/><path d="M3 17V3h14L3 17z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 12h5" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h3" stroke="currentColor" stroke-width="1.5"/></svg></div><div class="cat-body"><div class="cat-name">大容量ファイル</div><div class="cat-desc">RAW・大きな写真を検出</div></div><div class="cat-right"><div class="cat-size" id="c-big">—</div><div class="cat-cnt" id="c-big-n"></div></div><div class="cat-arr">›</div></button>
         </div>
 
     </div>
@@ -389,12 +516,12 @@ a{color:var(--ac);text-decoration:none}
             <div class="sim-title">似ている写真</div>
             <div class="sim-sub" id="sim-sub">— 枚の写真 (— GB)</div>
             <div class="sim-actions">
-                <button class="sim-pill" onclick="toggleAllSimilar()"><span class="sp-icon">✕</span> すべての選択を解除</button>
-                <button class="sim-pill" onclick="openCalendar()"><span class="sp-icon">📅</span> 日付を選択</button>
+                <button class="sim-pill" onclick="toggleAllSimilar()"><span class="sp-icon"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></span> すべての選択を解除</button>
+                <button class="sim-pill" onclick="openCalendar()"><span class="sp-icon"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="3" width="16" height="15" rx="2" fill="currentColor" opacity=".12"/><rect x="2" y="3" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h16" stroke="currentColor" stroke-width="1.5"/><path d="M6 1v4M14 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="5" y="10" width="3" height="2" rx=".5" fill="currentColor"/></svg></span> 日付を選択</button>
             </div>
             <div class="sim-filter-tag" id="sim-filter-tag" style="display:none">
                 <span id="sim-filter-label"></span>
-                <button onclick="clearDateFilter()">✕</button>
+                <button onclick="clearDateFilter()"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
             </div>
         </div>
         <div id="sim-list"></div>
@@ -453,13 +580,13 @@ a{color:var(--ac);text-decoration:none}
                 </div>
             </div>
             <div class="sw-btn-row">
-                <button class="sw-btn del" onclick="swipeAction('del')">👎 削除</button>
-                <button class="sw-btn keep" onclick="swipeAction('keep')">👍 保持</button>
+                <button class="sw-btn del" onclick="swipeAction('del')"><svg class="ico" viewBox="0 0 20 20"><path d="M3 3h2.5v8H3a1 1 0 01-1-1V4a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 11l3 6.5c.8 0 2-.8 2-2.5v-3h5c1.2 0 2-1 1.8-2.2L16.1 4.3c-.2-.8-.9-1.3-1.7-1.3H5.5v8z" fill="currentColor" opacity=".15"/><path d="M5.5 11l3 6.5c.8 0 2-.8 2-2.5v-3h5c1.2 0 2-1 1.8-2.2L16.1 4.3c-.2-.8-.9-1.3-1.7-1.3H5.5v8z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 3h2.5v8H3a1 1 0 01-1-1V4a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> 削除</button>
+                <button class="sw-btn keep" onclick="swipeAction('keep')"><svg class="ico" viewBox="0 0 20 20"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="currentColor" opacity=".15"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> 保持</button>
             </div>
             <div class="sw-toolbar">
-                <button class="sw-undo-btn" onclick="swipeUndo()">↩</button>
+                <button class="sw-undo-btn" onclick="swipeUndo()"><svg class="ico" viewBox="0 0 20 20"><path d="M7.7 4.3L2 10l5.7 5.7 1.4-1.4L5.8 11H14c1.7 0 3-1.3 3-3s-1.3-3-3-3H12v2h2c.6 0 1 .4 1 1s-.4 1-1 1H5.8l3.3-3.3z" fill="currentColor"/></svg></button>
                 <div class="sw-thumbstrip" id="sw-thumbstrip"></div>
-                <button class="sw-trash-btn" onclick="openSwipeTrash()">🗑<span class="sw-trash-badge" id="sw-trash-badge" style="display:none">0</span></button>
+                <button class="sw-trash-btn" onclick="openSwipeTrash()"><svg class="ico" viewBox="0 0 20 20"><path d="M7 3V2c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 5h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="currentColor" opacity=".15"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span class="sw-trash-badge" id="sw-trash-badge" style="display:none">0</span></button>
             </div>
         </div>
     </div>
@@ -467,14 +594,14 @@ a{color:var(--ac);text-decoration:none}
     <!-- SWIPE TRASH MODAL -->
     <div class="sw-trash-modal" id="sw-trash-modal">
         <div class="sw-trash-hdr">
-            <button onclick="closeSwipeTrash()" style="font-size:22px;background:none;border:none;cursor:pointer;color:var(--tx)">✕</button>
+            <button onclick="closeSwipeTrash()" style="font-size:22px;background:none;border:none;cursor:pointer;color:var(--tx)"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
             <h3 id="sw-trash-title">ゴミ箱 (0 MB)</h3>
             <div></div>
         </div>
-        <div class="sw-trash-hint">💡 写真をタップして復元する</div>
+        <div class="sw-trash-hint"><svg class="ico" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-2 9.6V14h4v-2.4A5 5 0 0010 2z" fill="currentColor" opacity=".25"/><path d="M10 2a5 5 0 00-2 9.6V14h4v-2.4A5 5 0 0010 2z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 15h4M8.5 17h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 写真をタップして復元する</div>
         <div class="sw-trash-grid" id="sw-trash-grid"></div>
         <div class="sw-trash-actions">
-            <button class="trash-empty" onclick="emptySwipeTrash()">🗑 ゴミ箱を空にする</button>
+            <button class="trash-empty" onclick="emptySwipeTrash()"><svg class="ico" viewBox="0 0 20 20"><path d="M7 3V2c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 5h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="currentColor" opacity=".15"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> ゴミ箱を空にする</button>
             <button class="trash-restore" onclick="restoreAllSwipeTrash()">すべて復元する</button>
         </div>
     </div>
@@ -482,16 +609,16 @@ a{color:var(--ac);text-decoration:none}
     <!-- CONTACTS -->
     <div class="pg" id="p-contacts">
         <div id="con-perm" style="padding:40px 20px;text-align:center">
-            <div style="font-size:48px;margin-bottom:16px">👤</div>
+            <div style="font-size:48px;margin-bottom:16px"><svg class="ico" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" fill="currentColor"/><path d="M3 17.5c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5" fill="currentColor" opacity=".6"/></svg></div>
             <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">連絡先を整理する</h3>
             <p style="font-size:14px;color:var(--tx2);line-height:1.6;margin-bottom:24px">重複した連絡先の結合や、<br>不完全な連絡先の削除ができます。</p>
             <div style="background:var(--sf);border-radius:var(--r);padding:20px;box-shadow:var(--sh);text-align:left;margin-bottom:16px">
                 <div style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:12px">アクセスを許可すると：</div>
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--acL);border-radius:8px;display:flex;align-items:center;justify-content:center">👥</div><div><div style="font-size:14px;font-weight:600">重複を検出</div><div style="font-size:12px;color:var(--tx2)">同名・同番号・同メールを自動検出</div></div></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--amberL);border-radius:8px;display:flex;align-items:center;justify-content:center">🔗</div><div><div style="font-size:14px;font-weight:600">結合する</div><div style="font-size:12px;color:var(--tx2)">情報を1つにまとめて整理</div></div></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 0"><div style="width:32px;height:32px;background:var(--redL);border-radius:8px;display:flex;align-items:center;justify-content:center">🧹</div><div><div style="font-size:14px;font-weight:600">不完全を削除</div><div style="font-size:12px;color:var(--tx2)">名前なし・番号なしを一括削除</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--acL);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg class="ico" viewBox="0 0 20 20"><circle cx="7.5" cy="6.5" r="3" fill="currentColor"/><path d="M1 16c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6" fill="currentColor" opacity=".6"/><circle cx="14" cy="6" r="2.5" fill="currentColor" opacity=".7"/><path d="M19 15.5c0-2.5-2-4.5-5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/></svg></div><div><div style="font-size:14px;font-weight:600">重複を検出</div><div style="font-size:12px;color:var(--tx2)">同名・同番号・同メールを自動検出</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)"><div style="width:32px;height:32px;background:var(--amberL);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg class="ico" viewBox="0 0 20 20"><path d="M8 12l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M11.5 14.5l1.5 1.5a3 3 0 004.2-4.2l-1.5-1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 5.5L7 4a3 3 0 00-4.2 4.2l1.5 1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div><div><div style="font-size:14px;font-weight:600">結合する</div><div style="font-size:12px;color:var(--tx2)">情報を1つにまとめて整理</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0"><div style="width:32px;height:32px;background:var(--redL);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg class="ico" viewBox="0 0 20 20"><path d="M10 2v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 10c0 0-1 8 4 8s4-8 4-8H6z" fill="currentColor" opacity=".3"/><path d="M6 10c0 0-1 8 4 8s4-8 4-8H6z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><div><div style="font-size:14px;font-weight:600">不完全を削除</div><div style="font-size:12px;color:var(--tx2)">名前なし・番号なしを一括削除</div></div></div>
             </div>
-            <button onclick="scanContacts()" style="width:100%;padding:15px;background:var(--ac);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:700;box-shadow:0 4px 12px rgba(0,93,77,.2);font-family:var(--font)">連絡先へのアクセスを許可</button>
+            <button onclick="scanContacts()" style="width:100%;padding:15px;background:var(--ac);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:700;box-shadow:0 4px 12px rgba(92,142,132,.2);font-family:var(--font)">連絡先へのアクセスを許可</button>
             <p style="font-size:11px;color:var(--tx3);margin-top:10px;line-height:1.5">※ 端末の設定画面が開きます。</p>
         </div>
         <div id="con-results" style="display:none">
@@ -503,41 +630,40 @@ a{color:var(--ac);text-decoration:none}
     </div>
 
     <!-- SETTINGS -->
-    <div class="pg" id="p-settings">
-        <div class="s-sec">
-            <div class="s-lbl">テーマ</div>
-            <div class="s-card"><div style="padding:14px 18px">
+    <!-- DRAWER (replaces settings tab) -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-head">
+            <div class="drawer-head-logo"><svg viewBox="0 0 100 100" fill="#fff"><path d="M26 38 Q4 14 10 10 Q16 10 28 28Z"/><path d="M74 38 Q96 14 90 10 Q84 10 72 28Z"/><path d="M30 68 Q16 84 20 86 Q26 82 34 72Z"/><path d="M70 68 Q84 84 80 86 Q74 82 66 72Z"/><path d="M46 82 Q50 94 54 82Z"/><ellipse cx="50" cy="18" rx="9" ry="8"/><ellipse cx="50" cy="52" rx="25" ry="30"/><path d="M50 36 L62 50 L50 64 L38 50Z" fill="#5C8E84"/><path d="M50 26 L56 32 L50 36 L44 32Z" fill="#5C8E84" opacity=".7"/><path d="M30 50 L38 44 L38 56Z" fill="#5C8E84" opacity=".7"/><path d="M70 50 L62 44 L62 56Z" fill="#5C8E84" opacity=".7"/><path d="M50 64 L56 70 L50 76 L44 70Z" fill="#5C8E84" opacity=".7"/></svg></div>
+            <div class="drawer-head-info"><h3>写真クリーナー</h3><p>Jone Lab · 東京</p></div>
+        </div>
+        <div class="drawer-body">
+            <div class="drawer-sec-label">テーマ</div>
+            <div style="padding:4px 20px 12px">
                 <div class="th-seg" id="th-seg">
                     <button onclick="setTheme('light',this)">ライト</button>
                     <button class="on" onclick="setTheme('auto',this)">自動</button>
                     <button onclick="setTheme('dark',this)">ダーク</button>
                 </div>
-            </div></div>
-        </div>
-        <div class="s-sec">
-            <div class="s-lbl">ヘルプ</div>
-            <div class="s-card">
-                <div class="s-item" onclick="goSub('howto')"><div class="si-ic blu">📖</div><div class="si-body"><div class="si-t">使い方を見る</div><div class="si-d">写真クリーナーの基本的な使い方</div></div><div class="si-arr">›</div></div>
             </div>
+            <div class="drawer-sep"></div>
+            <div class="drawer-sec-label">ヘルプ</div>
+            <div class="drawer-item" onclick="drawerGoSub('howto')"><div class="di-ic blu"><svg class="ico" viewBox="0 0 20 20"><path d="M2 4c2-1 4-1.5 8 0v13c-4-1.5-6-1-8 0V4z" fill="currentColor" opacity=".15"/><path d="M18 4c-2-1-4-1.5-8 0v13c4-1.5 6-1 8 0V4z" fill="currentColor" opacity=".15"/><path d="M2 4c2-1 4-1.5 8 0v13c-4-1.5-6-1-8 0V4zm16 0c-2-1-4-1.5-8 0v13c4-1.5 6-1 8 0V4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><div><div class="di-t">使い方を見る</div><div class="di-d">基本的な使い方</div></div><div class="di-arr">›</div></div>
+            <div class="drawer-item" onclick="drawerGoSub('criteria')"><div class="di-ic grn"><svg class="ico" viewBox="0 0 20 20"><path d="M10 1l2.2 6.8H19l-5.5 4 2.1 6.7L10 14.4l-5.6 4.1 2.1-6.7L1 7.8h6.8z" fill="currentColor"/></svg></div><div><div class="di-t">整理の基準</div><div class="di-d">判定ロジックと安全設計</div></div><div class="di-arr">›</div></div>
+            <div class="drawer-sep"></div>
+            <div class="drawer-sec-label">サポート</div>
+            <div class="drawer-item" onclick="drawerGoSub('contact')"><div class="di-ic amb"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".15"/><rect x="2" y="4" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6l8 5 8-5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><div><div class="di-t">お問い合わせ</div><div class="di-d">不具合・ご意見はこちら</div></div><div class="di-arr">›</div></div>
+            <div class="drawer-item" onclick="drawerGoSub('privacy')"><div class="di-ic grn"><svg class="ico" viewBox="0 0 20 20"><rect x="4" y="9" width="12" height="9" rx="2" fill="currentColor" opacity=".3"/><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6a3 3 0 016 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></svg></div><div><div class="di-t">プライバシーポリシー</div><div class="di-d">データの取り扱いについて</div></div><div class="di-arr">›</div></div>
         </div>
-        <div class="s-sec">
-            <div class="s-lbl">サポート</div>
-            <div class="s-card">
-                <div class="s-item" onclick="goSub('contact')"><div class="si-ic amb">✉️</div><div class="si-body"><div class="si-t">お問い合わせ</div><div class="si-d">不具合・ご意見はこちら</div></div><div class="si-arr">›</div></div>
-                <div class="s-item" onclick="goSub('privacy')"><div class="si-ic grn">🔒</div><div class="si-body"><div class="si-t">プライバシーポリシー</div><div class="si-d">データの取り扱いについて</div></div><div class="si-arr">›</div></div>
-            </div>
-        </div>
-        <div class="s-footer">
-            <div class="sf-ic">🔐</div>
-            <h4>プライバシー保護</h4>
-            <p>全データは端末内にのみ保存。<br>外部送信なし。</p>
+        <div class="drawer-foot">
+            <p>日本の個人開発者が作りました。<br>あなたの思い出を守ります。 v1.0.0</p>
         </div>
     </div>
 
     <!-- PRIVACY -->
     <div class="pg" id="p-privacy"><div class="prose"><div class="pc">
-        <button class="pc-x" onclick="goBack()">✕</button>
-        <h2>🔒 プライバシーポリシー</h2>
+        <button class="pc-x" onclick="goBack()"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
+        <h2><svg class="ico" viewBox="0 0 20 20"><rect x="4" y="9" width="12" height="9" rx="2" fill="currentColor" opacity=".3"/><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6a3 3 0 016 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></svg> プライバシーポリシー</h2>
         <div class="pc-m">制定日：2026年4月1日</div>
         <p>本アプリケーション「写真クリーナー」における情報の取り扱いについて、開発者（以下「当方」）は以下の通りプライバシーポリシーを定めます。</p>
         <h3>1. 取得する情報および利用目的</h3>
@@ -558,29 +684,100 @@ a{color:var(--ac);text-decoration:none}
 
     <!-- HOWTO -->
     <div class="pg" id="p-howto"><div class="prose"><div class="pc">
-        <button class="pc-x" onclick="goBack()">✕</button>
-        <h2>📖 使い方ガイド</h2>
+        <button class="pc-x" onclick="goBack()"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
+        <h2><svg class="ico" viewBox="0 0 20 20"><path d="M2 4c2-1 4-1.5 8 0v13c-4-1.5-6-1-8 0V4z" fill="currentColor" opacity=".15"/><path d="M18 4c-2-1-4-1.5-8 0v13c4-1.5 6-1 8 0V4z" fill="currentColor" opacity=".15"/><path d="M2 4c2-1 4-1.5 8 0v13c-4-1.5-6-1-8 0V4zm16 0c-2-1-4-1.5-8 0v13c4-1.5 6-1 8 0V4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> 使い方ガイド</h2>
         <h3>1. 写真を読み込む</h3><p>ホーム画面の「フォルダ読込」から端末の写真フォルダへのアクセスを許可します。</p>
         <h3>2. カテゴリから整理</h3><p>似ている写真・スクショ・動画・大容量ファイルの4カテゴリから選びます。</p>
         <h3>3. スワイプで仕分け</h3><p>左スワイプ=削除、右スワイプ=キープで直感的に整理。</p>
-        <h3>4. スマートクリーン</h3><p>AIが不要と判断したファイルを自動選択。確認後に一括削除。</p>
         <h3>よくある質問</h3>
-        <p><strong>Q. 料金はかかりますか？</strong><br>A. 完全無料です。広告・課金はありません。</p>
         <p><strong>Q. 削除した写真は復元できますか？</strong><br>A. 削除直後は「元に戻す」で復元可能です。</p>
     </div></div></div>
 
     <!-- CONTACT -->
     <div class="pg" id="p-contact"><div class="prose"><div class="pc">
-        <button class="pc-x" onclick="goBack()">✕</button>
-        <h2>✉️ お問い合わせ</h2>
+        <button class="pc-x" onclick="goBack()"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
+        <h2><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".15"/><rect x="2" y="4" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6l8 5 8-5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> お問い合わせ</h2>
         <p>ご質問・ご要望・不具合報告は下記までお送りください。</p>
-        <p style="text-align:center;padding:20px 0"><a href="/cdn-cgi/l/email-protection#315b5e5f541f5d50531f50414171565c50585d1f525e5c" style="font-size:16px;font-weight:700">✉️ jone.lab.app&#64;gmail.com</a></p>
+        <p style="text-align:center;padding:20px 0"><a href="mailto:jone.lab.app@gmail.com" style="font-size:16px;font-weight:700"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".15"/><rect x="2" y="4" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6l8 5 8-5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> jone.lab.app&#64;gmail.com</a></p>
         <h3>不具合報告の際のお願い</h3>
         <ul><li>端末名・OSバージョン</li><li>問題の詳細</li><li>再現手順</li></ul>
     </div></div></div>
 
+    <!-- CRITERIA (整理の基準) -->
+    <div class="pg" id="p-criteria"><div class="prose"><div class="pc">
+        <button class="pc-x" onclick="goBack()"><svg class="ico" viewBox="0 0 20 20"><path d="M14.3 4.3L10 8.6 5.7 4.3 4.3 5.7 8.6 10l-4.3 4.3 1.4 1.4L10 11.4l4.3 4.3 1.4-1.4L11.4 10l4.3-4.3z" fill="currentColor"/></svg></button>
+        <h2><svg class="ico" viewBox="0 0 20 20"><path d="M10 1l2.2 6.8H19l-5.5 4 2.1 6.7L10 14.4l-5.6 4.1 2.1-6.7L1 7.8h6.8z" fill="currentColor"/></svg> 整理の基準</h2>
+        <p>写真クリーナーがどのような基準でファイルを分類しているか、透明に説明します。</p>
+
+        <h3 style="display:flex;align-items:center;gap:6px"><svg class="ico" viewBox="0 0 20 20" style="width:18px;height:18px;color:var(--ac)"><rect x="2" y="3" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><path d="M2 14l4-4 3 3 4-5 5 6v1c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z" fill="currentColor" opacity=".7"/></svg> 似ている写真の判定</h3>
+        <p>2段階の安全設計で類似写真を検出します。</p>
+        <p style="background:var(--acL);padding:10px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--ac)">Step 1: 候補検出 → Step 2: 確定基準で判定</p>
+        <p><strong>Step 1: 候補を検出する</strong></p>
+        <p>写真の見た目と構図を端末内で比較し、似ている写真の候補を広めに拾います。すべて端末内で処理され、外部に送信されません。</p>
+        <p><strong>Step 2: 確定基準で検証</strong></p>
+        <p>Step 1で出した候補を、以下の客観的なメタデータで検証します。</p>
+        <ul>
+            <li>撮影日時が1分以内か</li>
+            <li>GPS座標が10m以内か</li>
+            <li>ファイルサイズの差が50%以内か</li>
+            <li>解像度が±20%以内か</li>
+        </ul>
+        <p style="background:var(--sf2);padding:10px 14px;border-radius:8px;font-size:12px;color:var(--tx2)">2つ以上一致 → 確実な重複。1つ一致 → 候補として表示。0一致 → 誤検出と判断して除外。構図が似ているだけでは検出されません。</p>
+
+        <h3 style="display:flex;align-items:center;gap:6px;margin-top:20px"><svg class="ico" viewBox="0 0 20 20" style="width:18px;height:18px;color:var(--ac)"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Best写真の選び方</h3>
+        <p>グループ内で最も品質の高い1枚を自動判定します。</p>
+        <p><strong>シャープネス（50%）</strong><br>ブレやぼけがない、くっきりした写真ほど高スコア。</p>
+        <p><strong>解像度（30%）</strong><br>ピクセル数が多い写真ほど高スコア。</p>
+        <p><strong>情報量（20%）</strong><br>ファイルサイズが大きい＝圧縮が少ない＝情報が豊かな写真ほど高スコア。</p>
+
+        <h3 style="display:flex;align-items:center;gap:6px;margin-top:20px"><svg class="ico" viewBox="0 0 20 20" style="width:18px;height:18px;color:var(--ac)"><circle cx="10" cy="7" r="3.5" fill="currentColor"/><path d="M3 17.5c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5" fill="currentColor" opacity=".6"/></svg> 連絡先の重複判定</h3>
+        <p>名前だけでは重複と判定しません。</p>
+        <p><strong>確実な重複（結合可能）</strong></p>
+        <ul>
+            <li>名前が同じ ＋ 電話番号が一致</li>
+            <li>名前が同じ ＋ メールアドレスが一致</li>
+            <li>電話番号が完全一致（名前が違っても）</li>
+        </ul>
+        <p><strong>候補（自動結合しない）</strong></p>
+        <ul>
+            <li>名前だけが同じ → 表示はするが結合ボタンは無効</li>
+        </ul>
+        <p style="background:var(--sf2);padding:10px 14px;border-radius:8px;font-size:12px;color:var(--tx2)">例: 「田中太郎（会社）」と「田中太郎（病院）」は名前が同じでも、電話番号もメールも異なるため候補止まりです。勝手に結合されることはありません。</p>
+
+        <h3 style="display:flex;align-items:center;gap:6px;margin-top:20px"><svg class="ico" viewBox="0 0 20 20" style="width:18px;height:18px;color:var(--ac)"><rect x="4" y="9" width="12" height="9" rx="2" fill="currentColor" opacity=".3"/><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6a3 3 0 016 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></svg> 削除の安全設計</h3>
+        <p>大切な思い出を守るため、複数の安全策を設けています。</p>
+        <p><strong>1. 自動選択しない</strong><br>スキャン後、何も選択されていない状態で表示します。削除するファイルはユーザー自身が確認して選びます。</p>
+        <p><strong>2. ゴミ箱に移動</strong><br>「削除」を実行しても即座に消えません。端末のゴミ箱に移動され、30日間はいつでも復元できます。</p>
+        <p><strong>3. 元に戻すボタン</strong><br>操作直後に表示される「元に戻す」ボタンで、即座に復元できます。</p>
+        <p><strong>4. 端末内で完結</strong><br>写真データは一切外部に送信されません。すべての処理は端末内で完結します。</p>
+
+        <h3 style="display:flex;align-items:center;gap:6px;margin-top:20px"><svg class="ico" viewBox="0 0 20 20" style="width:18px;height:18px;color:var(--ac)"><path d="M10 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 8.5L10 5l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".4"/><path d="M7 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".3"/></svg> スワイプ整理</h3>
+        <p>月ごとに写真を1枚ずつ確認できます。</p>
+        <p>左スワイプ → ゴミ箱へ（復元可能）<br>右スワイプ → 保持<br>下部の「↩」ボタンで直前の操作を取り消し可能です。</p>
+
+        <div style="background:var(--acL);padding:14px 16px;border-radius:10px;margin-top:20px">
+            <p style="font-size:13px;font-weight:600;color:var(--ac);margin-bottom:4px">写真クリーナーの約束</p>
+            <p style="font-size:12px;color:var(--ac);margin-bottom:0;line-height:1.6">私たちは「思い出は宝」だと考えています。確認なしに削除することはありません。判定に不安がある場合は、いつでもこのページで基準を確認してください。</p>
+        </div>
+    </div></div></div>
+
     <!-- OVERLAYS -->
-    <div class="del-bar"><button class="del-btn" id="del-btn" onclick="confirmDel()">🗑 <span id="del-txt">削除</span></button></div>
+    <div class="del-bar"><button class="del-btn" id="del-btn" onclick="confirmDel()"><svg class="ico" viewBox="0 0 20 20"><path d="M7 3V2c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 5h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="currentColor" opacity=".15"/><path d="M5 5l1 12c0 .6.4 1 1 1h6c.6 0 1-.4 1-1l1-12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> <span id="del-txt">削除</span></button></div>
+
+    <!-- CELEBRATION -->
+    <div class="celeb" id="celeb" onclick="closeCeleb()">
+        <div class="celeb-box" onclick="event.stopPropagation()">
+            <div class="celeb-ic" id="celeb-ic"></div>
+            <div class="celeb-title" id="celeb-title"></div>
+            <div class="celeb-sub" id="celeb-sub"></div>
+            <div class="celeb-stat">
+                <div class="celeb-stat-item"><div class="celeb-stat-val" id="celeb-cnt">0</div><div class="celeb-stat-lbl">削除</div></div>
+                <div class="celeb-stat-item"><div class="celeb-stat-val" id="celeb-mb">0</div><div class="celeb-stat-lbl">解放</div></div>
+                <div class="celeb-stat-item"><div class="celeb-stat-val" id="celeb-min">0</div><div class="celeb-stat-lbl">節約</div></div>
+            </div>
+            <button class="celeb-btn" onclick="closeCeleb()">続ける</button>
+        </div>
+    </div>
 
     <!-- CALENDAR MODAL -->
     <div class="cal-modal" id="cal-modal">
@@ -590,7 +787,6 @@ a{color:var(--ac);text-decoration:none}
                 <span class="cal-title">日付を選択</span>
                 <button class="cal-done" id="cal-done" onclick="applyDateFilter()">完了</button>
             </div>
-            <div class="cal-weekdays"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
             <div class="cal-scroll" id="cal-scroll"></div>
         </div>
     </div>
@@ -600,17 +796,17 @@ a{color:var(--ac);text-decoration:none}
 
     <!-- TABS -->
     <div class="tabs">
-        <button class="tab on" data-t="home" onclick="goTab(this)"><div class="ti">🏠</div><span>ホーム</span></button>
-        <button class="tab" data-t="similar" onclick="goTab(this)"><div class="ti">🖼</div><span>写真</span></button>
-        <button class="tab" data-t="swipe" onclick="goTab(this)"><div class="ti">👆</div><span>スワイプ</span></button>
-        <button class="tab" data-t="settings" onclick="goTab(this)"><div class="ti">⚙️</div><span>設定</span></button>
+        <button class="tab on" data-t="home" onclick="goTab(this)"><div class="ti"><svg class="ico" viewBox="0 0 20 20"><path d="M3 10l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9v7a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V9" fill="currentColor" opacity=".3"/><path d="M5 9v7a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><span>ホーム</span></button>
+        <button class="tab" data-t="similar" onclick="goTab(this)"><div class="ti"><svg class="ico" viewBox="0 0 20 20"><rect x="2" y="3" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><path d="M2 14l4-4 3 3 4-5 5 6v1c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z" fill="currentColor" opacity=".7"/></svg></div><span>写真</span></button>
+        <button class="tab" data-t="swipe" onclick="goTab(this)"><div class="ti"><svg class="ico" viewBox="0 0 20 20"><path d="M10 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 8.5L10 5l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".4"/><path d="M7 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".3"/></svg></div><span>スワイプ</span></button>
+        <button class="tab" data-t="contacts" onclick="goTab(this)"><div class="ti"><svg class="ico" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" fill="currentColor"/><path d="M3 17.5c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5" fill="currentColor" opacity=".6"/></svg></div><span>連絡先</span></button>
     </div>
 
     <input type="file" id="inp-dir" class="file-in" multiple>
     <input type="file" id="inp-files" class="file-in" accept="image/*,video/*,.cr2,.nef,.arw,.dng" multiple>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ============================================================
    CONFIG
    ============================================================ */
@@ -654,9 +850,12 @@ let previousTab = 'home';
 let undoBuffer = [];
 let undoFromTab = '';
 let toastTimer = null;
-let swipePhotos = [];
-let swipeIndex = 0;
-let swipeDeleted = 0;
+// (swipe state is in SWIPE section below)
+
+// Achievement tracking
+var achFreedMB = 0;
+var achCleaned = 0;
+var achTimeMin = 0;  // 1枚 ≈ 0.5分の手動整理時間を節約と仮定
 
 /* ============================================================
    THEME
@@ -689,6 +888,66 @@ function applyTheme(mode) {
 }
 
 /* ============================================================
+   DRAWER
+   ============================================================ */
+function openDrawer() {
+    document.getElementById('drawer').classList.add('on');
+    document.getElementById('drawer-overlay').classList.add('on');
+}
+
+function closeDrawer() {
+    document.getElementById('drawer').classList.remove('on');
+    document.getElementById('drawer-overlay').classList.remove('on');
+}
+
+function drawerGoSub(id) {
+    closeDrawer();
+    setTimeout(function() { goSub(id); }, 150);
+}
+
+// Edge swipe to open drawer (left edge → right)
+(function() {
+    var dsx = 0, ddx = 0, dActive = false, dDrawer = null, dOverlay = null;
+
+    document.addEventListener('touchstart', function(e) {
+        if (!['home','similar','swipe','contacts'].includes(currentTab)) return;
+        var x = e.touches[0].clientX;
+        if (x > 30) return; // only from left edge
+        dsx = x; ddx = 0; dActive = true;
+        dDrawer = document.getElementById('drawer');
+        dOverlay = document.getElementById('drawer-overlay');
+        dDrawer.style.transition = 'none';
+        dOverlay.style.transition = 'none';
+        dOverlay.style.pointerEvents = 'all';
+    });
+
+    document.addEventListener('touchmove', function(e) {
+        if (!dActive) return;
+        ddx = e.touches[0].clientX - dsx;
+        if (ddx < 0) ddx = 0;
+        var maxW = dDrawer.offsetWidth;
+        var pct = Math.min(ddx / maxW, 1);
+        dDrawer.style.transform = 'translateX(' + (-100 + pct * 100) + '%)';
+        dOverlay.style.background = 'rgba(0,0,0,' + (pct * 0.35) + ')';
+    });
+
+    document.addEventListener('touchend', function() {
+        if (!dActive) return;
+        dActive = false;
+        dDrawer.style.transition = '';
+        dOverlay.style.transition = '';
+        if (ddx > 80) {
+            openDrawer();
+        } else {
+            dDrawer.style.transform = '';
+            dOverlay.style.background = '';
+            dOverlay.style.pointerEvents = '';
+            closeDrawer();
+        }
+    });
+})();
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 function goTab(el) {
@@ -712,6 +971,9 @@ function go(id) {
     selBtn.style.display = 'none';
     document.getElementById('del-btn').classList.remove('show');
     document.getElementById('del-btn').classList.remove('indigo');
+    var isTabPage = ['home','similar','swipe','contacts'].includes(id);
+    document.getElementById('hd-logo').style.display = (id === 'home') ? 'block' : 'none';
+    document.getElementById('hd-burger').style.display = isTabPage ? 'block' : 'none';
 
     const pages = {
         home:    { title: '写真クリーナー', page: 'p-home' },
@@ -719,9 +981,8 @@ function go(id) {
         ss:      { title: 'スクリーンショット', page: 'p-ss', detail: true },
         vid:     { title: '大きな動画', page: 'p-vid', detail: true },
         big:     { title: '大容量ファイル', page: 'p-big', detail: true },
-        contacts:{ title: '連絡先を整理', page: 'p-contacts', back: true },
+        contacts:{ title: '連絡先', page: 'p-contacts' },
         swipe:   { title: 'スワイプ整理', page: 'p-swipe' },
-        settings:{ title: '設定', page: 'p-settings' },
     };
 
     const cfg = pages[id];
@@ -754,17 +1015,31 @@ function goSub(id) {
     document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
     document.getElementById('p-' + id).classList.add('on');
 
-    const titles = { howto: '使い方', privacy: 'プライバシーポリシー', contact: 'お問い合わせ' };
+    const titles = { howto: '使い方', privacy: 'プライバシーポリシー', contact: 'お問い合わせ', criteria: '整理の基準' };
     document.getElementById('hd-title').textContent = titles[id] || '';
     document.getElementById('hd-back').style.display = 'block';
+    document.getElementById('hd-logo').style.display = 'none';
+    document.getElementById('hd-burger').style.display = 'none';
     document.getElementById('sel-btn').style.display = 'none';
     document.getElementById('del-btn').classList.remove('show');
 }
 
 function goBack() {
-    const subPages = ['howto', 'privacy', 'contact'];
+    // If in swipe card view, go back to month list
+    var cardView = document.getElementById('sw-card-view');
+    if (cardView && cardView.classList.contains('on') && currentTab === 'swipe') {
+        exitSwipeCard();
+        return;
+    }
+    // If trash modal is open, close it
+    var trashModal = document.getElementById('sw-trash-modal');
+    if (trashModal && trashModal.classList.contains('on')) {
+        closeSwipeTrash();
+        return;
+    }
+    var subPages = ['howto', 'privacy', 'contact', 'criteria'];
     if (subPages.includes(currentTab)) {
-        go('settings');
+        go(previousTab || 'home');
     } else {
         go('home');
     }
@@ -897,8 +1172,18 @@ function execDel() {
     // Save for undo
     undoBuffer = [];
     undoFromTab = currentTab;
-    sel.forEach(i => undoBuffer.push({ html: i.outerHTML, parent: i.parentElement, next: i.nextElementSibling }));
+    var delMB = 0;
+    sel.forEach(function(i) {
+        undoBuffer.push({ html: i.outerHTML, parent: i.parentElement, next: i.nextElementSibling });
+        delMB += parseFloat(i.dataset.sz || 0);
+    });
     const cnt = sel.length;
+
+    // Track achievements
+    achFreedMB += delMB;
+    achCleaned += cnt;
+    achTimeMin += Math.round(cnt * 0.5);  // 1枚 ≈ 30秒の手動整理
+    updateAchDisplay();
 
     // Native delete
     if (isNative) {
@@ -916,7 +1201,6 @@ function execDel() {
 
     setTimeout(() => {
         sel.forEach(i => i.remove());
-        // Clean empty groups
         document.querySelectorAll('.grp').forEach(g => {
             if (!g.querySelectorAll('.item').length) {
                 g.style.transition = 'all .2s'; g.style.opacity = '0';
@@ -927,9 +1211,53 @@ function execDel() {
         updateDeleteBtn();
         updateDetailInfo();
         updateHome();
+
+        // Show celebration for significant deletions
+        showCeleb(cnt, delMB);
     }, 200 + sel.length * 15);
 
     showToast(cnt);
+}
+
+/* ============================================================
+   CELEBRATION & ACHIEVEMENT
+   ============================================================ */
+function showCeleb(cnt, mb) {
+    // Only celebrate for 3+ items
+    if (cnt < 3) return;
+
+    var savedMin = Math.round(cnt * 0.5);
+    var messages = [
+        { min: 20, ic: '🎉', title: 'すごい！大掃除完了！', sub: '一気に整理できましたね' },
+        { min: 10, ic: '✨', title: 'スッキリ！', sub: 'どんどんキレイになっています' },
+        { min: 5,  ic: '🧹', title: 'いい調子！', sub: '着実に整理が進んでいます' },
+        { min: 0,  ic: '👍', title: 'お疲れさま！', sub: 'ストレージに余裕ができました' }
+    ];
+
+    var msg = messages.find(function(m) { return cnt >= m.min; }) || messages[messages.length - 1];
+
+    document.getElementById('celeb-ic').textContent = msg.ic;
+    document.getElementById('celeb-title').textContent = msg.title;
+    document.getElementById('celeb-sub').textContent = msg.sub;
+    document.getElementById('celeb-cnt').textContent = cnt + '件';
+    document.getElementById('celeb-mb').textContent = fmtMB(mb);
+    document.getElementById('celeb-min').textContent = savedMin + '分';
+
+    setTimeout(function() {
+        document.getElementById('celeb').classList.add('on');
+    }, 400);
+}
+
+function closeCeleb() {
+    document.getElementById('celeb').classList.remove('on');
+}
+
+function updateAchDisplay() {
+    document.getElementById('ach-freed').textContent = achFreedMB > 1024 ?
+        (achFreedMB / 1024).toFixed(1) + 'GB' : Math.round(achFreedMB) + 'MB';
+    document.getElementById('ach-cleaned').textContent = achCleaned;
+    document.getElementById('ach-time').textContent = achTimeMin >= 60 ?
+        Math.round(achTimeMin / 60) + '時間' : achTimeMin + '分';
 }
 
 function showToast(n) {
@@ -941,6 +1269,19 @@ function showToast(n) {
 
 function undo() {
     if (!undoBuffer.length) return;
+    // Reverse achievements
+    var restoredMB = 0;
+    undoBuffer.forEach(function(d) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = d.html;
+        var sz = parseFloat(tmp.firstElementChild.dataset.sz || 0);
+        restoredMB += sz;
+    });
+    achFreedMB = Math.max(0, achFreedMB - restoredMB);
+    achCleaned = Math.max(0, achCleaned - undoBuffer.length);
+    achTimeMin = Math.max(0, achTimeMin - Math.round(undoBuffer.length * 0.5));
+    updateAchDisplay();
+
     undoBuffer.reverse().forEach(d => {
         const tmp = document.createElement('div');
         tmp.innerHTML = d.html;
@@ -955,20 +1296,6 @@ function undo() {
     updateDeleteBtn();
     updateDetailInfo();
     updateHome();
-}
-
-function smartClean() {
-    // Auto-select non-best similar + all screenshots
-    document.querySelectorAll('#sim-list .item').forEach(it => {
-        const grp = it.closest('.grp');
-        if (!grp) return;
-        const items = grp.querySelectorAll('.item');
-        it.classList.toggle('on', [...items].indexOf(it) > 0);
-    });
-    document.querySelectorAll('#ss-grid .item').forEach(it => it.classList.add('on'));
-    go('similar');
-    updateDetailInfo();
-    updateDeleteBtn();
 }
 
 /* ============================================================
@@ -1036,14 +1363,16 @@ function renderMonthList() {
         var isDone = reviewed >= photos.length;
         var thumb = photos[0] && photos[0].src ? photos[0].src : '';
 
-        return '<div class="sw-month" onclick="enterSwipeMonth(\'' + ym + '\')">' +
+        return '<div class="sw-month' + (isDone ? ' done' : '') + '" onclick="enterSwipeMonth(\'' + ym + '\')">' +
             '<div class="sw-month-thumb">' +
             (thumb ? '<img src="' + thumb + '">' : '') +
-            (isDone ? '<div class="sw-check-done">✓</div>' : '') +
+            (isDone ? '<div class="sw-check-done"><svg viewBox="0 0 24 24" width="28" height="28" fill="none"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.4L12 16.6 5.7 21l2.3-7.4-6-4.4h7.6z" fill="#FFD700" stroke="#E6B800" stroke-width=".5"/></svg></div>' : '') +
             '</div>' +
             '<div class="sw-month-body">' +
-            '<div class="sw-month-name">' + monthName + '</div>' +
-            '<div class="sw-month-prog">' + reviewed + '/' + photos.length + ' 件を確認済み</div>' +
+            '<div class="sw-month-name">' + monthName +
+            (isDone ? '<span class="sw-month-done-badge"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 1l1.8 5.4H16l-4.5 3.3 1.7 5.5L8 12 2.8 15.2l1.7-5.5L0 6.4h6.2z" fill="currentColor"/></svg> 完了</span>' : '') +
+            '</div>' +
+            '<div class="sw-month-prog">' + (isDone ? '全 ' + photos.length + ' 件を確認しました' : reviewed + '/' + photos.length + ' 件を確認済み') + '</div>' +
             '<div class="sw-month-bar"><div class="sw-month-bar-fill" style="width:' + pct + '%"></div></div>' +
             '</div></div>';
     }).join('');
@@ -1172,7 +1501,7 @@ function openSwipeTrash() {
 
     document.getElementById('sw-trash-grid').innerHTML = swTrash.map(function(p, i) {
         return '<div class="sw-trash-item" onclick="restoreFromTrash(' + i + ')">' +
-            (p.src ? '<img src="' + p.src + '">' : '<div style="width:100%;height:100%;background:var(--sf2);display:flex;align-items:center;justify-content:center">📷</div>') +
+            (p.src ? '<img src="' + p.src + '">' : '<div style="width:100%;height:100%;background:var(--sf2);display:flex;align-items:center;justify-content:center"><svg class="ico" viewBox="0 0 20 20"><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="currentColor" opacity=".15"/><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>') +
             '</div>';
     }).join('');
 }
@@ -1353,12 +1682,12 @@ function onContactScanComplete(jsonStr) {
         // Summary cards (Cleaner Guru風)
         var sumHtml = '<div style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:4px">管理する連絡先</div>';
         sumHtml += '<div style="background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)">';
-        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic grn">👥</div><div class="si-body"><div class="si-t">重複</div><div class="si-d">名前・番号・メールアドレス</div></div><div style="font-size:16px;font-weight:700;color:var(--ac)">' + data.duplicateCount + '</div><div class="si-arr">›</div></div>';
-        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic" style="background:var(--redL);color:var(--red)">🚫</div><div class="si-body"><div class="si-t">不完全な連絡先</div><div class="si-d">名前なし・番号なし・メールなし</div></div><div style="font-size:16px;font-weight:700;color:var(--red)">' + data.incompleteCount + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic grn"><svg class="ico" viewBox="0 0 20 20"><circle cx="7.5" cy="6.5" r="3" fill="currentColor"/><path d="M1 16c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6" fill="currentColor" opacity=".6"/><circle cx="14" cy="6" r="2.5" fill="currentColor" opacity=".7"/><path d="M19 15.5c0-2.5-2-4.5-5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/></svg></div><div class="si-body"><div class="si-t">重複</div><div class="si-d">名前・番号・メールアドレス</div></div><div style="font-size:16px;font-weight:700;color:var(--ac)">' + data.duplicateCount + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic" style="background:var(--redL);color:var(--red)"><svg class="ico" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="1.8"/></svg></div><div class="si-body"><div class="si-t">不完全な連絡先</div><div class="si-d">名前なし・番号なし・メールなし</div></div><div style="font-size:16px;font-weight:700;color:var(--red)">' + data.incompleteCount + '</div><div class="si-arr">›</div></div>';
         sumHtml += '</div>';
         sumHtml += '<div style="font-size:13px;font-weight:600;color:var(--tx2);margin-top:16px;margin-bottom:4px">フルディレクトリ</div>';
         sumHtml += '<div style="background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)">';
-        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic blu">📞</div><div class="si-body"><div class="si-t">全ての連絡先</div></div><div style="font-size:16px;font-weight:700">' + data.totalContacts + '</div><div class="si-arr">›</div></div>';
+        sumHtml += '<div class="s-item" style="cursor:default"><div class="si-ic blu"><svg class="ico" viewBox="0 0 20 20"><path d="M4.3 2.8c.8-.8 2-.5 2.5.3l1.5 2.5c.4.6.2 1.4-.3 1.9l-.7.7c-.2.2-.2.5 0 .8l3.7 3.7c.3.3.6.2.8 0l.7-.7c.5-.5 1.3-.7 1.9-.3l2.5 1.5c.8.5 1.1 1.7.3 2.5l-1 1C14.3 18.5 8 17 5.5 14.5S1.5 5.7 3.3 3.8l1-1z" fill="currentColor"/></svg></div><div class="si-body"><div class="si-t">全ての連絡先</div></div><div style="font-size:16px;font-weight:700">' + data.totalContacts + '</div><div class="si-arr">›</div></div>';
         sumHtml += '</div>';
         document.getElementById('con-summary').innerHTML = sumHtml;
 
@@ -1421,7 +1750,7 @@ function mergeContactGroup(gi) {
         btn.textContent = '結合中...';
         Android.mergeContactGroup(gi);
     } else {
-        btn.textContent = '✓ 結合完了';
+        btn.textContent = '<svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg> 結合完了';
         btn.classList.add('done');
     }
 }
@@ -1429,7 +1758,7 @@ function mergeContactGroup(gi) {
 function onContactMergeComplete(gi, success) {
     var btn = document.getElementById('con-merge-' + gi);
     if (btn) {
-        btn.textContent = success ? '✓ 結合完了' : '❌ 失敗';
+        btn.textContent = success ? '<svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg> 結合完了' : '<svg class="ico" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="currentColor" opacity=".15"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> 失敗';
         btn.classList.add('done');
     }
 }
@@ -1439,13 +1768,13 @@ function deleteIncomplete(idsJson) {
         if (isNative) {
             Android.deleteIncompleteContacts(idsJson);
         } else {
-            document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600">✓ 削除完了（デモ）</div>';
+            document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg> 削除完了（デモ）</div>';
         }
     }
 }
 
 function onContactDeleteComplete(deleted, total) {
-    document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600">✓ ' + deleted + '件 削除完了</div>';
+    document.getElementById('con-incomplete').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ac);font-weight:600"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg> ' + deleted + '件 削除完了</div>';
 }
 
 function showContactDemo() {
@@ -1509,9 +1838,9 @@ function onAIAnalysisComplete(jsonStr) {
                 var items = g.items.map(function(p, pi) {
                     var isBest = !!p.isBest;
                     return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" data-uri="' + (p.uri||'') + '" onclick="togSim(this)">' +
-                        (p.uri ? '<img src="' + p.uri + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
-                        (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
-                        '<div class="ck">✓</div></div>';
+                        (p.uri ? '<img src="' + p.uri + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)"><svg class="ico" viewBox="0 0 20 20"><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="currentColor" opacity=".15"/><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>') +
+                        (isBest ? '<div class="best-badge"><span class="best-icon"><svg class="ico" viewBox="0 0 20 20"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="currentColor" opacity=".15"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span> Best</div>' : '') +
+                        '<div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
                 }).join('');
                 return '<div class="grp" data-gi="' + gi + '">' +
                     '<div class="grp-hd"><span class="grp-count">' + g.items.length + ' 似ています</span>' +
@@ -1532,10 +1861,10 @@ function onNativeDeleteComplete(d, t) { console.log('Deleted: ' + d + '/' + t); 
 
 function renderNativeList(gridId, items, preCheck, isVideo) {
     document.getElementById(gridId).innerHTML = items.map(item =>
-        '<div class="item' + (preCheck ? ' on' : '') + '" data-sz="' + item.mb + '" data-uri="' + item.uri + '" onclick="tog(this)">' +
-        (item.uri ? '<img src="' + item.uri + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '🎬' : '📐') + '</div>') +
-        (isVideo ? '<div class="play">▶</div>' : '') +
-        '<div class="sz">' + item.mb + 'MB</div><div class="ck">✓</div></div>'
+        '<div class="item on" data-sz="' + item.mb + '" data-uri="' + item.uri + '" onclick="tog(this)">' +
+        (item.uri ? '<img src="' + item.uri + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '<svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".2"/><path d="M2 6c0-1.1.9-2 2-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7.5v5l4.5-2.5z" fill="currentColor"/></svg>' : '<svg class="ico" viewBox="0 0 20 20"><path d="M3 17V3h14L3 17z" fill="currentColor" opacity=".15"/><path d="M3 17V3h14L3 17z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 12h5" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h3" stroke="currentColor" stroke-width="1.5"/></svg>') + '</div>') +
+        (isVideo ? '<div class="play"><svg class="ico" viewBox="0 0 20 20"><path d="M6 3.8v12.4c0 .6.7 1 1.2.6l9.1-6.2c.5-.3.5-1 0-1.3L7.2 3.1c-.5-.3-1.2 0-1.2.7z" fill="currentColor"/></svg></div>' : '') +
+        '<div class="sz">' + item.mb + 'MB</div><div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>'
     ).join('');
 }
 
@@ -1586,9 +1915,9 @@ function renderSimilar(photos) {
         var items = g.map(function(p, pi) {
             var isBest = (pi === 0);
             return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" onclick="togSim(this)">' +
-                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
-                (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
-                '<div class="ck">✓</div></div>';
+                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)"><svg class="ico" viewBox="0 0 20 20"><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="currentColor" opacity=".15"/><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>') +
+                (isBest ? '<div class="best-badge"><span class="best-icon"><svg class="ico" viewBox="0 0 20 20"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="currentColor" opacity=".15"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span> Best</div>' : '') +
+                '<div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
         }).join('');
         return '<div class="grp" data-gi="' + gi + '">' +
             '<div class="grp-hd"><span class="grp-count">' + g.length + ' 似ています</span>' +
@@ -1645,41 +1974,49 @@ function closeCalendar() {
 function buildCalendar() {
     var scroll = document.getElementById('cal-scroll');
     calPhotoDates = {};
+    var dateMB = {};
     allSimPhotos.forEach(function(p) {
         if (!p.date) return;
         calPhotoDates[p.date] = (calPhotoDates[p.date] || 0) + 1;
+        dateMB[p.date] = (dateMB[p.date] || 0) + p.mb;
     });
 
-    var now = new Date();
-    var html = '';
-    for (var m = 0; m < 12; m++) {
-        var year = now.getFullYear();
-        var month = now.getMonth() - m;
-        while (month < 0) { month += 12; year--; }
+    // Group dates by month, only show dates with photos
+    var months = {};
+    Object.keys(calPhotoDates).sort().reverse().forEach(function(dateStr) {
+        var ym = dateStr.substring(0, 7);
+        if (!months[ym]) months[ym] = [];
+        months[ym].push(dateStr);
+    });
 
-        html += '<div class="cal-month-title">' + (month + 1) + '月 ' + year + '</div>';
-        html += '<div class="cal-grid">';
+    var monthKeys = Object.keys(months).sort().reverse();
 
-        var firstDay = new Date(year, month, 1).getDay();
-        for (var e = 0; e < firstDay; e++) html += '<div class="cal-day empty"></div>';
-
-        var daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (var d = 1; d <= daysInMonth; d++) {
-            var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-            var photoCount = calPhotoDates[dateStr] || 0;
-            var isSelected = !!calSelectedDates[dateStr];
-            var cls = 'cal-day';
-            if (photoCount > 0) {
-                cls += ' has-photos';
-                if (isSelected) cls += ' selected';
-                html += '<div class="' + cls + '" data-date="' + dateStr + '" data-count="' + photoCount + '" onclick="toggleCalDay(this)">' + d + '</div>';
-            } else {
-                cls += ' no-photos';
-                html += '<div class="' + cls + '">' + d + '</div>';
-            }
-        }
-        html += '</div>';
+    if (monthKeys.length === 0) {
+        scroll.innerHTML = '<div class="cal-empty">写真がありません</div>';
+        return;
     }
+
+    var html = '';
+    monthKeys.forEach(function(ym) {
+        var parts = ym.split('-');
+        html += '<div class="cal-month-sec">';
+        html += '<div class="cal-month-title">' + parseInt(parts[1]) + '月 ' + parts[0] + '</div>';
+        months[ym].forEach(function(dateStr) {
+            var d = new Date(dateStr);
+            var dayNames = ['日','月','火','水','木','金','土'];
+            var dayName = dayNames[d.getDay()];
+            var day = d.getDate();
+            var count = calPhotoDates[dateStr];
+            var mb = dateMB[dateStr] || 0;
+            var isSelected = !!calSelectedDates[dateStr];
+            html += '<div class="cal-date-item' + (isSelected ? ' selected' : '') + '" data-date="' + dateStr + '" onclick="toggleCalDay(this)">';
+            html += '<div class="cdi-date">' + parseInt(parts[1]) + '月' + day + '日 (' + dayName + ')</div>';
+            html += '<div class="cdi-info"><div class="cdi-count">' + count + '枚</div><div class="cdi-size">' + fmtMB(mb) + '</div></div>';
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+
     scroll.innerHTML = html;
     updateCalDoneBtn();
 }
@@ -1789,9 +2126,9 @@ function filterAndRenderSimilar() {
         var items = g.map(function(p, pi) {
             var isBest = (pi === 0);
             return '<div class="item' + (isBest ? '' : ' on') + '" data-sz="' + p.mb + '" onclick="togSim(this)">' +
-                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)">📷</div>') +
-                (isBest ? '<div class="best-badge"><span class="best-icon">👍</span> Best</div>' : '') +
-                '<div class="ck">✓</div></div>';
+                (p.url ? '<img src="' + p.url + '" loading="lazy">' : '<div style="width:100%;aspect-ratio:3/4;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r2)"><svg class="ico" viewBox="0 0 20 20"><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="currentColor" opacity=".15"/><path d="M7 4l-1 2H3a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V7a1 1 0 00-1-1h-3l-1-2H7z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>') +
+                (isBest ? '<div class="best-badge"><span class="best-icon"><svg class="ico" viewBox="0 0 20 20"><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="currentColor" opacity=".3"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="currentColor" opacity=".15"/><path d="M5.5 9l3-6.5c.8 0 2 .8 2 2.5v3h5c1.2 0 2 1 1.8 2.2l-1.2 5.5c-.2.8-.9 1.3-1.7 1.3H5.5V9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h2.5v8H3a1 1 0 01-1-1v-6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span> Best</div>' : '') +
+                '<div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
         }).join('');
         return '<div class="grp" data-gi="' + gi + '">' +
             '<div class="grp-hd"><span class="grp-count">' + g.length + ' 似ています</span>' +
@@ -1804,11 +2141,11 @@ function filterAndRenderSimilar() {
 
 function renderList(gridId, items, preCheck, isVideo) {
     document.getElementById(gridId).innerHTML = items.map(item =>
-        '<div class="item' + (preCheck ? ' on' : '') + '" data-sz="' + item.mb + '" onclick="tog(this)">' +
-        (item.url ? '<img src="' + item.url + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '🎬' : '📐') + '</div>') +
-        (isVideo ? '<div class="play">▶</div>' : '') +
+        '<div class="item on" data-sz="' + item.mb + '" onclick="tog(this)">' +
+        (item.url ? '<img src="' + item.url + '" loading="lazy">' : '<div class="ph">' + (isVideo ? '<svg class="ico" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" opacity=".2"/><path d="M2 6c0-1.1.9-2 2-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7.5v5l4.5-2.5z" fill="currentColor"/></svg>' : '<svg class="ico" viewBox="0 0 20 20"><path d="M3 17V3h14L3 17z" fill="currentColor" opacity=".15"/><path d="M3 17V3h14L3 17z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 12h5" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h3" stroke="currentColor" stroke-width="1.5"/></svg>') + '</div>') +
+        (isVideo ? '<div class="play"><svg class="ico" viewBox="0 0 20 20"><path d="M6 3.8v12.4c0 .6.7 1 1.2.6l9.1-6.2c.5-.3.5-1 0-1.3L7.2 3.1c-.5-.3-1.2 0-1.2.7z" fill="currentColor"/></svg></div>' : '') +
         (RAW_EXT.has(getExt(item.name)) ? '<div class="tag">' + getExt(item.name).toUpperCase() + '</div>' : '') +
-        '<div class="sz">' + fmtSz(item.size) + '</div><div class="ck">✓</div></div>'
+        '<div class="sz">' + fmtSz(item.size) + '</div><div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>'
     ).join('');
 }
 
@@ -1884,15 +2221,59 @@ function loadDemo() {
     renderSimilar(photos);
 
     document.getElementById('ss-grid').innerHTML = ss.map(function(s){
-        return '<div class="item on" data-sz="'+s.mb+'" onclick="tog(this)"><img src="'+s.url+'" loading="lazy"><div class="sz">'+s.mb+'MB</div><div class="ck">✓</div></div>';
+        return '<div class="item on" data-sz="'+s.mb+'" onclick="tog(this)"><img src="'+s.url+'" loading="lazy"><div class="sz">'+s.mb+'MB</div><div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
     }).join('');
 
     document.getElementById('vid-grid').innerHTML = vid.map(function(v){
-        return '<div class="item" data-sz="'+v.mb+'" onclick="tog(this)"><img src="'+v.url+'" loading="lazy"><div class="play">▶</div><div class="sz">'+v.gb+'GB · '+v.dur+'</div><div class="ck">✓</div></div>';
+        return '<div class="item on" data-sz="'+v.mb+'" onclick="tog(this)"><img src="'+v.url+'" loading="lazy"><div class="play"><svg class="ico" viewBox="0 0 20 20"><path d="M6 3.8v12.4c0 .6.7 1 1.2.6l9.1-6.2c.5-.3.5-1 0-1.3L7.2 3.1c-.5-.3-1.2 0-1.2.7z" fill="currentColor"/></svg></div><div class="sz">'+v.gb+'GB · '+v.dur+'</div><div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
     }).join('');
 
     document.getElementById('big-grid').innerHTML = big.map(function(b){
-        return '<div class="item" data-sz="'+b.mb+'" onclick="tog(this)"><img src="'+b.url+'" loading="lazy"><div class="tag">'+getExt(b.name).toUpperCase()+'</div><div class="sz">'+b.mb+'MB</div><div class="ck">✓</div></div>';
+        return '<div class="item on" data-sz="'+b.mb+'" onclick="tog(this)"><img src="'+b.url+'" loading="lazy"><div class="tag">'+getExt(b.name).toUpperCase()+'</div><div class="sz">'+b.mb+'MB</div><div class="ck"><svg class="ico" viewBox="0 0 20 20"><path d="M8.5 14.2L4.3 10l1.4-1.4 2.8 2.8 6.3-6.3 1.4 1.4z" fill="currentColor"/></svg></div></div>';
     }).join('');
 
-    up
+    updateHome();
+}
+
+var obPage = 0;
+function obNext() {
+    obPage++;
+    if (obPage >= 3) { closeOnboard(); return; }
+    var slides = document.getElementById('ob-slides');
+    slides.scrollTo({ left: slides.offsetWidth * obPage, behavior: 'smooth' });
+    updateObDots();
+    if (obPage === 2) {
+        document.getElementById('ob-btn').textContent = '始める';
+        document.getElementById('ob-skip').style.display = 'none';
+    }
+}
+function updateObDots() {
+    document.querySelectorAll('#ob-dots .ob-dot').forEach(function(d, i) {
+        d.classList.toggle('on', i === obPage);
+    });
+}
+function closeOnboard() {
+    document.getElementById('onboard').classList.add('done');
+    try { localStorage.setItem('sc-onboarded', '1'); } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var slides = document.getElementById('ob-slides');
+    if (slides) {
+        slides.addEventListener('scroll', function() {
+            var newPage = Math.round(slides.scrollLeft / slides.offsetWidth);
+            if (newPage !== obPage) {
+                obPage = newPage;
+                updateObDots();
+                document.getElementById('ob-btn').textContent = obPage === 2 ? '始める' : '次へ';
+                document.getElementById('ob-skip').style.display = obPage === 2 ? 'none' : 'block';
+            }
+        });
+    }
+    try { if (localStorage.getItem('sc-onboarded') === '1') document.getElementById('onboard').classList.add('done'); } catch(e) {}
+    initTheme();
+    loadDemo();
+    go('home');
+});
+</script>
+</body>
+</html>
